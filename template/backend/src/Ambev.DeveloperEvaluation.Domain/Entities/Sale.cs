@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Exceptions;
+using Ambev.DeveloperEvaluation.Domain.Specifications;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
@@ -12,38 +13,45 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public string SaleStatus { get; set; }
         public IEnumerable<SaleItem> SaleItems { get; set; }
 
-        private const int MAX_ITEMS_PER_PRODUCT = 20;
-
         public Sale()
         {
         }
 
         public decimal CalculateTotalSalePriceWithItems()
         {
-            SaleItems = SaleItem.GetSaleItemsGroupedByProductId(SaleItems);
-            if (HasMaxQuantityProductItems(SaleItems))
-            {
-                throw new MaxQuantityProductItemsException($"The maximum quantity of product items is {MAX_ITEMS_PER_PRODUCT}.");
-            }
-            foreach (var item in SaleItems)
-            {
-                if (SaleItems.Any(x => item.ProductId == x.ProductId))
-                {
-                    TotalSalePrice += item.CalculateTotalSaleItemPrice();
-                    continue;
-                }
-                TotalSalePrice += item.UnitProductItemPrice * item.ProductItemQuantity;
-            }
+            SaleItems = GetSaleItemsGroupedByProductId();
+            if (HasMaxQuantityProductItems(SaleItems)) throw new MaxQuantityProductItemsException($"The maximum quantity of product items is {MaxQuantityProductItemsSpecification.MAX_ITEMS_PER_PRODUCT}.");
+           
+            TotalSalePrice = SaleItems.Sum(x => x.CalculateTotalSaleItemPrice());
             return TotalSalePrice;
+        }
+
+        public IEnumerable<SaleItem> GetSaleItemsGroupedByProductId()
+        {
+            if (SaleItems == null || !SaleItems.Any())
+            {
+                return Enumerable.Empty<SaleItem>();
+            }
+            return SaleItems
+                .GroupBy(x => x.ProductId)
+                .Select(g => new SaleItem
+                {
+                    SaleId = g.First().SaleId,
+                    ProductId = g.Key,
+                    ProductItemQuantity = g.Sum(p => p.ProductItemQuantity),
+                    UnitProductItemPrice = g.First().UnitProductItemPrice,
+                    DiscountAmount = g.First().DiscountAmount,
+                    TotalSaleItemPrice = g.First().TotalSaleItemPrice,
+                    TotalWithoutDiscount = g.First().TotalWithoutDiscount,
+                    SaleItemStatus = g.First().SaleItemStatus
+                })
+                .ToList();
         }
 
         private bool HasMaxQuantityProductItems(IEnumerable<SaleItem> saleItems)
         {
-            if (SaleItems.Any(x => x.ProductItemQuantity > MAX_ITEMS_PER_PRODUCT))
-            {
-                return true;
-            }
-            return false;
+            var spec = new MaxQuantityProductItemsSpecification();
+            return spec.IsSatisfiedBy(saleItems);
         }
 
     }
