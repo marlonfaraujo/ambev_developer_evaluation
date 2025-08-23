@@ -1,21 +1,35 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Factories;
+﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Factories;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
-    public class SaleItem
+    public class SaleItem : BaseEntity
     {
-        public int Id { get; set; }
-        public int SaleId { get; set; }
-        public int ProductId { get; set; }
+        public string Id { get; }
+        public Guid SaleId { get; set; }
+        public Guid ProductId { get; set; }
         public int ProductItemQuantity { get; set; }
         public decimal UnitProductItemPrice { get; set; }
-        public decimal DiscountAmount { get; set; }
-        public decimal TotalSaleItemPrice { get; set; }
-        public decimal TotalWithoutDiscount { get; set; }
-        public string SaleItemStatus { get; set; }
+        public decimal DiscountAmount { get; private set; }
+        public decimal TotalSaleItemPrice { get; private set; }
+        public decimal TotalWithoutDiscount { get; private set; }
+        public string SaleItemStatus { get; private set; }
         public SaleItem()
         {
             TotalSaleItemPrice = 0;
+            SaleItemStatus = SaleStatusEnum.Created.ToString();
+        }
+        public SaleItem(Guid saleId, Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)
+        {
+            SaleId = saleId;
+            ProductId = productId;
+            ProductItemQuantity = productItemQuantity;
+            UnitProductItemPrice = unitProductItemPrice;
+            DiscountAmount = discountAmount;
+            TotalSaleItemPrice = totalSaleItemPrice;
+            TotalWithoutDiscount = totalWithoutDiscount;
+            SaleItemStatus = saleItemStatus;
         }
 
         public decimal CalculateTotalSaleItemPrice()
@@ -24,6 +38,16 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             DiscountAmount = DiscountAmountCalculatorFactory.Create(ProductItemQuantity).Calculate(TotalWithoutDiscount);
             TotalSaleItemPrice = TotalWithoutDiscount - DiscountAmount;
             return TotalSaleItemPrice;
+        }
+
+        public void SetItemQuantity(int quantity)
+        {
+            ProductItemQuantity = quantity;
+        }
+
+        public void CancelItem()
+        {
+            SaleItemStatus = SaleItemStatusEnum.Cancelled.ToString();
         }
     }
 }
