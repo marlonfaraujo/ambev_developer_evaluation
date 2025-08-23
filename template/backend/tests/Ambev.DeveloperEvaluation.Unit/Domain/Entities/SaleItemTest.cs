@@ -9,7 +9,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities
         public void Given_SaleItemsWithCustomData_When_IdenticalProducts_Then_ShouldBeTheSameTotalSaleItemPrice()
         {
             Guid productId = SaleItemTestData.GenerateValidProductId();
-            int itemQuantity = SaleItemTestData.GenerateValidItemQuantity();
+            int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(1);
             decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
             var saleItem = SaleItemTestData.GenerateValidSaleItem(productId, itemQuantity, price);
             decimal discountAmount = (itemQuantity > 10 && itemQuantity <= 20) ? 0.2m : (itemQuantity >= 4 ) ? 0.1m : 0;

@@ -6,7 +6,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
     public class SaleItem : BaseEntity
     {
-        public Guid SaleId { get; set; }
         public Guid ProductId { get; set; }
         public int ProductItemQuantity { get; set; }
         public decimal UnitProductItemPrice { get; set; }
@@ -19,9 +18,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             TotalSaleItemPrice = 0;
             SaleItemStatus = SaleStatusEnum.Created.ToString();
         }
-        public SaleItem(Guid saleId, Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)
+        public SaleItem(Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)
         {
-            SaleId = saleId;
             ProductId = productId;
             ProductItemQuantity = productItemQuantity;
             UnitProductItemPrice = unitProductItemPrice;

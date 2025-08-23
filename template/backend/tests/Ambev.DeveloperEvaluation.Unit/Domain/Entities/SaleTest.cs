@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
+using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using Xunit;
 
@@ -18,7 +19,8 @@ public class SaleTest
                 new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 15, UnitProductItemPrice = 200 }
             }
         );
-        var totalPrice = sale.CalculateTotalSalePriceWithItems();
+        var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
+        var totalPrice = simulateSaleService.TotalSalePrice();
         Assert.Equal(totalPrice, 2940.00m);
 
         var sale2 = new Sale();
@@ -30,7 +32,8 @@ public class SaleTest
                 new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 15, UnitProductItemPrice = 200.59m }
             }
         );
-        totalPrice = sale2.CalculateTotalSalePriceWithItems();
+        var simulateSaleService2 = new SimulateSaleService(sale2, Enumerable.Empty<Product>());
+        totalPrice = simulateSaleService2.TotalSalePrice();
         Assert.Equal(totalPrice, 2952.99m);
     }
 
@@ -38,13 +41,15 @@ public class SaleTest
     public void Given_SaleItemsWithGenerateFaker_When_IdenticalProducts_Then_ShouldHaveTotalPriceWithDiscount()
     {
         Guid productId = SaleItemTestData.GenerateValidProductId();
-        int itemQuantity = SaleItemTestData.GenerateValidItemQuantity();
+        int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(1);
         decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
         var sale = SaleTestData.GenerateValidSale();
         var saleItem = SaleItemTestData.GenerateValidSaleItem(productId, itemQuantity, price);
         sale.AddSaleItems(new List<SaleItem> { saleItem });
         decimal expectedSaleItemPrice = saleItem.CalculateTotalSaleItemPrice();
-        decimal totalSalePrice = sale.CalculateTotalSalePriceWithItems();
+
+        var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
+        decimal totalSalePrice = simulateSaleService.TotalSalePrice();
         Assert.Equal(totalSalePrice, expectedSaleItemPrice);
     }
 
@@ -61,23 +66,24 @@ public class SaleTest
         decimal price1 = (90.29m * 16) - ((90.29m * 16) * 0.2m);
         decimal price2 = (122.73m * 4) - ((122.73m * 4) * 0.1m);
         decimal expectedTotal = price1 + price2;
-        decimal totalSalePrice = sale.CalculateTotalSalePriceWithItems();
+        var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
+        decimal totalSalePrice = simulateSaleService.TotalSalePrice();
         Assert.Equal(totalSalePrice, expectedTotal);
     }
 
     [Fact(DisplayName = "When trying to calculate the total value of the items, it should not allow it to continue if there are more than 20 products")]
     public void Given_CalculateTotalSalePriceWithItems_When_HaveMoreThanMaxQuantityItems_Then_ThereIsAnException()
     {
-        Guid productId = SaleItemTestData.GenerateValidProductId();
         decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
         var sale = SaleTestData.GenerateValidSale();
         sale.AddSaleItems(new List<SaleItem>
             {
-                SaleItemTestData.GenerateValidSaleItem(productId, 20, price),
-                SaleItemTestData.GenerateValidSaleItem(productId, 20, price)
+                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(20,30), price),
+                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(20,30), price)
             }
         );
-        var ex = Assert.Throws<MaxQuantityProductItemsException>(() => sale.CalculateTotalSalePriceWithItems());
+        var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
+        var ex = Assert.Throws<MaxQuantityProductItemsException>(() => simulateSaleService.ValidateMaxQuantityProductItems(sale.SaleItems));
         Assert.Equal("The maximum quantity of product items is 20.", ex.Message);
     }
 

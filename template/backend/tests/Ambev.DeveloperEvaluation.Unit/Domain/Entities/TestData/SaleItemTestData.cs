@@ -28,6 +28,11 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData
             return new Faker().Random.Int(min, 20);
         }
 
+        public static int GenerateValidItemQuantity(int min = 1, int max = 20)
+        {
+            return new Faker().Random.Int(min, max);
+        }
+
         public static decimal GenerateValidUnitItemPrice()
         {
             return new Faker().Random.Decimal(50,100);

@@ -24,5 +24,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             if (json.IsNullOrEmpty) return default;
             return JsonSerializer.Deserialize<T>(json);
         }
+
+        public async Task<bool> RemoverAsync(string key)
+        {
+            return await _database.KeyDeleteAsync(key);
+        }
     }
 }
