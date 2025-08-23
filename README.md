@@ -1,3 +1,5 @@
+[![.NET 8 Build and Test](https://github.com/marlonfaraujo/ambev_developerevaluation_backend/actions/workflows/main.yml/badge.svg)](https://github.com/marlonfaraujo/ambev_developerevaluation_backend/actions/workflows/main.yml)
+
 # Developer Evaluation Project
 
 `READ CAREFULLY`
