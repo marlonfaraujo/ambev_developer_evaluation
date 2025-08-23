@@ -23,9 +23,9 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData
             return new Faker().Random.Int(1, 100);
         }
 
-        public static int GenerateValidItemQuantity()
+        public static int GenerateValidItemQuantity(int min = 1)
         {
-            return new Faker().Random.Int(1, 30);
+            return new Faker().Random.Int(min, 30);
         }
 
         public static decimal GenerateValidUnitItemPrice()

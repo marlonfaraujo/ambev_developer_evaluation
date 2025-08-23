@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using FluentAssertions;
 using Xunit;
@@ -49,13 +50,10 @@ public class SaleTest
         totalSalePrice.Should().Be(expectedSaleItemPrice);
     }
 
-
     [Fact(DisplayName = "With personalized data, the sale should give a discount because there are identical products, with 17 and 5 quantities")]
     public void Given_SaleItemsWithCustomData_When_IdenticalProducts_Then_ShouldHaveTotalPriceWithDiscount()
     {
         int productId = SaleItemTestData.GenerateValidProductId();
-        int itemQuantity = SaleItemTestData.GenerateValidItemQuantity();
-        decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
         var sale = SaleTestData.GenerateValidSale();
         sale.SaleItems = new List<SaleItem>
         {
@@ -67,5 +65,20 @@ public class SaleTest
         decimal expectedTotal = price1 + price2;
         decimal totalSalePrice = sale.CalculateTotalSalePriceWithItems();
         totalSalePrice.Should().Be(expectedTotal);
+    }
+
+    [Fact(DisplayName = "When trying to calculate the total value of the items, it should not allow it to continue if there are more than 20 products")]
+    public void Given_CalculateTotalSalePriceWithItems_When_HaveMoreThanMaxQuantityItems_Then_ThereIsAnException()
+    {
+        int productId = SaleItemTestData.GenerateValidProductId();
+        decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
+        var sale = SaleTestData.GenerateValidSale();
+        sale.SaleItems = new List<SaleItem>
+        {
+            SaleItemTestData.GenerateValidSaleItem(productId, SaleItemTestData.GenerateValidItemQuantity(20), price),
+            SaleItemTestData.GenerateValidSaleItem(productId, SaleItemTestData.GenerateValidItemQuantity(20), price)
+        };
+        var ex = Assert.Throws<MaxQuantityProductItemsException>(() => sale.CalculateTotalSalePriceWithItems());
+        Assert.Equal("The maximum quantity of product items is 20.", ex.Message);
     }
 }
