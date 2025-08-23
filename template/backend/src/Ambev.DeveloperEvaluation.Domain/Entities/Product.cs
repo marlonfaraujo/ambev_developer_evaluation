@@ -14,5 +14,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             Description = description;
             Price = price;
         }
+        public Product()
+        {
+        }
     }
 }
