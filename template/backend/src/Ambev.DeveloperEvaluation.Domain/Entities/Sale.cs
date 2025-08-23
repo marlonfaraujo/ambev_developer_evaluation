@@ -14,29 +14,18 @@
         {
         }
 
-        public decimal CalculateTotalPrice()
+        public decimal CalculateTotalSalePriceWithItems()
         {
-            decimal itemDiscount = 0;
-
+            SaleItems = SaleItem.GetSaleItemsGroupedByProductId(SaleItems);
             foreach (var item in SaleItems)
             {
-                decimal TotalItemPrice = item.UnitItemPrice * item.ItemQuantity;
-                if (SaleItems.Any(x => item.ProductId == x.ProductId && x.ItemQuantity > 10 && x.ItemQuantity <= 20))
+                if (SaleItems.Any(x => item.ProductId == x.ProductId))
                 {
-                    itemDiscount = 0.2m;
-                    TotalSalePrice += TotalItemPrice - (TotalItemPrice * itemDiscount);
+                    TotalSalePrice += item.CalculateTotalSaleItemPrice();
                     continue;
                 }
-
-                if (SaleItems.Any(x => item.ProductId == x.ProductId && x.ItemQuantity > 4))
-                {
-                    itemDiscount = 0.1m;
-                    TotalSalePrice += TotalItemPrice - (TotalItemPrice * itemDiscount);
-                    continue;
-                }
-                TotalSalePrice += TotalItemPrice;
+                TotalSalePrice += item.UnitProductItemPrice * item.ProductItemQuantity;
             }
-
             return TotalSalePrice;
         }
 
