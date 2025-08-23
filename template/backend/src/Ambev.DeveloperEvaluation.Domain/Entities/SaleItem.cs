@@ -6,7 +6,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
     public class SaleItem : BaseEntity
     {
-        public string Id { get; }
         public Guid SaleId { get; set; }
         public Guid ProductId { get; set; }
         public int ProductItemQuantity { get; set; }
