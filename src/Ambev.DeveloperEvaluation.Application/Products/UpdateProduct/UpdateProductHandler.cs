@@ -27,11 +27,11 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
 
             var existing = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
             if (existing != null)
-                throw new InvalidOperationException($"Record already exists");
+                throw new InvalidOperationException($"Product already exists");
 
             var product = _mapper.Map<Product>(command);
 
-            var created = await _productRepository.CreateAsync(product, cancellationToken);
+            var created = await _productRepository.UpdateAsync(product, cancellationToken);
             var result = _mapper.Map<UpdateProductResult>(created);
             return result;
         }

@@ -15,6 +15,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         public Sale()
         {
+            SaleDate = DateTime.Now;
             SaleItems = new List<SaleItem>();
             SaleStatus = SaleStatusEnum.Created.ToString();
         }
@@ -44,6 +45,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public void UpdateSale()
         {
             SaleStatus = SaleStatusEnum.Modified.ToString();
+        }
+
+        public void SetSaleNumber(int saleNumber)
+        {
+            SaleNumber = saleNumber;
         }
     }
 }

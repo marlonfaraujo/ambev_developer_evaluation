@@ -18,8 +18,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             TotalSaleItemPrice = 0;
             SaleItemStatus = SaleStatusEnum.Created.ToString();
         }
-        public SaleItem(Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)
+
+        public SaleItem(Guid id, Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)
         {
+            Id = id;
             ProductId = productId;
             ProductItemQuantity = productItemQuantity;
             UnitProductItemPrice = unitProductItemPrice;

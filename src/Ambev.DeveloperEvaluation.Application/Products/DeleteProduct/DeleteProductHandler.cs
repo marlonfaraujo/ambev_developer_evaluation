@@ -29,7 +29,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.DeleteProduct
             if (existing == null)
                 throw new KeyNotFoundException($"Product with ID {command.Id} not found");
 
-            var hasProductInItems = await _queryDbService.ProductsInItem(command.Id.ToString());
+            var hasProductInItems = await _queryDbService.ProductsInItem(command.Id);
             if (hasProductInItems)
                 throw new InvalidOperationException($"Product with ID {command.Id} cannot be deleted because it is referenced in sales items.");
 

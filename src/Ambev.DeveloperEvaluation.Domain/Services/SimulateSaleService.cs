@@ -37,6 +37,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Services
                                         product => product.Id,
                                         (saleItem, product) => new SaleItem
                                         {
+                                            Id = saleItem.Id,
                                             ProductId = product.Id,
                                             UnitProductItemPrice = product.Price,
                                             ProductItemQuantity = saleItem.ProductItemQuantity

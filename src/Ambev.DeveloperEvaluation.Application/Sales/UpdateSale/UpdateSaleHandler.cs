@@ -33,7 +33,7 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (existing == null)
-            throw new InvalidOperationException($"Record with ID not found");
+            throw new InvalidOperationException($"Sale with ID not found");
 
         if (existing.SaleStatus == SaleStatusEnum.Cancelled.ToString())
             throw new InvalidOperationException($"Sale with ID {command.Id} is already canceled");
@@ -60,6 +60,10 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         var simulateSaleService = new SimulateSaleService(sale, products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
+
+        simulatedSale.SetSaleNumber(existing.SaleNumber);
+        simulatedSale.SaleDate = existing.SaleDate;
+        simulatedSale.UserId = existing.UserId;
 
         var updated = await _saleRepository.UpdateAsync(simulatedSale, cancellationToken);
         var result = _mapper.Map<UpdateSaleResult>(updated);

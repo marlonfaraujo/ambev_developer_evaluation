@@ -28,12 +28,12 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch
 
             var existing = await _branchRepository.GetByIdAsync(command.Id, cancellationToken);
             if (existing != null)
-                throw new InvalidOperationException($"Record already exists");
+                throw new InvalidOperationException($"Branch already exists");
 
             var branch = _mapper.Map<Branch>(command);
 
-            var created = await _branchRepository.CreateAsync(branch, cancellationToken);
-            var result = _mapper.Map<UpdateBranchResult>(created);
+            var updated = await _branchRepository.UpdateAsync(branch, cancellationToken);
+            var result = _mapper.Map<UpdateBranchResult>(updated);
             return result;
         }
     }

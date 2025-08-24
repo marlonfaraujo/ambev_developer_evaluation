@@ -6,8 +6,11 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 {
     public CreateSaleCommandValidator()
     {
-        RuleFor(sale => sale.UserId).NotEmpty();
-        RuleFor(sale => sale.SaleItems).NotEmpty();
-        RuleFor(sale => sale.BranchSaleId).NotEmpty();
+        RuleFor(sale => sale.UserId).NotEmpty()
+                .WithMessage("UserId is required."); ;
+        RuleFor(sale => sale.SaleItems).NotEmpty()
+                .WithMessage("SaleItems is required."); ;
+        RuleFor(sale => sale.BranchSaleId).NotEmpty()
+                .WithMessage("BranchSaleId is required."); ;
     }
 }
