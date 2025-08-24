@@ -27,6 +27,18 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public void CancelSale()
         {
             SaleStatus = SaleStatusEnum.Cancelled.ToString();
+            CancelSaleItems();
+        }
+
+        private void CancelSaleItems()
+        {
+            if (SaleItems != null && SaleItems.Any())
+            {
+                foreach (var item in SaleItems)
+                {
+                    item.CancelItem();
+                }
+            }
         }
 
         public void UpdateSale()

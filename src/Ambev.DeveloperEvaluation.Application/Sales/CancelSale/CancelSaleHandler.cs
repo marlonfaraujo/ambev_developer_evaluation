@@ -1,8 +1,9 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
-using MediatR;
 using FluentValidation;
+using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
 {
@@ -19,7 +20,6 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
 
         public async Task<CancelSaleResult> Handle(CancelSaleCommand command, CancellationToken cancellationToken)
         {
-
             var validator = new CancelSaleCommandValidator();
             var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
@@ -29,6 +29,9 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
             var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
             if (existing == null)
                 throw new InvalidOperationException($"Sale with ID not found");
+
+            if (existing.SaleStatus == SaleStatusEnum.Cancelled.ToString())
+                throw new InvalidOperationException($"Sale with ID {command.Id} is already canceled");
 
             var sale = _mapper.Map<Sale>(existing);
 

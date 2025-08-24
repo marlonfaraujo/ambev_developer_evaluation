@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
@@ -33,6 +34,9 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (existing == null)
             throw new InvalidOperationException($"Record with ID not found");
+
+        if (existing.SaleStatus == SaleStatusEnum.Cancelled.ToString())
+            throw new InvalidOperationException($"Sale with ID {command.Id} is already canceled");
 
         if (string.IsNullOrWhiteSpace(command.SaleStatus))
         {
