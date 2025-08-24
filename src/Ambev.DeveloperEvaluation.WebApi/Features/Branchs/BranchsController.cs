@@ -20,13 +20,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BranchController : BaseController
+    public class BranchsController : BaseController
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly QueryDatabaseService _queryDbService;
 
-        public BranchController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
+        public BranchsController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;

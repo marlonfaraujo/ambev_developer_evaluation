@@ -15,13 +15,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CartController : BaseController
+    public class CartsController : BaseController
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly RedisDatabaseService _redisService;
 
-        public CartController(IMediator mediator, IMapper mapper, RedisDatabaseService redisService)
+        public CartsController(IMediator mediator, IMapper mapper, RedisDatabaseService redisService)
         {
             _mediator = mediator;
             _mapper = mapper;

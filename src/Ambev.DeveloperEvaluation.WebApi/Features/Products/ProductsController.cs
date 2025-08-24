@@ -20,14 +20,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : BaseController
+    public class ProductsController : BaseController
     {
 
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly QueryDatabaseService _queryDbService;
 
-        public ProductController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
+        public ProductsController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
