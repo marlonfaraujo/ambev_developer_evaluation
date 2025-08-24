@@ -9,6 +9,7 @@ using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using StackExchange.Redis;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -35,6 +36,9 @@ public class Program
                     b => b.MigrationsAssembly("Ambev.DeveloperEvaluation.ORM")
                 )
             );
+
+            builder.Services.AddSingleton<IConnectionMultiplexer>(options => 
+                ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")));
 
             builder.Services.AddJwtAuthentication(builder.Configuration);
 

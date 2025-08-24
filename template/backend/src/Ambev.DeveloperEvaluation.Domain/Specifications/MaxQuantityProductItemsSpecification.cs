@@ -8,8 +8,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Specifications
         
         public bool IsSatisfiedBy(IEnumerable<SaleItem> items)
         {
-            if (items.Any(x => x.ProductItemQuantity > MAX_ITEMS_PER_PRODUCT)) return true;
-            return false;
+            if (items.Any(x => x.ProductItemQuantity > MAX_ITEMS_PER_PRODUCT)) return false;
+            return true;
         }
     }   
 }

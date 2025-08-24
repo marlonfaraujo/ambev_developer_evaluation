@@ -1,58 +1,37 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Exceptions;
-using Ambev.DeveloperEvaluation.Domain.Specifications;
+﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
-    public class Sale
+    public class Sale : BaseEntity
     {
-        public int Id { get; set; }
+        public int SaleNumber { get; private set; }
         public DateTime SaleDate { get; set; }
         public Guid UserId { get; set; }
         public decimal TotalSalePrice { get; set; }
-        public int BranchSaleId { get; set; }
-        public string SaleStatus { get; set; }
-        public IEnumerable<SaleItem> SaleItems { get; set; }
+        public Guid BranchSaleId { get; set; }
+        public string SaleStatus { get; private set; }
+        public IEnumerable<SaleItem> SaleItems { get; private set; }
 
         public Sale()
         {
+            SaleItems = new List<SaleItem>();
+            SaleStatus = SaleStatusEnum.Created.ToString();
         }
 
-        public decimal CalculateTotalSalePriceWithItems()
+        public void AddSaleItems(IEnumerable<SaleItem> saleItems)
         {
-            SaleItems = GetSaleItemsGroupedByProductId();
-            if (HasMaxQuantityProductItems(SaleItems)) throw new MaxQuantityProductItemsException($"The maximum quantity of product items is {MaxQuantityProductItemsSpecification.MAX_ITEMS_PER_PRODUCT}.");
-           
-            TotalSalePrice = SaleItems.Sum(x => x.CalculateTotalSaleItemPrice());
-            return TotalSalePrice;
+            SaleItems = saleItems;
         }
 
-        public IEnumerable<SaleItem> GetSaleItemsGroupedByProductId()
+        public void CancelSale()
         {
-            if (SaleItems == null || !SaleItems.Any())
-            {
-                return Enumerable.Empty<SaleItem>();
-            }
-            return SaleItems
-                .GroupBy(x => x.ProductId)
-                .Select(g => new SaleItem
-                {
-                    SaleId = g.First().SaleId,
-                    ProductId = g.Key,
-                    ProductItemQuantity = g.Sum(p => p.ProductItemQuantity),
-                    UnitProductItemPrice = g.First().UnitProductItemPrice,
-                    DiscountAmount = g.First().DiscountAmount,
-                    TotalSaleItemPrice = g.First().TotalSaleItemPrice,
-                    TotalWithoutDiscount = g.First().TotalWithoutDiscount,
-                    SaleItemStatus = g.First().SaleItemStatus
-                })
-                .ToList();
+            SaleStatus = SaleStatusEnum.Cancelled.ToString();
         }
 
-        private bool HasMaxQuantityProductItems(IEnumerable<SaleItem> saleItems)
+        public void UpdateSale()
         {
-            var spec = new MaxQuantityProductItemsSpecification();
-            return spec.IsSatisfiedBy(saleItems);
+            SaleStatus = SaleStatusEnum.Modified.ToString();
         }
-
     }
 }
