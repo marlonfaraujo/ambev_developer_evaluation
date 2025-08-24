@@ -34,24 +34,31 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         if (existing == null)
             throw new InvalidOperationException($"Record with ID not found");
 
+        if (string.IsNullOrWhiteSpace(command.SaleStatus))
+        {
+            command.SaleStatus = existing.SaleStatus;
+        }
+        if (command.BranchSaleId == null || command.BranchSaleId == Guid.Empty)
+        {
+            command.BranchSaleId = existing.BranchSaleId;
+        }
+
         var products = await _productRepository.ListByIdsAsync(command.SaleItems.Select(x => x.ProductId).ToArray(), cancellationToken);
         if (products == null || !products.Any() || command.SaleItems.ToList().Count != products.ToList().Count)
             throw new KeyNotFoundException($"Product with ID not found");
 
         var branch = await _branchRepository.GetByIdAsync(command.BranchSaleId, cancellationToken);
         if (branch == null)
-            throw new KeyNotFoundException($"Branch not found");
+            throw new KeyNotFoundException($"Branch with ID not found");
 
         var sale = _mapper.Map<Sale>(command);
+        sale.UpdateSale();
 
         var simulateSaleService = new SimulateSaleService(sale, products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
 
-        var created = await _saleRepository.CreateAsync(simulatedSale, cancellationToken);
-        var result = _mapper.Map<UpdateSaleResult>(created);
-
-        sale.UpdateSale();
-        await _saleRepository.UpdateAsync(sale, cancellationToken);
+        var updated = await _saleRepository.UpdateAsync(simulatedSale, cancellationToken);
+        var result = _mapper.Map<UpdateSaleResult>(updated);
 
         return result;
     }

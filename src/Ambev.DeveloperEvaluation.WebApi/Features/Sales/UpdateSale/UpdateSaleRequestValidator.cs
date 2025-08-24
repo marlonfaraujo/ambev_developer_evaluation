@@ -6,9 +6,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale
     {
         public UpdateSaleRequestValidator()
         {
-            RuleFor(x => x.UserId)
+            RuleFor(x => x.Id)
                 .NotEmpty()
-                .WithMessage("User ID is required");
+                .WithMessage("ID is required");
         }
     }
 }

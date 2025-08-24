@@ -4,8 +4,13 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
-public record UpdateSaleCommand(Guid Id, int SaleNumber, Guid BranchSaleId, string SaleStatus, IEnumerable<SaleItem> SaleItems) : IRequest<UpdateSaleResult>
+public class UpdateSaleCommand : IRequest<UpdateSaleResult>
 {
+    public Guid Id { get; set; }    
+    public Guid BranchSaleId { get;set; }
+    public string SaleStatus { get; set; }
+    public IEnumerable<SaleItem> SaleItems { get; set; }
+
     public ValidationResultDetail Validate()
     {
         var validator = new UpdateSaleCommandValidator();

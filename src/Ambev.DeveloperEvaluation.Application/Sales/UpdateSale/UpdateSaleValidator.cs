@@ -6,6 +6,12 @@ public class UpdateSaleCommandValidator : AbstractValidator<UpdateSaleCommand>
 {
     public UpdateSaleCommandValidator()
     {
-        RuleFor(sale => sale.SaleItems).NotEmpty();
+        RuleFor(sale => sale.Id)
+            .NotEmpty()
+            .WithMessage("Sale ID required");
+
+        RuleFor(sale => sale.SaleItems)
+            .NotEmpty()
+            .WithMessage("Sale items required"); ;
     }
 }
