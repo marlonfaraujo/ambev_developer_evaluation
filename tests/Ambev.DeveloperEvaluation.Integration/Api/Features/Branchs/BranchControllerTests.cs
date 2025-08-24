@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Integration.Api.Security;
 using Ambev.DeveloperEvaluation.WebApi;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -12,14 +11,15 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
     public class BranchControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
+        private readonly HelperControllerTests _helperControllerTests;
 
         public BranchControllerTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient();
 
-            var key = "YourSuperSecretKeyForJwtTokenGenerationThatShouldBeAtLeast32BytesLong";
-            var token = FakeJwtTokenGenerator.GenerateToken(key, string.Empty, string.Empty);
-            
+            _helperControllerTests = new HelperControllerTests(factory);
+            var token = _helperControllerTests.GetJwtToken();
+
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 

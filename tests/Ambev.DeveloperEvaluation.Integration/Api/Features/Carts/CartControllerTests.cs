@@ -1,6 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Integration.Api.Security;
-using Ambev.DeveloperEvaluation.WebApi;
+﻿using Ambev.DeveloperEvaluation.WebApi;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,42 +12,22 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
     public class CartControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
+        private readonly HelperControllerTests _helperControllerTests;
 
         public CartControllerTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient();
 
-            var key = "YourSuperSecretKeyForJwtTokenGenerationThatShouldBeAtLeast32BytesLong";
-            var token = FakeJwtTokenGenerator.GenerateToken(key, string.Empty, string.Empty);
+            _helperControllerTests = new HelperControllerTests(factory);
+            var token = _helperControllerTests.GetJwtToken();
 
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
-
-        public async Task<ResponseData> GetData()
+            
+        private void SetAuthorizationHeader(string token)
         {
-            var productRequest = new
-            {
-                Name = "Product",
-                Description = "Product for delete test",
-                Price = 10.00m
-            };
-            var branchRequest = new
-            {
-                Name = "Branch",
-                Description = "Branch for delete test"
-            };
-            var productResponse = _client.PostAsJsonAsync($"/api/products", productRequest);
-            var branchResposne = _client.PostAsJsonAsync($"/api/branchs", branchRequest);
-
-            await Task.WhenAll(productResponse, branchResposne);
-
-            var productResult = await productResponse;
-            var branchResult = await branchResposne;
-
-            var product = productResult.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>().Result.Data;
-            var branch = branchResult.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>().Result.Data;
-
-            return new ResponseData { Product = product, Branch = branch };
+            if (!string.IsNullOrWhiteSpace(token))
+                _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -58,7 +36,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "POST /api/carts should return Created when cart is valid")]
         public async Task CreateCart_ReturnsCreated()
         {
-            var responseData = await GetData();
+            var responseData = await _helperControllerTests.GetTestData();
+            SetAuthorizationHeader(responseData.AuthUser.Token);
 
             var cartRequest = new
             {
@@ -97,7 +76,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "PUT /api/carts should return Created when cart is updated")]
         public async Task UpdateCart_ReturnsCreated()
         {
-            var responseData = await GetData();
+            var responseData = await _helperControllerTests.GetTestData();
+            SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // First, create a cart
             var createRequest = new
@@ -111,7 +91,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             var createResponse = await _client.PostAsJsonAsync("/api/carts", createRequest);
             createResponse.EnsureSuccessStatusCode();
 
-            var responseData2 = await GetData();
+            var responseData2 = await _helperControllerTests.GetTestData();
 
             // Now, update the cart
             var updateRequest = new
@@ -134,7 +114,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "PUT /api/carts should return BadRequest when update is invalid")]
         public async Task UpdateCart_InvalidData_ReturnsBadRequest()
         {
-            var responseData = await GetData();
+            var responseData = await _helperControllerTests.GetTestData();
+            SetAuthorizationHeader(responseData.AuthUser.Token);
+
             var updateRequest = new
             {
                 BranchSaleId = responseData.Branch.Id, // Invalid Guid
@@ -156,7 +138,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "GET /api/carts should return Ok when cart exists")]
         public async Task GetCart_ReturnsOk()
         {
-            var responseData = await GetData();
+            var responseData = await _helperControllerTests.GetTestData();
+            SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // Ensure a cart exists
             var cartRequest = new
@@ -181,7 +164,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "DELETE /api/carts should return Ok when cart is deleted")]
         public async Task DeleteCart_ReturnsOk()
         {
-            var responseData = await GetData();
+            var responseData = await _helperControllerTests.GetTestData();
+            SetAuthorizationHeader(responseData.AuthUser.Token);
+
             // Ensure a cart exists
             var cartRequest = new
             {
@@ -201,10 +186,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that checking out the cart via POST returns HTTP 201 Created when the cart is valid.
         /// </summary>
-        [Fact(DisplayName = "POST /api/carts/checkout should return Created when checkout is successful")]
+        [Fact(DisplayName = "POST /api/sales should return Created when checkout is successful")]
         public async Task CheckoutCart_ReturnsCreated()
         {
-            var responseData = await GetData();
+            var responseData = await _helperControllerTests.GetTestData();
+            SetAuthorizationHeader(responseData.AuthUser.Token);
+
             // Ensure a cart exists
             var cartRequest = new
             {
@@ -217,7 +204,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             await _client.PostAsJsonAsync("/api/carts", cartRequest);
 
             // You may need to create a cart first before checkout
-            var response = await _client.PostAsync("/api/carts/checkout", null);
+            var response = await _client.PostAsync("/api/sales", null);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -225,13 +212,13 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that checking out an empty cart returns HTTP 400 BadRequest.
         /// </summary>
-        [Fact(DisplayName = "POST /api/carts/checkout should return BadRequest when cart is empty")]
+        [Fact(DisplayName = "POST /api/sale should return BadRequest when cart is empty")]
         public async Task CheckoutCart_EmptyCart_ReturnsBadRequest()
         {
             // Delete cart to ensure it's empty
             await _client.DeleteAsync("/api/carts");
 
-            var response = await _client.PostAsync("/api/carts/checkout", null);
+            var response = await _client.PostAsync("/api/sales", null);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
