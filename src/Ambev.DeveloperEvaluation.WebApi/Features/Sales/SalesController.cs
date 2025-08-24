@@ -3,8 +3,9 @@ using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
-using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
@@ -25,9 +26,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly QueryDatabaseService _queryDbService;
+        private readonly IQueryDatabaseService _queryDbService;
 
-        public SalesController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
+        public SalesController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
@@ -158,7 +159,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 parameters.Pager.PageSize = request.PageSize;
             }
 
-            var response = await _queryDbService.ListSalesAsync(parameters);
+            var response = await _queryDbService.Select<ListSalesQueryResult>(ListSalesQuery.SELECT, parameters);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListSalesResponse>>
             {

@@ -2,9 +2,9 @@
 using Ambev.DeveloperEvaluation.Application.Branchs.DeleteBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.GetBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch;
+using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
-using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
-using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.CreateBranch;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.DeleteBranch;
@@ -24,9 +24,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly QueryDatabaseService _queryDbService;
+        private readonly IQueryDatabaseService _queryDbService;
 
-        public BranchsController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
+        public BranchsController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
@@ -128,7 +128,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
             {
                 parameters.Pager.PageSize = request.PageSize;
             }
-            var response = await _queryDbService.ListBranchsAsync(parameters);
+
+            var sqlQueryParams = ListBranchsQuery.GetSqlQuery(parameters);
+            var response = await _queryDbService.Select<ListBranchsQueryResult>(sqlQueryParams.QuerySql, sqlQueryParams.SqlParameters);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListBranchsResponse>>
             {

@@ -2,9 +2,9 @@
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
-using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
+using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
-using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
@@ -25,9 +25,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
 
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly QueryDatabaseService _queryDbService;
+        private readonly IQueryDatabaseService _queryDbService;
 
-        public ProductsController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
+        public ProductsController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
@@ -130,7 +130,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
             {
                 parameters.Pager.PageSize = request.PageSize;
             }
-            var response = await _queryDbService.ListProductsAsync(parameters);
+            var sqlQueryParams = ListProductsQuery.GetSqlQuery(parameters);
+            var response = await _queryDbService.Select<ListProductsQueryResult>(sqlQueryParams.QuerySql, sqlQueryParams.SqlParameters);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListProductsResponse>>
             {
