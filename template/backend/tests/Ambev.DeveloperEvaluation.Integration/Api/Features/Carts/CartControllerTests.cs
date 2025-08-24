@@ -1,0 +1,194 @@
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.WebApi;
+using Microsoft.AspNetCore.Mvc.Testing;
+using System.Net;
+using System.Net.Http.Json;
+using Xunit;
+
+namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
+{
+    public class CartControllerTests : IClassFixture<WebApplicationFactory<Program>>
+    {
+        private readonly HttpClient _client;
+
+        public CartControllerTests(WebApplicationFactory<Program> factory)
+        {
+            _client = factory.CreateClient();
+        }
+
+        /// <summary>
+        /// Verifies that creating a new cart via POST returns HTTP 201 Created when the request is valid.
+        /// </summary>
+        [Fact(DisplayName = "POST /api/cart should return Created when cart is valid")]
+        public async Task CreateCart_ReturnsCreated()
+        {
+            var cartRequest = new
+            {
+                BranchSaleId = Guid.NewGuid(),
+                SaleItems = new[]
+                {
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 2 },
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 5 }
+                }
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/cart", cartRequest);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that creating a cart with empty items returns HTTP 400 BadRequest.
+        /// </summary>
+        [Fact(DisplayName = "POST /api/cart should return BadRequest when cart has no items")]
+        public async Task CreateCart_EmptyItems_ReturnsBadRequest()
+        {
+            var cartRequest = new
+            {
+                BranchSaleId = Guid.NewGuid(),
+                SaleItems = Array.Empty<object>()
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/cart", cartRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+
+        /// <summary>
+        /// Verifies that updating the cart via PUT returns HTTP 201 Created when the request is valid.
+        /// </summary>
+        [Fact(DisplayName = "PUT /api/cart should return Created when cart is updated")]
+        public async Task UpdateCart_ReturnsCreated()
+        {
+            // First, create a cart
+            var createRequest = new
+            {
+                BranchSaleId = Guid.NewGuid(),
+                SaleItems = new[]
+                {
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 1 }
+                }
+            };
+            var createResponse = await _client.PostAsJsonAsync("/api/cart", createRequest);
+            createResponse.EnsureSuccessStatusCode();
+
+            // Now, update the cart
+            var updateRequest = new
+            {
+                BranchSaleId = Guid.NewGuid(),
+                SaleItems = new[]
+                {
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 3 },
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 4 }
+                }
+            };
+
+            var response = await _client.PutAsJsonAsync("/api/cart", createRequest);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that updating the cart with invalid data returns HTTP 400 BadRequest.
+        /// </summary>
+        [Fact(DisplayName = "PUT /api/cart should return BadRequest when update is invalid")]
+        public async Task UpdateCart_InvalidData_ReturnsBadRequest()
+        {
+            var updateRequest = new
+            {
+                BranchSaleId = Guid.Empty, // Invalid Guid
+                SaleItems = new[]
+                {
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 0 } // Invalid quantity
+                }
+            };
+
+            var response = await _client.PutAsJsonAsync("/api/cart", updateRequest);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+
+        /// <summary>
+        /// Verifies that retrieving the cart via GET returns HTTP 200 OK.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/cart should return Ok when cart exists")]
+        public async Task GetCart_ReturnsOk()
+        {
+            // Ensure a cart exists
+            var cartRequest = new
+            {
+                BranchSaleId = Guid.NewGuid(),
+                SaleItems = new[]
+                {
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 2 }
+                }
+            };
+            await _client.PostAsJsonAsync("/api/cart", cartRequest);
+
+            var response = await _client.GetAsync("/api/cart");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that deleting the cart via DELETE returns HTTP 200 OK.
+        /// </summary>
+        [Fact(DisplayName = "DELETE /api/cart should return Ok when cart is deleted")]
+        public async Task DeleteCart_ReturnsOk()
+        {
+            // Ensure a cart exists
+            var cartRequest = new
+            {
+                BranchSaleId = Guid.NewGuid(),
+                SaleItems = new[]
+                {
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 2 }
+                }
+            };
+            await _client.PostAsJsonAsync("/api/cart", cartRequest);
+
+            var response = await _client.DeleteAsync("/api/cart");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that checking out the cart via POST returns HTTP 201 Created when the cart is valid.
+        /// </summary>
+        [Fact(DisplayName = "POST /api/cart/checkout should return Created when checkout is successful")]
+        public async Task CheckoutCart_ReturnsCreated()
+        {
+            // Ensure a cart exists
+            var cartRequest = new
+            {
+                BranchSaleId = Guid.NewGuid(),
+                SaleItems = new[]
+                {
+                    new { ProductId = Guid.NewGuid(), ProductItemQuantity = 2 }
+                }
+            };
+            await _client.PostAsJsonAsync("/api/cart", cartRequest);
+
+            // You may need to create a cart first before checkout
+            var response = await _client.PostAsync("/api/cart/checkout", null);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that checking out an empty cart returns HTTP 400 BadRequest.
+        /// </summary>
+        [Fact(DisplayName = "POST /api/cart/checkout should return BadRequest when cart is empty")]
+        public async Task CheckoutCart_EmptyCart_ReturnsBadRequest()
+        {
+            // Delete cart to ensure it's empty
+            await _client.DeleteAsync("/api/cart");
+
+            var response = await _client.PostAsync("/api/cart/checkout", null);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+    }
+}
