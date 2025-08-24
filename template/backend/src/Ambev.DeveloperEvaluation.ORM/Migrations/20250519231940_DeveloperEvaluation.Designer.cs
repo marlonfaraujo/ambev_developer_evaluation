@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Ambev.DeveloperEvaluation.ORM.Migrations
 {
     [DbContext(typeof(DefaultContext))]
-    [Migration("20250519030513_AddSales_AddSaleItems")]
-    partial class AddSales_AddSaleItems
+    [Migration("20250519231940_DeveloperEvaluation")]
+    partial class DeveloperEvaluation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
