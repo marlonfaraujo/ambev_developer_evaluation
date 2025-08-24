@@ -13,7 +13,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Services
 
         public RedisDatabaseServiceTests()
         {
-            _redisDatabaseService = new RedisDatabaseService(ConnectionMultiplexer.Connect("localhost:51883,password=ev@luAt10n"));
+            _redisDatabaseService = new RedisDatabaseService(ConnectionMultiplexer.Connect("localhost:64790,password=ev@luAt10n"));
         }
 
         /// <summary>
