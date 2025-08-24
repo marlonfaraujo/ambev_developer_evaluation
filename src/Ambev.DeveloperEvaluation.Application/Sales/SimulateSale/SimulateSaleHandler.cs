@@ -36,6 +36,11 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
             if (branch == null)
                 throw new KeyNotFoundException($"Branch not found");
 
+            if (query.SaleItems.Any(x => x.ProductItemQuantity <= 0))
+            {
+                throw new KeyNotFoundException($"Quantity of product less than 1");
+            }
+
             var simulateSaleService = new SimulateSaleService(_mapper.Map<Sale>(query), products);
             var sale = simulateSaleService.MakePriceSimulation();
 

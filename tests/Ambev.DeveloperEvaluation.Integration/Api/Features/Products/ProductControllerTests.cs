@@ -1,5 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Integration.Api.Security;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Integration.Api.Security;
 using Ambev.DeveloperEvaluation.WebApi;
+using Ambev.DeveloperEvaluation.WebApi.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -50,26 +52,22 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
             {
                 Name = "Product To Update",
                 Description = "Product before update",
-                Price = 50.00m,
-                Stock = 10,
-                Category = "Update Category"
+                Price = 50.00m
             };
             var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid productId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
+            Guid productId = created.Data.Id;
 
             var updateRequest = new
             {
                 Id = productId,
                 Name = "Updated Product",
                 Description = "Product after update",
-                Price = 75.00m,
-                Stock = 20,
-                Category = "Updated Category"
+                Price = 75.00m
             };
 
-            var response = await _client.PutAsJsonAsync("/api/products", updateRequest);
+            var response = await _client.PutAsJsonAsync($"/api/products/{productId}", updateRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -91,8 +89,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
             };
             var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid productId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
+            Guid productId = created.Data.Id;
 
             var response = await _client.GetAsync($"/api/products/{productId}");
 
@@ -122,14 +120,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
             {
                 Name = "Product To Delete",
                 Description = "Product for delete test",
-                Price = 20.00m,
-                Stock = 2,
-                Category = "Delete Category"
+                Price = 20.00m
             };
             var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid productId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
+            Guid productId = created.Data.Id;
 
             var response = await _client.DeleteAsync($"/api/products/{productId}");
 

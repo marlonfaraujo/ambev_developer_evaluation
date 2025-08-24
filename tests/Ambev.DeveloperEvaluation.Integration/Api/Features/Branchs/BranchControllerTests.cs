@@ -1,5 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Integration.Api.Security;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Integration.Api.Security;
 using Ambev.DeveloperEvaluation.WebApi;
+using Ambev.DeveloperEvaluation.WebApi.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -30,10 +32,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
             var branchRequest = new
             {
                 Name = "Fake Branch",
-                Address = "123 Fake Street",
-                City = "Faketown",
-                State = "FS",
-                ZipCode = "12345-678"
+                Description = "123 Fake Street"
             };
 
             var response = await _client.PostAsJsonAsync("/api/branchs", branchRequest);
@@ -51,27 +50,21 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
             var createRequest = new
             {
                 Name = "Branch To Update",
-                Address = "456 Update Ave",
-                City = "Updatetown",
-                State = "UP",
-                ZipCode = "98765-432"
+                Description = "456 Update Ave"
             };
             var createResponse = await _client.PostAsJsonAsync("/api/branchs", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid branchId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>();
+            Guid branchId = created.Data.Id;
 
             var updateRequest = new
             {
                 Id = branchId,
                 Name = "Updated Branch",
-                Address = "789 Updated Blvd",
-                City = "Updated City",
-                State = "UC",
-                ZipCode = "11111-222"
+                Description = "789 Updated Blvd"
             };
 
-            var response = await _client.PutAsJsonAsync("/api/branchs", updateRequest);
+            var response = await _client.PutAsJsonAsync($"/api/branchs/{branchId}", updateRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -86,15 +79,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
             var createRequest = new
             {
                 Name = "Branch To Get",
-                Address = "101 Get St",
-                City = "Getville",
-                State = "GT",
-                ZipCode = "22222-333"
+                Description = "101 Get St"
             };
             var createResponse = await _client.PostAsJsonAsync("/api/branchs", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid branchId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>();
+            Guid branchId = created.Data.Id;
 
             var response = await _client.GetAsync($"/api/branchs/{branchId}");
 
@@ -122,15 +112,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
             var createRequest = new
             {
                 Name = "Branch To Delete",
-                Address = "202 Delete Rd",
-                City = "Deleteburg",
-                State = "DL",
-                ZipCode = "44444-555"
+                Description = "202 Delete Rd"
             };
             var createResponse = await _client.PostAsJsonAsync("/api/branchs", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid branchId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>();
+            Guid branchId = created.Data.Id;
 
             var response = await _client.DeleteAsync($"/api/branchs/{branchId}");
 

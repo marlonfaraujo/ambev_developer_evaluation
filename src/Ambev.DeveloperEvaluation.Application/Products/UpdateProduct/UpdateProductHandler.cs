@@ -26,8 +26,8 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
                 throw new ValidationException(validationResult.Errors);
 
             var existing = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existing != null)
-                throw new InvalidOperationException($"Product already exists");
+            if (existing == null)
+                throw new InvalidOperationException($"Product ID not found");
 
             var product = _mapper.Map<Product>(command);
 

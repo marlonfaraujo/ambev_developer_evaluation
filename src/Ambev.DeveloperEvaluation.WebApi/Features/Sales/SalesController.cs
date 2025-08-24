@@ -7,7 +7,10 @@ using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
 using Ambev.DeveloperEvaluation.ORM.Queries;
+using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
+using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CheckoutCart;
+using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.DeleteSale;
@@ -28,27 +31,41 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
         private readonly IQueryDatabaseService _queryDbService;
+        private readonly RedisDatabaseService _redisService;
 
-        public SalesController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService)
+        public SalesController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService, RedisDatabaseService redisService)
         {
             _mediator = mediator;
             _mapper = mapper;
             _queryDbService = queryDbService;
+            _redisService = redisService;
         }
 
-        [HttpPost]
+        [HttpPost("")]
         [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateSale([FromBody] CreateSaleRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateSale(CancellationToken cancellationToken)
         {
-            var validator = new CreateSaleRequestValidator();
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-            
+            var cartCache = await _redisService.GetAsync<CreateCartResponse>(GetCurrentUserGuid().ToString());
+            if (cartCache == null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Cart not found"
+                });
+            }
+
+            var validator = new CheckoutCartValidator();
+            var validationResult = await validator.ValidateAsync(cartCache, cancellationToken);
+
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
             
-            var command = _mapper.Map<CreateSaleCommand>(request);
+            var command = _mapper.Map<CreateSaleCommand>(cartCache);
             var response = await _mediator.Send(command, cancellationToken);
+
+            await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
 
             return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
             {

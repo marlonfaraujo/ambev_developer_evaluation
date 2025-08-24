@@ -27,8 +27,8 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch
                 throw new ValidationException(validationResult.Errors);
 
             var existing = await _branchRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existing != null)
-                throw new InvalidOperationException($"Branch already exists");
+            if (existing == null)
+                throw new InvalidOperationException($"Branch ID not found");
 
             var branch = _mapper.Map<Branch>(command);
 
