@@ -1,13 +1,17 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using MediatR;
 
-namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
+namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
 {
-    public record GetProductCommand(Guid Id, string Name, string Description, decimal Price) : IRequest<GetProductResult>
+    public class SimulateSaleQuery : IRequest<SimulateSaleResult>
     {
+        public Guid BranchSaleId { get; set; }
+        public IEnumerable<SaleItem> SaleItems { get; set; }
+
         public ValidationResultDetail Validate()
         {
-            var validator = new GetProductCommandValidator();
+            var validator = new SimulateSaleQueryValidator();
             var result = validator.Validate(this);
             return new ValidationResultDetail
             {

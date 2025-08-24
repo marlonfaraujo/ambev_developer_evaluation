@@ -2,10 +2,10 @@ using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
-public class GetSaleCommandValidator : AbstractValidator<GetSaleCommand>
+public class GetSaleQueryValidator : AbstractValidator<GetSaleQuery>
 {
 
-    public GetSaleCommandValidator()
+    public GetSaleQueryValidator()
     {
         RuleFor(x => x.Id)
             .NotEmpty()

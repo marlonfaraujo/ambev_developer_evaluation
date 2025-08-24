@@ -5,7 +5,7 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
-public class GetSaleHandler : IRequestHandler<GetSaleCommand, GetSaleResult>
+public class GetSaleHandler : IRequestHandler<GetSaleQuery, GetSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
@@ -17,17 +17,17 @@ public class GetSaleHandler : IRequestHandler<GetSaleCommand, GetSaleResult>
         _mapper = mapper;
     }
 
-    public async Task<GetSaleResult> Handle(GetSaleCommand command, CancellationToken cancellationToken)
+    public async Task<GetSaleResult> Handle(GetSaleQuery query, CancellationToken cancellationToken)
     {
-        var validator = new GetSaleCommandValidator();
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
+        var validator = new GetSaleQueryValidator();
+        var validationResult = await validator.ValidateAsync(query, cancellationToken);
 
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
+        var sale = await _saleRepository.GetByIdAsync(query.Id, cancellationToken);
         if (sale == null)
-            throw new KeyNotFoundException($"Record with ID {command.Id} not found");
+            throw new KeyNotFoundException($"Record with ID {query.Id} not found");
 
         return _mapper.Map<GetSaleResult>(sale);
     }

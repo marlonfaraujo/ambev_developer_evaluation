@@ -7,7 +7,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
     {
         public SimulateSaleProfile()
         {
-            CreateMap<SimulateSaleCommand, Sale>();
+            CreateMap<SimulateSaleQuery, Sale>();
             CreateMap<Sale, SimulateSaleResult>();
         }
     }

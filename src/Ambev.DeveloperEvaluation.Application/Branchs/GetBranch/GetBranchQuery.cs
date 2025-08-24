@@ -3,11 +3,11 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Branchs.GetBranch
 {
-    public record GetBranchCommand(Guid Id, string Name, string Description) : IRequest<GetBranchResult>
+    public record GetBranchQuery(Guid Id, string Name, string Description) : IRequest<GetBranchResult>
     {
         public ValidationResultDetail Validate()
         {
-            var validator = new GetBranchCommandValidator();
+            var validator = new GetBranchQueryValidator();
             var result = validator.Validate(this);
             return new ValidationResultDetail
             {

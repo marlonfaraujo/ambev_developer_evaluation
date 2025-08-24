@@ -2,9 +2,9 @@
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
 {
-    public class SimulateSaleCommandValidator : AbstractValidator<SimulateSaleCommand>
+    public class SimulateSaleQueryValidator : AbstractValidator<SimulateSaleQuery>
     {
-        public SimulateSaleCommandValidator()
+        public SimulateSaleQueryValidator()
         {
             RuleFor(sale => sale.BranchSaleId).NotEmpty();
 

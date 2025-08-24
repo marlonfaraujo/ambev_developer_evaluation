@@ -3,18 +3,18 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
-public record GetSaleCommand : IRequest<GetSaleResult>
+public record GetSaleQuery : IRequest<GetSaleResult>
 {
     public Guid Id { get; }
 
-    public GetSaleCommand(Guid id)
+    public GetSaleQuery(Guid id)
     {
         Id = id;
     }
 
     public ValidationResultDetail Validate()
     {
-        var validator = new GetSaleCommandValidator();
+        var validator = new GetSaleQueryValidator();
         var result = validator.Validate(this);
         return new ValidationResultDetail
         {

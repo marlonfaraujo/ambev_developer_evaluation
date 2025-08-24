@@ -5,7 +5,7 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
 {
-    public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductResult>
+    public class GetProductHandler : IRequestHandler<GetProductQuery, GetProductResult>
     {
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
@@ -16,17 +16,17 @@ namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
             _mapper = mapper;
         }
 
-        public async Task<GetProductResult> Handle(GetProductCommand command, CancellationToken cancellationToken)
+        public async Task<GetProductResult> Handle(GetProductQuery query, CancellationToken cancellationToken)
         {
-            var validator = new GetProductCommandValidator();
-            var validationResult = await validator.ValidateAsync(command, cancellationToken);
+            var validator = new GetProductQueryValidator();
+            var validationResult = await validator.ValidateAsync(query, cancellationToken);
 
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            var product = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
+            var product = await _productRepository.GetByIdAsync(query.Id, cancellationToken);
             if (product == null)
-                throw new KeyNotFoundException($"Record with ID {command.Id} not found");
+                throw new KeyNotFoundException($"Record with ID {query.Id} not found");
 
             return _mapper.Map<GetProductResult>(product);
         }

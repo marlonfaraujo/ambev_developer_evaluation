@@ -40,8 +40,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
             
-            var command = _mapper.Map<SimulateSaleCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var query = _mapper.Map<SimulateSaleQuery>(request);
+            var response = await _mediator.Send(query, cancellationToken);
 
             await _redisService.SetAsync(User.Identity.Name, _mapper.Map<CreateCartResponse>(response), TimeSpan.FromHours(1));
 
@@ -91,8 +91,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
 
             var result = await _redisService.RemoverAsync(User.Identity.Name);
 
-            var command = _mapper.Map<SimulateSaleCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var query = _mapper.Map<SimulateSaleQuery>(request);
+            var response = await _mediator.Send(query, cancellationToken);
 
             await _redisService.SetAsync(User.Identity.Name, _mapper.Map<UpdateCartResponse>(response), TimeSpan.FromHours(1));
 

@@ -7,7 +7,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs.GetBranch
     {
         public GetBranchProfile()
         {
-            CreateMap<GetBranchRequest, GetBranchCommand>();
+            CreateMap<GetBranchRequest, GetBranchQuery>();
             CreateMap<GetBranchResult, GetBranchResponse>();
         }
     }

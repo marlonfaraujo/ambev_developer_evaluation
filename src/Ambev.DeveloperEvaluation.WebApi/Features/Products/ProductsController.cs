@@ -94,8 +94,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
-            var command = _mapper.Map<GetProductCommand>(request.Id);
-            var response = await _mediator.Send(command, cancellationToken);
+            var query = _mapper.Map<GetProductQuery>(request.Id);
+            var response = await _mediator.Send(query, cancellationToken);
 
             return Ok(new ApiResponseWithData<GetProductResponse>
             {

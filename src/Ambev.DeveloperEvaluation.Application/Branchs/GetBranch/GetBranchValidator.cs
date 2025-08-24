@@ -2,9 +2,9 @@
 
 namespace Ambev.DeveloperEvaluation.Application.Branchs.GetBranch
 {
-    public class GetBranchCommandValidator : AbstractValidator<GetBranchCommand>
+    public class GetBranchQueryValidator : AbstractValidator<GetBranchQuery>
     {
-        public GetBranchCommandValidator()
+        public GetBranchQueryValidator()
         {
             RuleFor(command => command.Id)
                 .NotEmpty()
