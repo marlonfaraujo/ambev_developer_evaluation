@@ -2,6 +2,8 @@
 using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
+using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.DeleteSale;
@@ -21,11 +23,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly QueryDatabaseService _queryDbService;
 
-        public SalesController(IMediator mediator, IMapper mapper)
+        public SalesController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
+            _queryDbService = queryDbService;
         }
 
         [HttpPost]
@@ -100,16 +104,37 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         [ProducesResponseType(typeof(ApiResponseWithData<ListSalesResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ListSales([FromQuery] ListSalesRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetSales([FromQuery] ListSalesRequest request, CancellationToken cancellationToken)
         {
             var validator = new ListSalesRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
-            
-            var command = _mapper.Map<GetSaleCommand>(request.Id);
-            var response = await _mediator.Send(command, cancellationToken);
+
+            var parameters = new ListSalesQueryParams();
+            if (!string.IsNullOrWhiteSpace(request.SaleId))
+            {
+                parameters.SaleId = request.SaleId.ToString();
+            }
+            if (!string.IsNullOrWhiteSpace(request.BranchId))
+            {
+                parameters.BranchId = request.BranchId.ToString();
+            }
+            if (!string.IsNullOrWhiteSpace(request.ProductId))
+            {
+                parameters.ProductId = request.ProductId.ToString();
+            }
+            if (request.PageNumber > 0)
+            {
+                parameters.Pager.PageNumber = request.PageNumber;
+            }
+            if (request.PageSize > 0)
+            {
+                parameters.Pager.PageSize = request.PageSize;
+            }
+
+            var response = await _queryDbService.ListSalesAsync(parameters);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListSalesResponse>>
             {

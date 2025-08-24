@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
+﻿using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Products.ListProducts
@@ -7,8 +7,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products.ListProducts
     {
         public ListProductsProfile()
         {
-            CreateMap<ListProductsRequest, GetProductCommand>();
-            CreateMap<GetProductResult, ListProductsResponse>();
+            CreateMap<ListProductsQueryResult, ListProductsResponse>();
         }
     }
 }

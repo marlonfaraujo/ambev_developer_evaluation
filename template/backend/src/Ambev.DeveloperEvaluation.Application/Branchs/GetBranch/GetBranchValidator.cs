@@ -6,11 +6,9 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.GetBranch
     {
         public GetBranchCommandValidator()
         {
-            RuleFor(command => command.Name)
+            RuleFor(command => command.Id)
                 .NotEmpty()
-                .WithMessage("Branch name is required.")
-                .MaximumLength(100)
-                .WithMessage("Branch name must not exceed 100 characters.");
+                .WithMessage("Branch ID is required"); ;
         }
     }
 }

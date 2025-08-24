@@ -1,11 +1,10 @@
 ﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
 {
     public record ListSalesRequest(
-        Guid? Id = null,
-        string? BranchName = null,
-        string? ProductName = null,
-        DateTime? StartDate = null,
-        DateTime? EndDate = null,
+        string SaleId = null,
+        string UserId= null,
+        string BranchId = null,
+        string ProductId = null,
         int PageNumber = 1,
         int PageSize = 10
     )

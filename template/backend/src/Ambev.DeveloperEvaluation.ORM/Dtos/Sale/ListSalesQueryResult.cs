@@ -1,10 +1,10 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
+﻿namespace Ambev.DeveloperEvaluation.ORM.Dtos.Sale
 {
-    public class ListSalesResponse
+    public class ListSalesQueryResult
     {
         public Guid SaleId { get; set; }
         public int SaleNumber { get; set; }
-        public DateTime SaleDate { get; set; }
+        public DateTime? SaleDate { get; set; }
         public decimal TotalSalePrice { get; set; }
         public string SaleStatus { get; set; } = string.Empty;
         public Guid UserId { get; set; }

@@ -2,6 +2,9 @@
 using Ambev.DeveloperEvaluation.Application.Branchs.DeleteBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.GetBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch;
+using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
+using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
+using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.CreateBranch;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.DeleteBranch;
@@ -21,11 +24,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly QueryDatabaseService _queryDbService;
 
-        public BranchController(IMediator mediator, IMapper mapper)
+        public BranchController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
+            _queryDbService = queryDbService;
         }
 
         [HttpPost]
@@ -102,7 +107,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
         [ProducesResponseType(typeof(ApiResponseWithData<ListBranchsResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ListBranchs([FromQuery] ListBranchsRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetBranchs([FromQuery] ListBranchsRequest request, CancellationToken cancellationToken)
         {
             var validator = new ListBranchsRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -110,8 +115,20 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
-            var command = _mapper.Map<GetBranchCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var parameters = new ListBranchsQueryParams();
+            if (!string.IsNullOrWhiteSpace(request.Name))
+            {
+                parameters.Name = request.Name;
+            }
+            if (request.PageNumber > 0)
+            {
+                parameters.Pager.PageNumber = request.PageNumber;
+            }
+            if (request.PageSize > 0)
+            {
+                parameters.Pager.PageSize = request.PageSize;
+            }
+            var response = await _queryDbService.ListBranchsAsync(parameters);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListBranchsResponse>>
             {

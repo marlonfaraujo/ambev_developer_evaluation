@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Branchs.GetBranch;
+﻿using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs.ListBranchs
@@ -7,8 +7,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs.ListBranchs
     {
         public ListBranchsProfile()
         {
-            CreateMap<ListBranchsRequest, GetBranchCommand>();
-            CreateMap<GetBranchResult, ListBranchsResponse>();
+            CreateMap<ListBranchsQueryResult, ListBranchsResponse>();
         }
     }
 }

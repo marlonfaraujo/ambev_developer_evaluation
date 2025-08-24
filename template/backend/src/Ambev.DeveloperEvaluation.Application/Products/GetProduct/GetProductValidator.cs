@@ -6,11 +6,9 @@ namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
     {
         public GetProductCommandValidator()
         {
-            RuleFor(command => command.Name)
+            RuleFor(command => command.Id)
                 .NotEmpty()
-                .WithMessage("Product name is required.")
-                .MaximumLength(100)
-                .WithMessage("Product name must not exceed 100 characters.");
+                .WithMessage("Product ID is required"); ;
         }
     }
 }

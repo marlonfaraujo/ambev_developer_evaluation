@@ -2,6 +2,9 @@
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
+using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
+using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
+using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
@@ -22,11 +25,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
 
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
+        private readonly QueryDatabaseService _queryDbService;
 
-        public ProductController(IMediator mediator, IMapper mapper)
+        public ProductController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
+            _queryDbService = queryDbService;
         }
 
 
@@ -104,7 +109,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
         [ProducesResponseType(typeof(ApiResponseWithData<ListProductsResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ListProducts([FromQuery] ListProductsRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetProducts([FromQuery] ListProductsRequest request, CancellationToken cancellationToken)
         {
             var validator = new ListProductsRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -112,8 +117,20 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
-            var command = _mapper.Map<GetProductCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var parameters = new ListProductsQueryParams();
+            if (!string.IsNullOrWhiteSpace(request.Name))
+            {
+                parameters.Name = request.Name;
+            }
+            if (request.PageNumber > 0)
+            {
+                parameters.Pager.PageNumber = request.PageNumber;
+            }
+            if (request.PageSize > 0)
+            {
+                parameters.Pager.PageSize = request.PageSize;
+            }
+            var response = await _queryDbService.ListProductsAsync(parameters);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListProductsResponse>>
             {
