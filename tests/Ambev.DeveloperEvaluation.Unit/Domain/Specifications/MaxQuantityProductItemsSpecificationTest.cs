@@ -13,7 +13,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Specifications
             var spec = new MaxQuantityProductItemsSpecification();
 
             Guid productId = SaleItemTestData.GenerateValidProductId();
-            int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(20,50);
+            int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(21,50);
             decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
             var saleItems = new List<SaleItem> {
                 SaleItemTestData.GenerateValidSaleItem(productId, itemQuantity, price)

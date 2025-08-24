@@ -18,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
         /// <summary>
         /// Verifies that creating a new branch via POST returns HTTP 201 Created when the request is valid.
         /// </summary>
-        [Fact(DisplayName = "POST /api/branch should return Created when branch is valid")]
+        [Fact(DisplayName = "POST /api/branchs should return Created when branch is valid")]
         public async Task CreateBranch_ReturnsCreated()
         {
             var branchRequest = new
@@ -30,7 +30,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
                 ZipCode = "12345-678"
             };
 
-            var response = await _client.PostAsJsonAsync("/api/branch", branchRequest);
+            var response = await _client.PostAsJsonAsync("/api/branchs", branchRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -38,7 +38,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
         /// <summary>
         /// Verifies that updating a branch via PUT returns HTTP 201 Created when the request is valid.
         /// </summary>
-        [Fact(DisplayName = "PUT /api/branch should return Created when branch is updated")]
+        [Fact(DisplayName = "PUT /api/branchs should return Created when branch is updated")]
         public async Task UpdateBranch_ReturnsCreated()
         {
             // First, create a branch to update
@@ -50,7 +50,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
                 State = "UP",
                 ZipCode = "98765-432"
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/branch", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/api/branchs", createRequest);
             createResponse.EnsureSuccessStatusCode();
             var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
             Guid branchId = created.data.id;
@@ -65,7 +65,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
                 ZipCode = "11111-222"
             };
 
-            var response = await _client.PutAsJsonAsync("/api/branch", updateRequest);
+            var response = await _client.PutAsJsonAsync("/api/branchs", updateRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -73,7 +73,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
         /// <summary>
         /// Verifies that retrieving a branch by ID via GET returns HTTP 200 OK when the branch exists.
         /// </summary>
-        [Fact(DisplayName = "GET /api/branch/{id} should return Ok when branch exists")]
+        [Fact(DisplayName = "GET /api/branchs/{id} should return Ok when branch exists")]
         public async Task GetBranch_ReturnsOk()
         {
             // First, create a branch to retrieve
@@ -85,12 +85,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
                 State = "GT",
                 ZipCode = "22222-333"
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/branch", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/api/branchs", createRequest);
             createResponse.EnsureSuccessStatusCode();
             var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
             Guid branchId = created.data.id;
 
-            var response = await _client.GetAsync($"/api/branch/{branchId}");
+            var response = await _client.GetAsync($"/api/branchs/{branchId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -98,10 +98,10 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
         /// <summary>
         /// Verifies that listing branches via GET returns HTTP 200 OK.
         /// </summary>
-        [Fact(DisplayName = "GET /api/branch should return Ok with branch list")]
+        [Fact(DisplayName = "GET /api/branchs should return Ok with branch list")]
         public async Task ListBranchs_ReturnsOk()
         {
-            var response = await _client.GetAsync("/api/branch");
+            var response = await _client.GetAsync("/api/branchs");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -109,7 +109,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
         /// <summary>
         /// Verifies that deleting a branch via DELETE returns HTTP 200 OK when the branch exists.
         /// </summary>
-        [Fact(DisplayName = "DELETE /api/branch/{id} should return Ok when branch is deleted")]
+        [Fact(DisplayName = "DELETE /api/branchs/{id} should return Ok when branch is deleted")]
         public async Task DeleteBranch_ReturnsOk()
         {
             // First, create a branch to delete
@@ -121,12 +121,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
                 State = "DL",
                 ZipCode = "44444-555"
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/branch", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/api/branchs", createRequest);
             createResponse.EnsureSuccessStatusCode();
             var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
             Guid branchId = created.data.id;
 
-            var response = await _client.DeleteAsync($"/api/branch/{branchId}");
+            var response = await _client.DeleteAsync($"/api/branchs/{branchId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

@@ -19,7 +19,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that creating a new cart via POST returns HTTP 201 Created when the request is valid.
         /// </summary>
-        [Fact(DisplayName = "POST /api/cart should return Created when cart is valid")]
+        [Fact(DisplayName = "POST /api/carts should return Created when cart is valid")]
         public async Task CreateCart_ReturnsCreated()
         {
             var cartRequest = new
@@ -32,7 +32,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                 }
             };
 
-            var response = await _client.PostAsJsonAsync("/api/cart", cartRequest);
+            var response = await _client.PostAsJsonAsync("/api/carts", cartRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -40,7 +40,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that creating a cart with empty items returns HTTP 400 BadRequest.
         /// </summary>
-        [Fact(DisplayName = "POST /api/cart should return BadRequest when cart has no items")]
+        [Fact(DisplayName = "POST /api/carts should return BadRequest when cart has no items")]
         public async Task CreateCart_EmptyItems_ReturnsBadRequest()
         {
             var cartRequest = new
@@ -49,7 +49,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                 SaleItems = Array.Empty<object>()
             };
 
-            var response = await _client.PostAsJsonAsync("/api/cart", cartRequest);
+            var response = await _client.PostAsJsonAsync("/api/carts", cartRequest);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -58,7 +58,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that updating the cart via PUT returns HTTP 201 Created when the request is valid.
         /// </summary>
-        [Fact(DisplayName = "PUT /api/cart should return Created when cart is updated")]
+        [Fact(DisplayName = "PUT /api/carts should return Created when cart is updated")]
         public async Task UpdateCart_ReturnsCreated()
         {
             // First, create a cart
@@ -70,7 +70,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                     new { ProductId = Guid.NewGuid(), ProductItemQuantity = 1 }
                 }
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/cart", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/api/carts", createRequest);
             createResponse.EnsureSuccessStatusCode();
 
             // Now, update the cart
@@ -84,7 +84,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                 }
             };
 
-            var response = await _client.PutAsJsonAsync("/api/cart", createRequest);
+            var response = await _client.PutAsJsonAsync("/api/carts", createRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -92,7 +92,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that updating the cart with invalid data returns HTTP 400 BadRequest.
         /// </summary>
-        [Fact(DisplayName = "PUT /api/cart should return BadRequest when update is invalid")]
+        [Fact(DisplayName = "PUT /api/carts should return BadRequest when update is invalid")]
         public async Task UpdateCart_InvalidData_ReturnsBadRequest()
         {
             var updateRequest = new
@@ -104,7 +104,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                 }
             };
 
-            var response = await _client.PutAsJsonAsync("/api/cart", updateRequest);
+            var response = await _client.PutAsJsonAsync("/api/carts", updateRequest);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -113,7 +113,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that retrieving the cart via GET returns HTTP 200 OK.
         /// </summary>
-        [Fact(DisplayName = "GET /api/cart should return Ok when cart exists")]
+        [Fact(DisplayName = "GET /api/carts should return Ok when cart exists")]
         public async Task GetCart_ReturnsOk()
         {
             // Ensure a cart exists
@@ -125,9 +125,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                     new { ProductId = Guid.NewGuid(), ProductItemQuantity = 2 }
                 }
             };
-            await _client.PostAsJsonAsync("/api/cart", cartRequest);
+            await _client.PostAsJsonAsync("/api/carts", cartRequest);
 
-            var response = await _client.GetAsync("/api/cart");
+            var response = await _client.GetAsync("/api/carts");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -135,7 +135,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that deleting the cart via DELETE returns HTTP 200 OK.
         /// </summary>
-        [Fact(DisplayName = "DELETE /api/cart should return Ok when cart is deleted")]
+        [Fact(DisplayName = "DELETE /api/carts should return Ok when cart is deleted")]
         public async Task DeleteCart_ReturnsOk()
         {
             // Ensure a cart exists
@@ -147,9 +147,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                     new { ProductId = Guid.NewGuid(), ProductItemQuantity = 2 }
                 }
             };
-            await _client.PostAsJsonAsync("/api/cart", cartRequest);
+            await _client.PostAsJsonAsync("/api/carts", cartRequest);
 
-            var response = await _client.DeleteAsync("/api/cart");
+            var response = await _client.DeleteAsync("/api/carts");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -157,7 +157,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that checking out the cart via POST returns HTTP 201 Created when the cart is valid.
         /// </summary>
-        [Fact(DisplayName = "POST /api/cart/checkout should return Created when checkout is successful")]
+        [Fact(DisplayName = "POST /api/carts/checkout should return Created when checkout is successful")]
         public async Task CheckoutCart_ReturnsCreated()
         {
             // Ensure a cart exists
@@ -169,10 +169,10 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
                     new { ProductId = Guid.NewGuid(), ProductItemQuantity = 2 }
                 }
             };
-            await _client.PostAsJsonAsync("/api/cart", cartRequest);
+            await _client.PostAsJsonAsync("/api/carts", cartRequest);
 
             // You may need to create a cart first before checkout
-            var response = await _client.PostAsync("/api/cart/checkout", null);
+            var response = await _client.PostAsync("/api/carts/checkout", null);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -180,13 +180,13 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         /// <summary>
         /// Verifies that checking out an empty cart returns HTTP 400 BadRequest.
         /// </summary>
-        [Fact(DisplayName = "POST /api/cart/checkout should return BadRequest when cart is empty")]
+        [Fact(DisplayName = "POST /api/carts/checkout should return BadRequest when cart is empty")]
         public async Task CheckoutCart_EmptyCart_ReturnsBadRequest()
         {
             // Delete cart to ensure it's empty
-            await _client.DeleteAsync("/api/cart");
+            await _client.DeleteAsync("/api/carts");
 
-            var response = await _client.PostAsync("/api/cart/checkout", null);
+            var response = await _client.PostAsync("/api/carts/checkout", null);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }

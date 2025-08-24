@@ -43,7 +43,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             var query = _mapper.Map<SimulateSaleQuery>(request);
             var response = await _mediator.Send(query, cancellationToken);
 
-            await _redisService.SetAsync(User.Identity.Name, _mapper.Map<CreateCartResponse>(response), TimeSpan.FromHours(1));
+            await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<CreateCartResponse>(response), TimeSpan.FromHours(1));
 
             return Created(string.Empty, new ApiResponseWithData<CreateCartResponse>
             {
@@ -59,7 +59,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Checkout(CancellationToken cancellationToken)
         {
-            var cartCache = await _redisService.GetAsync<CreateCartResponse>(User.Identity.Name);
+            var cartCache = await _redisService.GetAsync<CreateCartResponse>(GetCurrentUserGuid().ToString());
 
             var validator = new CheckoutCartValidator();
             var validationResult = await validator.ValidateAsync(cartCache, cancellationToken);
@@ -89,12 +89,12 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
-            var result = await _redisService.RemoverAsync(User.Identity.Name);
+            var result = await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
 
             var query = _mapper.Map<SimulateSaleQuery>(request);
             var response = await _mediator.Send(query, cancellationToken);
 
-            await _redisService.SetAsync(User.Identity.Name, _mapper.Map<UpdateCartResponse>(response), TimeSpan.FromHours(1));
+            await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<UpdateCartResponse>(response), TimeSpan.FromHours(1));
 
             return Created(string.Empty, new ApiResponseWithData<UpdateCartResponse>
             {
@@ -110,7 +110,16 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCart(CancellationToken cancellationToken)
         {
-            var result = await _redisService.GetAsync<CreateCartResponse>(User.Identity.Name);
+            var result = await _redisService.GetAsync<CreateCartResponse>(GetCurrentUserGuid().ToString());
+
+            if (result == null)
+            {
+                return Ok(new ApiResponse
+                {
+                    Success = true,
+                    Message = "cart not found"
+                });
+            }
 
             return Ok(new ApiResponseWithData<CreateCartResponse>
             {
@@ -126,7 +135,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteCart(CancellationToken cancellationToken)
         {
-            var result = await _redisService.RemoverAsync(User.Identity.Name);
+            var result = await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
 
             return Ok(new ApiResponse
             {
