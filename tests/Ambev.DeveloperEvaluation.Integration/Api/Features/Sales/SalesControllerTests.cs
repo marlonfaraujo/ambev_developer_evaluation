@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Integration.Api.Security;
 using Ambev.DeveloperEvaluation.WebApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -14,6 +15,11 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         public SalesControllerTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient();
+
+            var key = "YourSuperSecretKeyForJwtTokenGenerationThatShouldBeAtLeast32BytesLong";
+            var token = FakeJwtTokenGenerator.GenerateToken(key, string.Empty, string.Empty);
+
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -22,6 +28,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "POST /api/sales should return Created when sale is valid")]
         public async Task Post_Sale_ReturnsCreated()
         {
+            var responseProducts = await _client.GetAsync($"/api/products");
+            var responseBranch = await _client.GetAsync($"/api/branchs");
+
             // Arrange
             var saleRequest = new
             {
@@ -140,9 +149,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             // Arrange
             var saleRequest = new
             {
-                SaleDate = DateTime.UtcNow,
                 UserId = Guid.NewGuid(),
-                BranchSaleId = 1,
+                BranchSaleId = Guid.NewGuid(),
                 SaleItems = new List<SaleItem>
                 {
                     new SaleItem

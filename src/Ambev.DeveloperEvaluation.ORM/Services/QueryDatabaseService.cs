@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             _context = context;
         }
 
-        public async Task<bool> BranchsInItem(string branchId)
+        public async Task<bool> BranchsInItem(Guid branchId)
         {
             var query = new StringBuilder();
             query.Append(@"
@@ -30,7 +31,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
 
             var sqlParameters = new List<NpgsqlParameter>();
 
-            if (!string.IsNullOrWhiteSpace(branchId))
+            if (Guid.Empty != branchId)
             {
                 query.AppendLine(@"AND s.""BranchSaleId"" = @branchId");
                 sqlParameters.Add(new NpgsqlParameter("branchId", branchId));
@@ -41,7 +42,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             return result;
         }
 
-        public async Task<bool> ProductsInItem(string productId)
+        public async Task<bool> ProductsInItem(Guid productId)
         {
             var query = new StringBuilder();
             query.Append(@"
@@ -54,7 +55,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
 
             var sqlParameters = new List<NpgsqlParameter>();
 
-            if (!string.IsNullOrWhiteSpace(productId))
+            if (Guid.Empty != productId)
             {
                 query.AppendLine(@"AND si.""ProductId"" = @productId");
                 sqlParameters.Add(new NpgsqlParameter("productId", productId));

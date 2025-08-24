@@ -43,6 +43,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             var query = _mapper.Map<SimulateSaleQuery>(request);
             var response = await _mediator.Send(query, cancellationToken);
 
+            response.UserId = GetCurrentUserGuid();
             await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<CreateCartResponse>(response), TimeSpan.FromHours(1));
 
             return Created(string.Empty, new ApiResponseWithData<CreateCartResponse>
@@ -60,6 +61,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         public async Task<IActionResult> Checkout(CancellationToken cancellationToken)
         {
             var cartCache = await _redisService.GetAsync<CreateCartResponse>(GetCurrentUserGuid().ToString());
+            if (cartCache == null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Cart not found"
+                });
+            }
 
             var validator = new CheckoutCartValidator();
             var validationResult = await validator.ValidateAsync(cartCache, cancellationToken);
@@ -70,6 +79,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             var command = _mapper.Map<CreateSaleCommand>(cartCache);
             var response = await _mediator.Send(command, cancellationToken);
 
+            await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
+
             return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
             {
                 Success = true,
@@ -79,7 +90,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         }
 
         [HttpPut]
-        [ProducesResponseType(typeof(ApiResponseWithData<UpdateCartResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponseWithData<UpdateCartResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateCart([FromBody] UpdateCartRequest request, CancellationToken cancellationToken)
         {

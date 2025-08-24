@@ -5,12 +5,15 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using StackExchange.Redis;
+using System.Text.Json;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -95,6 +98,22 @@ public class Program
             }
 
             app.UseHttpsRedirection();
+
+
+            app.UseExceptionHandler(u => u.Run(async context => {
+                var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                var exception = new BaseException(exceptionHandlerPathFeature.Error.Message, exceptionHandlerPathFeature.Error);
+
+                context.Response.ContentType = "application/json";
+                var response = new ApiResponse
+                {
+                    Success = false,
+                    Message = exception.Message
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            }));
+
 
             app.UseAuthentication();
             app.UseAuthorization();

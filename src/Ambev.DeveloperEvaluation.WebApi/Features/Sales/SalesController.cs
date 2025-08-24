@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 using Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
 using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -58,7 +59,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponseWithData<UpdateSaleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateSale([FromRoute] Guid id, [FromBody] UpdateSaleRequest request, CancellationToken cancellationToken)
         {
@@ -80,9 +81,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
         }
 
         [HttpPost("{id}/Cancel")]
-        [ProducesResponseType(typeof(ApiResponseWithData<CancelSaleResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponseWithData<CancelSaleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CancelSale([FromRoute] Guid id, [FromBody] CancelSaleRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CancelSale([FromBody] CancelSaleRequest request, CancellationToken cancellationToken)
         {
             var validator = new CancelSaleRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -161,13 +162,37 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
 
             var sqlQueryParameters = ListSalesQuery.GetSqlQuery(parameters);
             var response = await _queryDbService.Select<ListSalesQueryResult>(sqlQueryParameters.QuerySql, _queryDbService.GetSqlParameters(request));
-
+            
             return Ok(new ApiResponseWithData<IEnumerable<ListSalesResponse>>
             {
                 Success = true,
                 Message = "sale retrieved successfully",
-                Data = _mapper.Map<IEnumerable<ListSalesResponse>>(response)
+                Data = WithSaleItems(_mapper.Map<IEnumerable<ListSalesResponse>>(response))
             });
+
+            IEnumerable<ListSalesResponse> WithSaleItems(IEnumerable<ListSalesResponse> response)
+            {
+                return response
+                    .GroupBy(item => item.SaleId)
+                    .Select(group =>
+                    {
+                        var first = new ListSalesResponse(group.First());
+                        first.SaleItems = group.Select(i =>
+                        {
+                            var item = new SaleItem(i.SaleItemId
+                                , i.ProductId
+                                , i.ProductItemQuantity
+                                , i.UnitProductItemPrice
+                                , i.DiscountAmount
+                                , i.TotalSaleItemPrice
+                                , i.TotalWithoutDiscount
+                                , i.SaleItemStatus);
+
+                            return item;
+                        }).ToList();
+                        return first;
+                    }).ToList();
+            }
         }
 
         [HttpDelete("{id}")]

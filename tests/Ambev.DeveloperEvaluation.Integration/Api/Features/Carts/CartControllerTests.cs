@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Integration.Api.Security;
 using Ambev.DeveloperEvaluation.WebApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
@@ -14,6 +15,11 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         public CartControllerTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient();
+
+            var key = "YourSuperSecretKeyForJwtTokenGenerationThatShouldBeAtLeast32BytesLong";
+            var token = FakeJwtTokenGenerator.GenerateToken(key, string.Empty, string.Empty);
+
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>

@@ -10,9 +10,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale
                 .NotEmpty()
                 .WithMessage("UserId is required.");
 
-            RuleFor(x => x.BranchId)
+            RuleFor(x => x.BranchSaleId)
                 .NotEmpty()
-                .WithMessage("BranchId is required.");
+                .WithMessage("BranchSaleId is required.");
         }
     }
 }

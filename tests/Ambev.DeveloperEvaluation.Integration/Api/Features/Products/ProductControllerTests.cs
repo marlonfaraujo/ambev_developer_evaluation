@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.WebApi;
+﻿using Ambev.DeveloperEvaluation.Integration.Api.Security;
+using Ambev.DeveloperEvaluation.WebApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -13,6 +14,11 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         public ProductControllerTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient();
+
+            var key = "YourSuperSecretKeyForJwtTokenGenerationThatShouldBeAtLeast32BytesLong";
+            var token = FakeJwtTokenGenerator.GenerateToken(key, string.Empty, string.Empty);
+
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -25,9 +31,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
             {
                 Name = "Fake Product",
                 Description = "A fake product for testing",
-                Price = 99.99m,
-                Stock = 100,
-                Category = "Test Category"
+                Price = 99.99m
             };
 
             var response = await _client.PostAsJsonAsync("/api/products", productRequest);

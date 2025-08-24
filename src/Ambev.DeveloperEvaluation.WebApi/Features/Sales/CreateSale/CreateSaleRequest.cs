@@ -2,7 +2,7 @@
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale
 {
-    public record CreateSaleRequest(Guid UserId, Guid BranchId, IEnumerable<SaleItem> SaleItems)
+    public record CreateSaleRequest(Guid UserId, Guid BranchSaleId, IEnumerable<SaleItem> SaleItems)
     {
     }
 }

@@ -58,9 +58,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
 
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(ApiResponseWithData<UpdateBranchResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponseWithData<UpdateBranchResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateBranch([FromBody] UpdateBranchRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateBranch([FromRoute] Guid id, [FromBody] UpdateBranchRequest request, CancellationToken cancellationToken)
         {
             var validator = new UpdateBranchRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
