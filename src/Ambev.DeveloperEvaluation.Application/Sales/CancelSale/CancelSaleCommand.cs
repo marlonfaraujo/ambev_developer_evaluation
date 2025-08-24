@@ -2,7 +2,7 @@
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
 {
-    public record CancelSaleCommand(Guid Id, string SaleStatus) : IRequest<CancelSaleResult>
+    public record CancelSaleCommand(Guid Id) : IRequest<CancelSaleResult>
     {
     }
 }

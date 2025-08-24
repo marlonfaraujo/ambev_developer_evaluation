@@ -80,7 +80,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Queries
             return new SqlQueryParams<NpgsqlParameter>
             {
                 QuerySql = query.ToString(),
-                SqlParameters = sqlParameters.ToArray()
+                SqlParameters = sqlParameters
             };
         }
     }

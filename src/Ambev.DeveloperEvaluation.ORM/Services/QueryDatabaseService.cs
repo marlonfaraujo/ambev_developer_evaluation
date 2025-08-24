@@ -3,6 +3,7 @@ using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Reflection;
 using System.Text;
 
 namespace Ambev.DeveloperEvaluation.ORM.Services
@@ -66,9 +67,34 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
 
         public async Task<IEnumerable<TEntity>> Select<TEntity>(string query, params object[] parameters) where TEntity : class
         {
-            var result = await _context.Database.SqlQueryRaw<TEntity>(query,parameters).ToListAsync();
+            var result = await _context.Database.SqlQueryRaw<TEntity>(query, parameters).ToListAsync();
             return result;
         }
 
+        public object[] GetSqlParameters<T>(T parameters)
+        {
+            return ToSqlParameters(parameters).ToArray();
+        }
+
+        private List<NpgsqlParameter> ToSqlParameters(object obj)
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            var parameters = new List<NpgsqlParameter>();
+            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var prop in properties)
+            {
+                var value = prop.GetValue(obj);
+                if (value == null) 
+                    continue;
+                
+                var parameter = new NpgsqlParameter($"@{prop.Name}", value);
+                parameters.Add(parameter);
+            }
+
+            return parameters;
+        }
     }
 }

@@ -54,7 +54,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         }
 
 
-        [HttpPost("checkout")]
+        [HttpPost("Checkout")]
         [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Checkout(CancellationToken cancellationToken)

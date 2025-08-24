@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
 {
-    public record GetProductQuery(Guid Id, string Name, string Description, decimal Price) : IRequest<GetProductResult>
+    public record GetProductQuery(Guid Id) : IRequest<GetProductResult>
     {
         public ValidationResultDetail Validate()
         {

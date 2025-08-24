@@ -79,7 +79,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             });
         }
 
-        [HttpPost("{id}/cancel")]
+        [HttpPost("{id}/Cancel")]
         [ProducesResponseType(typeof(ApiResponseWithData<CancelSaleResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CancelSale([FromRoute] Guid id, [FromBody] CancelSaleRequest request, CancellationToken cancellationToken)
@@ -159,7 +159,8 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 parameters.Pager.PageSize = request.PageSize;
             }
 
-            var response = await _queryDbService.Select<ListSalesQueryResult>(ListSalesQuery.SELECT, parameters);
+            var sqlQueryParameters = ListSalesQuery.GetSqlQuery(parameters);
+            var response = await _queryDbService.Select<ListSalesQueryResult>(sqlQueryParameters.QuerySql, _queryDbService.GetSqlParameters(request));
 
             return Ok(new ApiResponseWithData<IEnumerable<ListSalesResponse>>
             {
