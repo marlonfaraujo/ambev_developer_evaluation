@@ -21,19 +21,22 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
         {
             var validator = new UpdateProductCommandValidator();
             var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
-
-            var existing = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existing == null)
-                throw new InvalidOperationException($"Product ID not found");
-
+            
+            await existingProductById();
+            
             var product = _mapper.Map<Product>(command);
-
             var created = await _productRepository.UpdateAsync(product, cancellationToken);
             var result = _mapper.Map<UpdateProductResult>(created);
             return result;
+
+            async Task existingProductById()
+            {
+                var existing = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
+                if (existing == null)
+                    throw new InvalidOperationException($"Product ID not found");
+            }
         }
     }
 }

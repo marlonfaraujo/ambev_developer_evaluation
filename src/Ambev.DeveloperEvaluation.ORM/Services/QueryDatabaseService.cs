@@ -18,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             _context = context;
         }
 
-        public async Task<bool> BranchsInItem(Guid branchId)
+        public async Task<bool> BranchsInSale(Guid branchId)
         {
             var query = new StringBuilder();
             query.Append(@"
@@ -42,7 +42,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             return result;
         }
 
-        public async Task<bool> ProductsInItem(Guid productId)
+        public async Task<bool> ProductsInSaleItems(Guid productId)
         {
             var query = new StringBuilder();
             query.Append(@"

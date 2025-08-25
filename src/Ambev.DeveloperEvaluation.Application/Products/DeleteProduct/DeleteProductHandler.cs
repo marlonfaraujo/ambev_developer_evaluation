@@ -21,23 +21,29 @@ namespace Ambev.DeveloperEvaluation.Application.Products.DeleteProduct
         {
             var validator = new DeleteProductCommandValidator();
             var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            var existing = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existing == null)
-                throw new KeyNotFoundException($"Product with ID {command.Id} not found");
-
-            var hasProductInItems = await _queryDbService.ProductsInItem(command.Id);
-            if (hasProductInItems)
-                throw new InvalidOperationException($"Product with ID {command.Id} cannot be deleted because it is referenced in sales items.");
+            await existingProductById();
+            await hasProductInSaleItems();
 
             var success = await _productRepository.DeleteAsync(command.Id, cancellationToken);
             if (!success)
                 throw new KeyNotFoundException($"Product with ID {command.Id} not found");
-
             return new DeleteProductResult { Success = true };
+
+            async Task existingProductById()
+            {
+                var existing = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
+                if (existing == null)
+                    throw new KeyNotFoundException($"Product with ID {command.Id} not found");
+            }
+            async Task hasProductInSaleItems()
+            {
+                var hasProductInItems = await _queryDbService.ProductsInSaleItems(command.Id);
+                if (hasProductInItems)
+                    throw new InvalidOperationException($"Product with ID {command.Id} cannot be deleted because it is referenced in sales items.");
+            }
         }
     }
 }

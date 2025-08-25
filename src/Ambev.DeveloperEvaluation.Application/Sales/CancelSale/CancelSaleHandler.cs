@@ -29,16 +29,13 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existing == null)
-                throw new InvalidOperationException($"Sale with ID not found");
-
-            if (existing.SaleStatus == SaleStatusEnum.Cancelled.ToString())
+            var existingSale = await existingSaleById();
+            if (existingSale.SaleStatus == SaleStatusEnum.Cancelled.ToString())
                 throw new InvalidOperationException($"Sale with ID {command.Id} is already canceled");
 
-            var saleEvent = existing.CancelSale();
-            var saleItemsEvent = existing.CancelSaleItems();
-            var result = await _saleRepository.UpdateAsync(existing, cancellationToken);
+            var saleEvent = existingSale.CancelSale();
+            var saleItemsEvent = existingSale.CancelSaleItems();
+            var result = await _saleRepository.UpdateAsync(existingSale, cancellationToken);
 
             _notification.Publish(saleEvent, cancellationToken);
             foreach (var item in saleItemsEvent)
@@ -47,6 +44,14 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
             }
 
             return _mapper.Map<CancelSaleResult>(result);
+
+            async Task<Sale> existingSaleById()
+            {
+                var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
+                if (existing == null)
+                    throw new InvalidOperationException($"Sale with ID not found");
+                return existing;
+            }
         }
     }
 }
