@@ -20,7 +20,7 @@ See [Use Case](/.doc/use-case.md)
 
 # Project description 
 
-Backend API project for handling sales records, with the aim of calculating discounts according to the quantity of identical products. The API could function as part or microservice of a complete E-commerce system, which contains registration of sellers or branches, products, payment processing (gateways), etc.
+Backend API project developed to manage sales records and calculate discounts based on the quantity of identical products sold. This API was created to act as a standalone service or a microservice within a comprehensive e-commerce ecosystem, it can be integrated with other microservices that communicate with payment gateways, inventory control and invoice generation, etc.
 
 # Process and decisions
 
@@ -94,17 +94,18 @@ dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM/Ambev.Deve
 * **Clean Code**
 * **CQRS**
 * **JWT**
-* **Unit and integration tests**
-* **Github Copilot**
+* **TDD, Unit and integration tests**
+* **Git Flow**
 
 ## Technologies Used - Overview
 Here are listed some of the specific technologies used for the implementation of the project:
 * **Authentication**: [JSON Web Tokens - JWT](https://jwt.io/)
-* **Databases - Persistence**: [Redis](https://redis.io/), [PostgeSQL](https://www.postgresql.org/), [EntityFrameworkCore] (https://learn.microsoft.com/en-us/ef/core/)
+* **Databases - Persistence**: [Redis](https://redis.io/), [PostgeSQL](https://www.postgresql.org/), [EntityFrameworkCore](https://learn.microsoft.com/en-us/ef/core/)
 * **Testing**: [XUnit](https://xunit.net/), [Bogus](https://github.com/bchavez/Bogus), [Moq](https://github.com/devlooped/moq)
 * **External Communication Protocols**: [REST](https://en.wikipedia.org/wiki/Representational_state_transfer)
 * **Frameworks**: [AutoMapper](https://automapper.org/), [FluentValidation](https://docs.fluentvalidation.net/en/latest/), [MediatR](https://www.nuget.org/packages/mediatr/), [Newtonsoft.Json](https://www.newtonsoft.com/json)
 * **Container Technology**: [Docker](https://www.docker.com/)
+* **Tools**: Github Copilot
 
 
 # Documentation
