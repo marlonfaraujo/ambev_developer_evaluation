@@ -96,7 +96,7 @@ dotnet test
 
 # Documentation
 Access the documentation and make requests to the API at https://localhost:8081/swagger
-
+See also in [Carts](/.doc/carts-api.md)
 
 # Technologies and Technical Features 
 This project consists of a REST API built in .NET 8 with a focus on clarity, scalability and ease of maintenance. Best practices were applied such as separation of responsibilities, use of Entity Framework Core for data persistence, validations with FluentValidation, CQRS pattern with MediatR and documentation with Swagger.

@@ -3,122 +3,86 @@
 ### Carts
 
 #### GET /carts
-- Description: Retrieve a list of all carts
-- Query Parameters:
-  - `_page` (optional): Page number for pagination (default: 1)
-  - `_size` (optional): Number of items per page (default: 10)
-  - `_order` (optional): Ordering of results (e.g., "id desc, userId asc")
+```
+  bash
+curl -X 'GET' \
+  'https://localhost:8081/api/Carts' \
+  -H 'accept: text/plain' \
+  -H 'Authorization: Bearer e'
+```
 - Response: 
   ```json
   {
-    "data": [
-      {
-        "id": "integer",
-        "userId": "integer",
-        "date": "string (date)",
-        "products": [
-          {
-            "productId": "integer",
-            "quantity": "integer"
-          }
-        ]
-      }
-    ],
-    "totalItems": "integer",
-    "currentPage": "integer",
-    "totalPages": "integer"
+  "data": {
+    "data": {
+      "userId": "40515b29-e112-4457-9a69-c170b833986d",
+      "branchSaleId": "035f4be0-ddec-42d5-bde7-6d45b4d39fb8",
+      "totalSalePrice": 96,
+      "saleItems": [
+        {
+          "productId": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
+          "productItemQuantity": 12,
+          "unitProductItemPrice": 10,
+          "discountAmount": 0,
+          "totalSaleItemPrice": 0,
+          "totalWithoutDiscount": 0,
+          "saleItemStatus": "Created",
+          "id": "00000000-0000-0000-0000-000000000000"
+        }
+      ]
+    },
+    "success": true,
+    "message": "cart retrieved successfully",
+    "errors": []
+  },
+  "success": true,
+  "message": "",
+  "errors": []
   }
   ```
 
 #### POST /carts
 - Description: Add a new cart
 - Request Body:
-  ```json
-  {
-    "userId": "integer",
-    "date": "string (date)",
-    "products": [
-      {
-        "productId": "integer",
-        "quantity": "integer"
-      }
-    ]
-  }
+  ```bash
+  curl -X 'POST' \
+  'https://localhost:8081/api/Carts' \
+  -H 'accept: text/plain' \
+  -H 'Authorization: Bearer e' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "branchSaleId": "035f4be0-ddec-42d5-bde7-6d45b4d39fb8",
+  "saleItems": [
+    {
+      "productId": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
+      "productItemQuantity": 12
+    }
+  ]
+  }'
   ```
 - Response: 
   ```json
   {
-    "id": "integer",
-    "userId": "integer",
-    "date": "string (date)",
-    "products": [
+  "data": {
+    "userId": "40515b29-e112-4457-9a69-c170b833986d",
+    "branchSaleId": "035f4be0-ddec-42d5-bde7-6d45b4d39fb8",
+    "totalSalePrice": 96,
+    "saleItems": [
       {
-        "productId": "integer",
-        "quantity": "integer"
+        "productId": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
+        "productItemQuantity": 12,
+        "unitProductItemPrice": 10,
+        "discountAmount": 24,
+        "totalSaleItemPrice": 96,
+        "totalWithoutDiscount": 120,
+        "saleItemStatus": "Created",
+        "id": "00000000-0000-0000-0000-000000000000"
       }
     ]
-  }
-  ```
-
-#### GET /carts/{id}
-- Description: Retrieve a specific cart by ID
-- Path Parameters:
-  - `id`: Cart ID
-- Response: 
-  ```json
-  {
-    "id": "integer",
-    "userId": "integer",
-    "date": "string (date)",
-    "products": [
-      {
-        "productId": "integer",
-        "quantity": "integer"
-      }
-    ]
-  }
-  ```
-
-#### PUT /carts/{id}
-- Description: Update a specific cart
-- Path Parameters:
-  - `id`: Cart ID
-- Request Body:
-  ```json
-  {
-    "userId": "integer",
-    "date": "string (date)",
-    "products": [
-      {
-        "productId": "integer",
-        "quantity": "integer"
-      }
-    ]
-  }
-  ```
-- Response: 
-  ```json
-  {
-    "id": "integer",
-    "userId": "integer",
-    "date": "string (date)",
-    "products": [
-      {
-        "productId": "integer",
-        "quantity": "integer"
-      }
-    ]
-  }
-  ```
-
-#### DELETE /carts/{id}
-- Description: Delete a specific cart
-- Path Parameters:
-  - `id`: Cart ID
-- Response: 
-  ```json
-  {
-    "message": "string"
+  },
+  "success": true,
+  "message": "Cart created successfully",
+  "errors": []
   }
   ```
 
@@ -126,5 +90,5 @@
 <br>
 <div style="display: flex; justify-content: space-between;">
   <a href="./products-api.md">Previous: Products API</a>
-  <a href="./users-api.md">Next: Users API</a>
+  <a href="./sale-api.md">Next: Sales API</a>
 </div>
