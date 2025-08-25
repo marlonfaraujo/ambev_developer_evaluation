@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
 using Npgsql;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Ambev.DeveloperEvaluation.ORM.Queries
 {
@@ -24,8 +25,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Queries
             {
                 if (!string.IsNullOrWhiteSpace(queryParameters.Name))
                 {
-                    query.AppendLine(@"AND ""Name"" ILIKE '%'@name'%'");
-                    sqlParameters.Add(new NpgsqlParameter("name", queryParameters.Name));
+                    query.AppendLine(@"AND ""Name"" ILIKE @name");
+                    sqlParameters.Add(new NpgsqlParameter("name", $"%{queryParameters.Name}%"));
                 }
             }
             query.AppendLine("LIMIT @pageSize OFFSET @pageSize * (@pageNumber - 1)");
