@@ -87,13 +87,13 @@ dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM/Ambev.Deve
 If executed locally - **Run the application:**
 
 ```bash
-dotnet run
+dotnet run --project src\Ambev.DeveloperEvaluation.WebApi
 ```
 
  **Run the tests**
 
 ```bash
-dotnet test
+dotnet test Ambev.DeveloperEvaluation.sln
 ```
 
 # Documentation
