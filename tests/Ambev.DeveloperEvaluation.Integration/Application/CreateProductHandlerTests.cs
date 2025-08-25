@@ -1,28 +1,36 @@
 ﻿
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Integration.Data;
+using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.ORM.Repositories;
 using AutoMapper;
 using Moq;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application
+namespace Ambev.DeveloperEvaluation.Integration.Application
 {
     public class CreateProductHandlerTests
     {
+        private readonly DefaultContext _context;
+
+        public CreateProductHandlerTests()
+        {
+            _context = new DatabaseInMemory().Context;
+        }
+
         [Fact]
         public async Task Handle_ValidCommand_CreatesProduct()
         {
-            var repoMock = new Mock<IProductRepository>();
+            var repoMock = new ProductRepository(_context);
             var mapperMock = new Mock<IMapper>();
             var command = new CreateProductCommand("FakeProduct", "FakeProductDescription", 10.0m);
             var product = new Product(Guid.NewGuid(), command.Name, command.Description, command.Price);
 
-            repoMock.Setup(r => r.CreateAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>())).ReturnsAsync(product);
             mapperMock.Setup(m => m.Map<Product>(command)).Returns(product);
             mapperMock.Setup(m => m.Map<CreateProductResult>(product)).Returns(new CreateProductResult(product.Id, product.Name, product.Description, product.Price));
 
-            var handler = new CreateProductHandler(repoMock.Object, mapperMock.Object);
+            var handler = new CreateProductHandler(repoMock, mapperMock.Object);
 
             var result = await handler.Handle(command, CancellationToken.None);
 

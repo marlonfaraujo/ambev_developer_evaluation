@@ -89,7 +89,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var command = _mapper.Map<UpdateSaleCommand>(request);
             var response = await _mediator.Send(new MediatRRequestAdapter<UpdateSaleCommand, UpdateSaleResult>(command), cancellationToken);
 
-            return Created(string.Empty, new ApiResponseWithData<UpdateSaleResponse>
+            return Ok(new ApiResponseWithData<UpdateSaleResponse>
             {
                 Success = true,
                 Message = "Sale updated successfully",
@@ -111,7 +111,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             var command = _mapper.Map<CancelSaleCommand>(request);
             var response = await _mediator.Send(new MediatRRequestAdapter<CancelSaleCommand, CancelSaleResult>(command), cancellationToken);
 
-            return Created(string.Empty, new ApiResponseWithData<CancelSaleResponse>
+            return Ok(new ApiResponseWithData<CancelSaleResponse>
             {
                 Success = true,
                 Message = "Sale canceled successfully",

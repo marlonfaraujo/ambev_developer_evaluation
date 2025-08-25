@@ -1,11 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
-using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
 using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.UpdateCart;
-using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -44,7 +42,15 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             var response = await _mediator.Send(new MediatRRequestAdapter<SimulateSaleQuery, SimulateSaleResult>(query), cancellationToken);
 
             response.UserId = GetCurrentUserGuid();
-            await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<CreateCartResponse>(response), TimeSpan.FromHours(1));
+            var redisResult = await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<CreateCartResponse>(response), TimeSpan.FromHours(1));
+            if (redisResult == null || !redisResult)
+            {
+                return Ok(new ApiResponse
+                {
+                    Success = false,
+                    Message = "Error saving cart"
+                });
+            }
 
             return Created(string.Empty, new ApiResponseWithData<CreateCartResponse>
             {
@@ -69,10 +75,19 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
 
             var query = _mapper.Map<SimulateSaleQuery>(request);
             var response = await _mediator.Send(new MediatRRequestAdapter<SimulateSaleQuery, SimulateSaleResult>(query), cancellationToken);
+            response.UserId = GetCurrentUserGuid();
 
-            await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<UpdateCartResponse>(response), TimeSpan.FromHours(1));
+            var redisResult = await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<UpdateCartResponse>(response), TimeSpan.FromHours(1));
+            if (redisResult == null || !redisResult)
+            {
+                return Ok(new ApiResponse
+                {
+                    Success = false,
+                    Message = "cart not found"
+                });
+            }
 
-            return Created(string.Empty, new ApiResponseWithData<UpdateCartResponse>
+            return Ok(new ApiResponseWithData<UpdateCartResponse>
             {
                 Success = true,
                 Message = "Cart updated successfully",
@@ -112,6 +127,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         public async Task<IActionResult> DeleteCart(CancellationToken cancellationToken)
         {
             var result = await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
+            if (result == null || !result)
+            {
+                return Ok(new ApiResponse
+                {
+                    Success = false,
+                    Message = "cart not found"
+                });
+            }
 
             return Ok(new ApiResponse
             {

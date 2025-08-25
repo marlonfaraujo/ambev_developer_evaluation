@@ -1,31 +1,20 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.WebApi;
-using Ambev.DeveloperEvaluation.WebApi.Common;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Ambev.DeveloperEvaluation.Domain.Enums;
+using Bogus;
 using System.Net;
 using System.Net.Http.Json;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
 {
-    public class SalesControllerTests : IClassFixture<WebApplicationFactory<Program>>
+    public class SalesControllerTests : IClassFixture<SaleApiFixture>
     {
-        private readonly HttpClient _client;
         private readonly HelperControllerTests _helperControllerTests;
+        private readonly SaleApiFixture _saleApiFixture;
 
-        public SalesControllerTests(WebApplicationFactory<Program> factory)
+        public SalesControllerTests(SaleApiFixture saleApiFixture)
         {
-            _client = factory.CreateClient();
-
-            _helperControllerTests = new HelperControllerTests(factory);
-            var token = _helperControllerTests.GetFakeJwtToken();
-
-            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        }
-
-        private void SetAuthorizationHeader(string token)
-        {
-            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            _saleApiFixture = saleApiFixture;
+            
         }
 
         /// <summary>
@@ -34,28 +23,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "POST /api/sales should return Created when sale is valid")]
         public async Task Post_Sale_ReturnsCreated()
         {
-            var responseData = await _helperControllerTests.GetWithTestData();
-            SetAuthorizationHeader(responseData.AuthUser.Token);
-
-            // Arrange
-            var saleRequest = new
-            {
-                SaleDate = DateTime.UtcNow,
-                UserId = responseData.User.Id,
-                BranchSaleId = responseData.Branch.Id,
-                SaleItems = new List<SaleItem>
-                {
-                    new SaleItem
-                    {
-                        ProductId = responseData.Product.Id,
-                        ProductItemQuantity = 2,
-                        UnitProductItemPrice = 10.0m
-                    }
-                }
-            };
-
+            _saleApiFixture.NewCartUserId();
             // Act
-            var response = await _client.PostAsync("/api/sales", null);
+            var response = await _saleApiFixture.Client.PostAsync("/api/sales", null);
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -67,32 +37,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "GET /api/sales/{id} should return Ok when sale exists")]
         public async Task Get_Sale_By_Id_ReturnsOk()
         {
-            var responseData = await _helperControllerTests.GetWithTestData();
-            SetAuthorizationHeader(responseData.AuthUser.Token);
-
-            // Arrange
-            var saleRequest = new
-            {
-                SaleDate = DateTime.Now,
-                UserId = responseData.User.Id,
-                BranchSaleId = responseData.Branch.Id,
-                SaleItems = new List<SaleItem>
-                {
-                    new SaleItem
-                    {
-                        ProductId = responseData.Product.Id,
-                        ProductItemQuantity = 2,
-                        UnitProductItemPrice = 10.0m
-                    } 
-                }
-            };
-            var postResponse = await _client.PostAsync("/api/sales", null);
-            postResponse.EnsureSuccessStatusCode();
-            var created = await postResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Sale>>();
-            Guid saleId = created.Data.Id;
-
             // Act
-            var getResponse = await _client.GetAsync($"/api/sales/{saleId}");
+            var getResponse = await _saleApiFixture.Client.GetAsync($"/api/sales/{_saleApiFixture.SaleId}");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
@@ -104,52 +50,27 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "PUT /api/sales/{id} should return NoContent when update is successful")]
         public async Task Put_Sale_ReturnsNoContent()
         {
-            var responseData = await _helperControllerTests.GetWithTestData();
-            SetAuthorizationHeader(responseData.AuthUser.Token);
-
-            // Arrange
-            var saleRequest = new
+            _saleApiFixture.NewSaleId();
+            var saleItems = _saleApiFixture.SaleItems;
+            foreach (var item in saleItems)
             {
-                SaleDate = DateTime.Now,
-                UserId = responseData.User.Id,
-                BranchSaleId = responseData.Branch.Id,
-                SaleItems = new List<SaleItem>
-                {
-                    new SaleItem
-                    {
-                        ProductId = responseData.Product.Id,
-                        ProductItemQuantity = 2,
-                        UnitProductItemPrice = 10.0m
-                    }
-                }
-            };
-            var postResponse = await _client.PostAsync("/api/sales", null);
-            postResponse.EnsureSuccessStatusCode();
-            var created = await postResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Sale>>();
-            Guid saleId = created.Data.Id;
+                item.ProductItemQuantity = new Faker().Random.Number(1, 20);
+                item.UnitProductItemPrice = new Faker().Random.Decimal(50, 100);
+            }
 
             var updateRequest = new
             {
-                Id = saleId,
-                SaleDate = DateTime.UtcNow,
-                UserId = responseData.User.Id,
-                BranchSaleId = responseData.Branch.Id,
-                SaleItems = new List<SaleItem>
-                {
-                    new SaleItem
-                    {
-                        ProductId = responseData.Product.Id,
-                        ProductItemQuantity = 3,
-                        UnitProductItemPrice = 10.0m
-                    }
-                }
+                Id = _saleApiFixture.SaleId,
+                BranchSaleId = _saleApiFixture.BranchId,
+                SaleItems = saleItems,
+                SaleStatus = SaleStatusEnum.Modified.ToString()
             };
 
             // Act
-            var putResponse = await _client.PutAsJsonAsync($"/api/sales/{saleId}", updateRequest);
+            var putResponse = await _saleApiFixture.Client.PutAsJsonAsync($"/api/sales/{_saleApiFixture.SaleId}", updateRequest);
 
             // Assert
-            Assert.Equal(HttpStatusCode.NoContent, putResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, putResponse.StatusCode);
         }
 
         /// <summary>
@@ -158,16 +79,14 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "DELETE /api/sales/{id} should return NoContent when delete is successful")]
         public async Task Delete_Sale_ReturnsNoContent()
         {
-            var postResponse = await _client.PostAsync("/api/sales", null);
-            postResponse.EnsureSuccessStatusCode();
-            var created = await postResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Sale>>();
-            Guid saleId = created.Data.Id;
+            _saleApiFixture.NewSaleId();
+            var putResponse = await _saleApiFixture.Client.PostAsJsonAsync($"/api/sales/{_saleApiFixture.SaleId}/cancel", new { Id = _saleApiFixture.SaleId });
 
             // Act
-            var deleteResponse = await _client.DeleteAsync($"/api/sales/{saleId}");
+            var deleteResponse = await _saleApiFixture.Client.DeleteAsync($"/api/sales/{_saleApiFixture.SaleId}");
 
             // Assert
-            Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
     }
 }

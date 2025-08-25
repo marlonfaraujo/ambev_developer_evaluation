@@ -36,11 +36,9 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
             if (existing.SaleStatus == SaleStatusEnum.Cancelled.ToString())
                 throw new InvalidOperationException($"Sale with ID {command.Id} is already canceled");
 
-            var sale = _mapper.Map<Sale>(existing);
-
-            var saleEvent = sale.CancelSale();
-            var saleItemsEvent = sale.CancelSaleItems();
-            var result = await _saleRepository.UpdateAsync(sale, cancellationToken);
+            var saleEvent = existing.CancelSale();
+            var saleItemsEvent = existing.CancelSaleItems();
+            var result = await _saleRepository.UpdateAsync(existing, cancellationToken);
 
             _notification.Publish(saleEvent, cancellationToken);
             foreach (var item in saleItemsEvent)
