@@ -2,7 +2,6 @@
 using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
 using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CheckoutCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.UpdateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
@@ -51,41 +50,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
                 Success = true,
                 Message = "Cart created successfully",
                 Data = _mapper.Map<CreateCartResponse>(response)
-            });
-        }
-
-
-        [HttpPost("Checkout")]
-        [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Checkout(CancellationToken cancellationToken)
-        {
-            var cartCache = await _redisService.GetAsync<CreateCartResponse>(GetCurrentUserGuid().ToString());
-            if (cartCache == null)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Success = false,
-                    Message = "Cart not found"
-                });
-            }
-
-            var validator = new CheckoutCartValidator();
-            var validationResult = await validator.ValidateAsync(cartCache, cancellationToken);
-            
-            if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
-            
-            var command = _mapper.Map<CreateSaleCommand>(cartCache);
-            var response = await _mediator.Send(command, cancellationToken);
-
-            await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
-
-            return Created(string.Empty, new ApiResponseWithData<CreateSaleResponse>
-            {
-                Success = true,
-                Message = "Checkout successfully",
-                Data = _mapper.Map<CreateSaleResponse>(response)
             });
         }
 

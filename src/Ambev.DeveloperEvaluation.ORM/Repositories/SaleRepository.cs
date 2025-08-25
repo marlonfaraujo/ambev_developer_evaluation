@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
@@ -39,29 +40,28 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
 
         public async Task<Sale?> UpdateAsync(Sale sale, CancellationToken cancellationToken = default)
         {
-            var local = _context.Sales.Local
-    .                       FirstOrDefault(entry => entry.Id == sale.Id);
+            var saleExists = await _context.Sales
+                .Include(x => x.SaleItems)
+                .FirstOrDefaultAsync(x => x.Id == sale.Id);
 
-            if (local != null)
-            {
-                _context.Entry(local).State = EntityState.Detached;
-                foreach (var item in local.SaleItems)
+            if (saleExists is null)
+                throw new Exception("Sale not found");
+
+            _context.Entry(saleExists).CurrentValues.SetValues(sale);
+
+            saleExists.SaleItems.SyncCollection(
+                sale.SaleItems,
+                getKey: item => item.Id,
+                updateItem: (exists, updated) =>
                 {
-                    if (item != null)
-                    {
-                        _context.Entry(item).State = EntityState.Detached;
-                    }
-                }
-            }
-            _context.Entry(sale).State = EntityState.Modified;
+                    _context.Entry(exists).CurrentValues.SetValues(updated);
+                },
+                onAdd: item => {},
+                onRemove: item => _context.Remove(item)
+            );
 
-            foreach (var item in sale.SaleItems)
-            {
-                _context.Entry(item).State = EntityState.Modified;
-            }
+            await _context.SaveChangesAsync();
 
-            _context.Sales.Update(sale);
-            await _context.SaveChangesAsync(cancellationToken);
             return sale;
         }
     }

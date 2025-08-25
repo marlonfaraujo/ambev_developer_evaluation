@@ -11,7 +11,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public decimal TotalSalePrice { get; set; }
         public Guid BranchSaleId { get; set; }
         public string SaleStatus { get; private set; }
-        public IEnumerable<SaleItem> SaleItems { get; private set; }
+        public List<SaleItem> SaleItems { get; private set; }
 
         public Sale()
         {
@@ -20,7 +20,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             SaleStatus = SaleStatusEnum.Created.ToString();
         }
 
-        public void AddSaleItems(IEnumerable<SaleItem> saleItems)
+        public void AddSaleItems(List<SaleItem> saleItems)
         {
             SaleItems = saleItems;
         }

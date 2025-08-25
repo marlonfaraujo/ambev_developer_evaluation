@@ -9,7 +9,6 @@ using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
 using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.ORM.Services;
 using Ambev.DeveloperEvaluation.WebApi.Common;
-using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CheckoutCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
@@ -18,6 +17,7 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +41,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
             _redisService = redisService;
         }
 
-        [HttpPost("")]
+        [HttpPost("", Name=nameof(CreateSale))]
         [ProducesResponseType(typeof(ApiResponseWithData<CreateSaleResponse>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateSale(CancellationToken cancellationToken)
@@ -56,7 +56,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 });
             }
 
-            var validator = new CheckoutCartValidator();
+            var validator = new CreateSaleRequestValidator();
             var validationResult = await validator.ValidateAsync(cartCache, cancellationToken);
 
             if (!validationResult.IsValid)
