@@ -1,14 +1,14 @@
-using AutoMapper;
-using MediatR;
-using FluentValidation;
+using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using AutoMapper;
+using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.GetUser;
 
 /// <summary>
 /// Handler for processing GetUserCommand requests
 /// </summary>
-public class GetUserHandler : IRequestHandler<GetUserCommand, GetUserResult>
+public class GetUserHandler : IRequestApplicationHandler<GetUserCommand, GetUserResult>
 {
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;

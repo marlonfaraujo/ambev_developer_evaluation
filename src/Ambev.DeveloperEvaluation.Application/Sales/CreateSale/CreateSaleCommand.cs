@@ -1,11 +1,15 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
-public record CreateSaleCommand(Guid UserId, Guid BranchSaleId, IEnumerable<SaleItem> SaleItems) : IRequest<CreateSaleResult>
+public class CreateSaleCommand : IRequestApplication<CreateSaleResult>
 {
+    public Guid UserId { get; set; }
+    public Guid BranchSaleId { get; set; }
+    public decimal TotalSalePrice { get; set; }
+    public IEnumerable<SaleItem> SaleItems { get; set; }
     public ValidationResultDetail Validate()
     {
         var validator = new CreateSaleCommandValidator();

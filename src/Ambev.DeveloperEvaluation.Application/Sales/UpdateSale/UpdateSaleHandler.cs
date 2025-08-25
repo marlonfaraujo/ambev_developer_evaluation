@@ -1,25 +1,29 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
-public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleResult>
+public class UpdateSaleHandler : IRequestApplicationHandler<UpdateSaleCommand, UpdateSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
     private readonly IBranchRepository _branchRepository;
     private readonly IMapper _mapper;
+    private readonly IDomainNotificationAdapter _notification;
 
-    public UpdateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper)
+    public UpdateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper, IDomainNotificationAdapter notification)
     {
         _saleRepository = saleRepository;
         _productRepository = productRepository;
         _branchRepository = branchRepository;
         _mapper = mapper;
+        _notification = notification;
     }
 
     public async Task<UpdateSaleResult> Handle(UpdateSaleCommand command, CancellationToken cancellationToken)
@@ -32,7 +36,10 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (existing == null)
-            throw new InvalidOperationException($"Record with ID not found");
+            throw new InvalidOperationException($"Sale with ID not found");
+
+        if (existing.SaleStatus == SaleStatusEnum.Cancelled.ToString())
+            throw new InvalidOperationException($"Sale with ID {command.Id} is already canceled");
 
         if (string.IsNullOrWhiteSpace(command.SaleStatus))
         {
@@ -57,8 +64,15 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         var simulateSaleService = new SimulateSaleService(sale, products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
 
+        simulatedSale.SetSaleNumber(existing.SaleNumber);
+        simulatedSale.SaleDate = existing.SaleDate;
+        simulatedSale.UserId = existing.UserId;
+
+        var saleEvent = simulatedSale.UpdateSale();
         var updated = await _saleRepository.UpdateAsync(simulatedSale, cancellationToken);
+
         var result = _mapper.Map<UpdateSaleResult>(updated);
+        _notification.Publish(saleEvent, cancellationToken);
 
         return result;
     }

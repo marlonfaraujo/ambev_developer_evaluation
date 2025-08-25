@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
@@ -32,12 +33,36 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
 
         public async Task<Sale?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _context.Sales.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            return await _context.Sales
+                .Include(x => x.SaleItems)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
-        public Task<Sale?> UpdateAsync(Sale sale, CancellationToken cancellationToken = default)
+        public async Task<Sale?> UpdateAsync(Sale sale, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var saleExists = await _context.Sales
+                .Include(x => x.SaleItems)
+                .FirstOrDefaultAsync(x => x.Id == sale.Id);
+
+            if (saleExists is null)
+                throw new Exception("Sale not found");
+
+            _context.Entry(saleExists).CurrentValues.SetValues(sale);
+
+            saleExists.SaleItems.SyncCollection(
+                sale.SaleItems,
+                getKey: item => item.Id,
+                updateItem: (exists, updated) =>
+                {
+                    _context.Entry(exists).CurrentValues.SetValues(updated);
+                },
+                onAdd: item => {},
+                onRemove: item => _context.Remove(item)
+            );
+
+            await _context.SaveChangesAsync();
+
+            return sale;
         }
     }
 }

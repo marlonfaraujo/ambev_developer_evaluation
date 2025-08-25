@@ -1,11 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Branchs.GetBranch
 {
-    public class GetBranchHandler : IRequestHandler<GetBranchQuery, GetBranchResult>
+    public class GetBranchHandler : IRequestApplicationHandler<GetBranchQuery, GetBranchResult>
     {
 
         private readonly IBranchRepository _branchRepository;

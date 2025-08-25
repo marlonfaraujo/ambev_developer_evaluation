@@ -1,26 +1,29 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Exceptions;
+using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
-public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleResult>
+public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, CreateSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
     private readonly IBranchRepository _branchRepository;
     private readonly IMapper _mapper;
+    private readonly IDomainNotificationAdapter _notification;
 
-    public CreateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper)
+    public CreateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper, IDomainNotificationAdapter notification)
     {
         _saleRepository = saleRepository;
         _productRepository = productRepository;
         _branchRepository = branchRepository;
         _mapper = mapper;
+        _notification = notification;
     }
 
     public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
@@ -50,7 +53,11 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         }
 
         var created = await _saleRepository.CreateAsync(simulatedSale, cancellationToken);
+        var saleEvent = created.CreateSaleEvent();
+
         var result = _mapper.Map<CreateSaleResult>(created);
+        _notification.Publish(saleEvent, cancellationToken);
+
         return result;
     }
 }

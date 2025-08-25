@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale
@@ -9,6 +10,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale
         {
             CreateMap<UpdateSaleRequest, UpdateSaleCommand>();
             CreateMap<UpdateSaleResult, UpdateSaleResponse>();
+            CreateMap<UpdateSaleItemRequest, SaleItem>();
         }
     }
 }

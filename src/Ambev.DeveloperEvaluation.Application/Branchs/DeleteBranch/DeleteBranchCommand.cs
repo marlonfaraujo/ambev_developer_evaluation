@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
 
 namespace Ambev.DeveloperEvaluation.Application.Branchs.DeleteBranch
 {
-    public record DeleteBranchCommand(Guid Id) : IRequest<DeleteBranchResult>
+    public record DeleteBranchCommand(Guid Id) : IRequestApplication<DeleteBranchResult>
     {
     }
 }

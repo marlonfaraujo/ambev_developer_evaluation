@@ -1,4 +1,6 @@
-﻿using Ambev.DeveloperEvaluation.WebApi;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.WebApi;
+using Ambev.DeveloperEvaluation.WebApi.Common;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
@@ -9,28 +11,32 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
     public class ProductControllerTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly HttpClient _client;
+        private readonly HelperControllerTests _helperControllerTests;
 
         public ProductControllerTests(WebApplicationFactory<Program> factory)
         {
             _client = factory.CreateClient();
+
+            _helperControllerTests = new HelperControllerTests(factory);
+            var token = _helperControllerTests.GetFakeJwtToken();
+
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
         /// Verifies that creating a new product via POST returns HTTP 201 Created when the request is valid.
         /// </summary>
-        [Fact(DisplayName = "POST /api/product should return Created when product is valid")]
+        [Fact(DisplayName = "POST /api/products should return Created when product is valid")]
         public async Task CreateProduct_ReturnsCreated()
         {
             var productRequest = new
             {
                 Name = "Fake Product",
                 Description = "A fake product for testing",
-                Price = 99.99m,
-                Stock = 100,
-                Category = "Test Category"
+                Price = 99.99m
             };
 
-            var response = await _client.PostAsJsonAsync("/api/product", productRequest);
+            var response = await _client.PostAsJsonAsync("/api/products", productRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -38,7 +44,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         /// <summary>
         /// Verifies that updating a product via PUT returns HTTP 201 Created when the request is valid.
         /// </summary>
-        [Fact(DisplayName = "PUT /api/product should return Created when product is updated")]
+        [Fact(DisplayName = "PUT /api/products should return Created when product is updated")]
         public async Task UpdateProduct_ReturnsCreated()
         {
             // First, create a product to update
@@ -46,26 +52,22 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
             {
                 Name = "Product To Update",
                 Description = "Product before update",
-                Price = 50.00m,
-                Stock = 10,
-                Category = "Update Category"
+                Price = 50.00m
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/product", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid productId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
+            Guid productId = created.Data.Id;
 
             var updateRequest = new
             {
                 Id = productId,
                 Name = "Updated Product",
                 Description = "Product after update",
-                Price = 75.00m,
-                Stock = 20,
-                Category = "Updated Category"
+                Price = 75.00m
             };
 
-            var response = await _client.PutAsJsonAsync("/api/product", updateRequest);
+            var response = await _client.PutAsJsonAsync($"/api/products/{productId}", updateRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -73,7 +75,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         /// <summary>
         /// Verifies that retrieving a product by ID via GET returns HTTP 200 OK when the product exists.
         /// </summary>
-        [Fact(DisplayName = "GET /api/product/{id} should return Ok when product exists")]
+        [Fact(DisplayName = "GET /api/products/{id} should return Ok when product exists")]
         public async Task GetProduct_ReturnsOk()
         {
             // First, create a product to retrieve
@@ -85,12 +87,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
                 Stock = 5,
                 Category = "Get Category"
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/product", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid productId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
+            Guid productId = created.Data.Id;
 
-            var response = await _client.GetAsync($"/api/product/{productId}");
+            var response = await _client.GetAsync($"/api/products/{productId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -98,11 +100,11 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         /// <summary>
         /// Verifies that listing products via GET returns HTTP 200 OK.
         /// </summary>
-        [Fact(DisplayName = "GET /api/product should return Ok with product list")]
+        [Fact(DisplayName = "GET /api/products should return Ok with product list")]
         public async Task ListProducts_ReturnsOk()
         {
             var listRequest = "?Category=Test Category"; // Example query string, adjust as needed
-            var response = await _client.GetAsync($"/api/product{listRequest}");
+            var response = await _client.GetAsync($"/api/products{listRequest}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -110,7 +112,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         /// <summary>
         /// Verifies that deleting a product via DELETE returns HTTP 200 OK when the product exists.
         /// </summary>
-        [Fact(DisplayName = "DELETE /api/product/{id} should return Ok when product is deleted")]
+        [Fact(DisplayName = "DELETE /api/products/{id} should return Ok when product is deleted")]
         public async Task DeleteProduct_ReturnsOk()
         {
             // First, create a product to delete
@@ -118,16 +120,14 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
             {
                 Name = "Product To Delete",
                 Description = "Product for delete test",
-                Price = 20.00m,
-                Stock = 2,
-                Category = "Delete Category"
+                Price = 20.00m
             };
-            var createResponse = await _client.PostAsJsonAsync("/api/product", createRequest);
+            var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
             createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<dynamic>();
-            Guid productId = created.data.id;
+            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
+            Guid productId = created.Data.Id;
 
-            var response = await _client.DeleteAsync($"/api/product/{productId}");
+            var response = await _client.DeleteAsync($"/api/products/{productId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

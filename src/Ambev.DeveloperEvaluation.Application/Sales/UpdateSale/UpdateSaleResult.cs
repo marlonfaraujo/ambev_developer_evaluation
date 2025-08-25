@@ -2,6 +2,6 @@
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
-public record UpdateSaleResult(Guid Id, Guid SaleId, int SaleNumber, decimal TotalSalePrice, string SaleStatus, IEnumerable<SaleItem> SaleItems)
+public record UpdateSaleResult(Guid Id, int SaleNumber, DateTime SaleDate, Guid UserId, decimal TotalSalePrice, Guid BranchSaleId, string SaleStatus, IEnumerable<SaleItem> SaleItems)
 {
 }

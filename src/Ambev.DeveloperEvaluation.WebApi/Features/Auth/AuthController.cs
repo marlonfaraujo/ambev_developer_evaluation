@@ -1,9 +1,11 @@
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
+using Ambev.DeveloperEvaluation.Application.Auth.AuthenticateUser;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
-using Ambev.DeveloperEvaluation.Application.Auth.AuthenticateUser;
+using AutoMapper;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Auth;
 
@@ -35,6 +37,7 @@ public class AuthController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Authentication token if successful</returns>
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponseWithData<AuthenticateUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
@@ -47,7 +50,7 @@ public class AuthController : BaseController
             return BadRequest(validationResult.Errors);
 
         var command = _mapper.Map<AuthenticateUserCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
+        var response = await _mediator.Send(new MediatRRequestAdapter<AuthenticateUserCommand, AuthenticateUserResult>(command), cancellationToken);
 
         return Ok(new ApiResponseWithData<AuthenticateUserResponse>
         {

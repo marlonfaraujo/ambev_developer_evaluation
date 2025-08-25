@@ -1,11 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct
 {
-    public class GetProductHandler : IRequestHandler<GetProductQuery, GetProductResult>
+    public class GetProductHandler : IRequestApplicationHandler<GetProductQuery, GetProductResult>
     {
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;

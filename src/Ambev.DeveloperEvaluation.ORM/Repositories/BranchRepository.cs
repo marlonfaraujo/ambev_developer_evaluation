@@ -34,9 +34,19 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             return await _context.Branchs.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
-        public Task<Branch?> UpdateAsync(Branch branch, CancellationToken cancellationToken = default)
+        public async Task<Branch?> UpdateAsync(Branch branch, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var local = _context.Set<Branch>()
+                .Local
+                .FirstOrDefault(entry => entry.Id == branch.Id);
+
+            if (local != null)
+            {
+                _context.Entry(local).State = EntityState.Detached;
+            }
+            _context.Entry(branch).State = EntityState.Modified;
+            await _context.SaveChangesAsync(cancellationToken);
+            return branch;
         }
     }
 }

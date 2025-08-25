@@ -1,12 +1,12 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Branchs.CreateBranch
 {
-    public class CreateBranchHandler : IRequestHandler<CreateBranchCommand, CreateBranchResult>
+    public class CreateBranchHandler : IRequestApplicationHandler<CreateBranchCommand, CreateBranchResult>
     {
         private readonly IBranchRepository _branchRepository;
         private readonly IMapper _mapper;

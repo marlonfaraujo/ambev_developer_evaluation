@@ -12,5 +12,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             Name = name;
             Description = description;
         }
+        public Branch()
+        {
+        }
     }
 }

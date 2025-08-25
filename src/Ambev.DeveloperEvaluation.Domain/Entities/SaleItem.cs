@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Factories;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
@@ -18,8 +19,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             TotalSaleItemPrice = 0;
             SaleItemStatus = SaleStatusEnum.Created.ToString();
         }
-        public SaleItem(Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)
+
+        public SaleItem(Guid id, Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)
         {
+            Id = id;
             ProductId = productId;
             ProductItemQuantity = productItemQuantity;
             UnitProductItemPrice = unitProductItemPrice;
@@ -42,9 +45,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             ProductItemQuantity = quantity;
         }
 
-        public void CancelItem()
+        public SaleItemCancelledEvent CancelItem()
         {
             SaleItemStatus = SaleItemStatusEnum.Cancelled.ToString();
+            return new SaleItemCancelledEvent(this);
         }
     }
 }

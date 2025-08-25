@@ -9,6 +9,10 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale
             RuleFor(x => x.Id)
                 .NotEmpty()
                 .WithMessage("ID is required");
+
+            RuleFor(x => x.SaleItems)
+                .NotEmpty()
+                .WithMessage("SaleItems is required");
         }
     }
 }

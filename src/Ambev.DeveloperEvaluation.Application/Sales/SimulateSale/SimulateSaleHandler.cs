@@ -1,13 +1,13 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
 {
-    public class SimulateSaleHandler : IRequestHandler<SimulateSaleQuery, SimulateSaleResult>
+    public class SimulateSaleHandler : IRequestApplicationHandler<SimulateSaleQuery, SimulateSaleResult>
     {
         private readonly IProductRepository _productRepository;
         private readonly IBranchRepository _branchRepository;
@@ -35,6 +35,11 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
             var branch = await _branchRepository.GetByIdAsync(query.BranchSaleId, cancellationToken);
             if (branch == null)
                 throw new KeyNotFoundException($"Branch not found");
+
+            if (query.SaleItems.Any(x => x.ProductItemQuantity <= 0))
+            {
+                throw new KeyNotFoundException($"Quantity of product less than 1");
+            }
 
             var simulateSaleService = new SimulateSaleService(_mapper.Map<Sale>(query), products);
             var sale = simulateSaleService.MakePriceSimulation();

@@ -1,11 +1,11 @@
-using AutoMapper;
-using MediatR;
-using FluentValidation;
+using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using AutoMapper;
+using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
-public class GetSaleHandler : IRequestHandler<GetSaleQuery, GetSaleResult>
+public class GetSaleHandler : IRequestApplicationHandler<GetSaleQuery, GetSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;

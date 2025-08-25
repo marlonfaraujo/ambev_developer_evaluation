@@ -30,13 +30,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Services
             return totalSalePrice;
         }
 
-        private IEnumerable<SaleItem> joinProductsWithSaleItems()
+        private List<SaleItem> joinProductsWithSaleItems()
         {
             var result = _sale.SaleItems.Join(_products,
                                         saleItem => saleItem.ProductId,
                                         product => product.Id,
                                         (saleItem, product) => new SaleItem
                                         {
+                                            Id = saleItem.Id,
                                             ProductId = product.Id,
                                             UnitProductItemPrice = product.Price,
                                             ProductItemQuantity = saleItem.ProductItemQuantity

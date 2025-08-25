@@ -2,11 +2,9 @@
 {
     public record UpdateSaleRequest(
         Guid Id,
-        int SaleNumber,
-        Guid UserId,
-        decimal TotalSalePrice,
-        DateTime SaleDate,
-        string SaleStatus
+        Guid BranchSaleId,
+        string SaleStatus,
+        IEnumerable<UpdateSaleItemRequest> SaleItems
     )
     {
     }

@@ -1,12 +1,12 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
 {
-    public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, UpdateProductResult>
+    public class UpdateProductHandler : IRequestApplicationHandler<UpdateProductCommand, UpdateProductResult>
     {
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
@@ -26,12 +26,12 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
                 throw new ValidationException(validationResult.Errors);
 
             var existing = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existing != null)
-                throw new InvalidOperationException($"Record already exists");
+            if (existing == null)
+                throw new InvalidOperationException($"Product ID not found");
 
             var product = _mapper.Map<Product>(command);
 
-            var created = await _productRepository.CreateAsync(product, cancellationToken);
+            var created = await _productRepository.UpdateAsync(product, cancellationToken);
             var result = _mapper.Map<UpdateProductResult>(created);
             return result;
         }

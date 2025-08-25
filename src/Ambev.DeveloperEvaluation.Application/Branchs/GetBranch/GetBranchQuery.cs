@@ -1,9 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Common.Validation;
 
 namespace Ambev.DeveloperEvaluation.Application.Branchs.GetBranch
 {
-    public record GetBranchQuery(Guid Id, string Name, string Description) : IRequest<GetBranchResult>
+    public record GetBranchQuery(Guid Id) : IRequestApplication<GetBranchResult>
     {
         public ValidationResultDetail Validate()
         {

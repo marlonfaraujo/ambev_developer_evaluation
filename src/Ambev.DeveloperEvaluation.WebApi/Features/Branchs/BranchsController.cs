@@ -2,9 +2,10 @@
 using Ambev.DeveloperEvaluation.Application.Branchs.DeleteBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.GetBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch;
+using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
-using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
-using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.ORM.Queries;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.CreateBranch;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.DeleteBranch;
@@ -24,9 +25,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly QueryDatabaseService _queryDbService;
+        private readonly IQueryDatabaseService _queryDbService;
 
-        public BranchsController(IMediator mediator, IMapper mapper, QueryDatabaseService queryDbService)
+        public BranchsController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService)
         {
             _mediator = mediator;
             _mapper = mapper;
@@ -46,7 +47,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<CreateBranchCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<CreateBranchCommand, CreateBranchResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<CreateBranchResponse>
             {
@@ -58,9 +59,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
 
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(ApiResponseWithData<UpdateBranchResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponseWithData<UpdateBranchResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateBranch([FromBody] UpdateBranchRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateBranch([FromRoute] Guid id, [FromBody] UpdateBranchRequest request, CancellationToken cancellationToken)
         {
             var validator = new UpdateBranchRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -69,7 +70,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<UpdateBranchCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<UpdateBranchCommand, UpdateBranchResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<UpdateBranchResponse>
             {
@@ -93,7 +94,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var query = _mapper.Map<GetBranchQuery>(request.Id);
-            var response = await _mediator.Send(query, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<GetBranchQuery, GetBranchResult>(query), cancellationToken);
 
             return Ok(new ApiResponseWithData<GetBranchResponse>
             {
@@ -128,7 +129,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
             {
                 parameters.Pager.PageSize = request.PageSize;
             }
-            var response = await _queryDbService.ListBranchsAsync(parameters);
+
+            var sqlQueryParams = ListBranchsQuery.GetSqlQuery(parameters);
+            var response = await _queryDbService.Select<ListBranchsQueryResult>(sqlQueryParams.QuerySql, _queryDbService.GetSqlParameters(request));
 
             return Ok(new ApiResponseWithData<IEnumerable<ListBranchsResponse>>
             {
@@ -152,7 +155,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<DeleteBranchCommand>(request.Id);
-            await _mediator.Send(command, cancellationToken);
+            await _mediator.Send(new MediatRRequestAdapter<DeleteBranchCommand, DeleteBranchResult>(command), cancellationToken);
 
             return Ok(new ApiResponse
             {

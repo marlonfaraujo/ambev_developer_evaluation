@@ -1,7 +1,36 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
 {
     public class ListSalesResponse
     {
+        public ListSalesResponse() { }
+
+        public ListSalesResponse(ListSalesResponse items)
+        {
+            SaleId = items.SaleId;
+            SaleNumber = items.SaleNumber;
+            SaleDate = items.SaleDate;
+            TotalSalePrice = items.TotalSalePrice;
+            SaleStatus = items.SaleStatus;
+            UserId = items.UserId;
+            UserName = items.UserName;
+            BranchId = items.BranchId;
+            BranchName = items.BranchName;
+            BranchDescription = items.BranchDescription;
+            SaleItemId = items.SaleItemId;
+            ProductItemQuantity = items.ProductItemQuantity;
+            UnitProductItemPrice = items.UnitProductItemPrice;
+            DiscountAmount = items.DiscountAmount;
+            TotalSaleItemPrice = items.TotalSaleItemPrice;
+            TotalWithoutDiscount = items.TotalWithoutDiscount;
+            SaleItemStatus = items.SaleItemStatus;
+            ProductId = items.ProductId;
+            ProductName = items.ProductName;
+            ProductDescription = items.ProductDescription;
+            ProductPrice = items.ProductPrice;
+        }
+
         public Guid SaleId { get; set; }
         public int SaleNumber { get; set; }
         public DateTime SaleDate { get; set; }
@@ -23,5 +52,6 @@
         public string ProductName { get; set; } = string.Empty;
         public string ProductDescription { get; set; } = string.Empty;
         public decimal ProductPrice { get; set; }
+        public List<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
     }
 }
