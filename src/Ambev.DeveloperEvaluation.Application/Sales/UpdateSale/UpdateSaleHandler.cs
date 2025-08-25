@@ -1,26 +1,29 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
-public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleResult>
+public class UpdateSaleHandler : IRequestApplicationHandler<UpdateSaleCommand, UpdateSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
     private readonly IBranchRepository _branchRepository;
     private readonly IMapper _mapper;
+    private readonly IDomainNotificationAdapter _notification;
 
-    public UpdateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper)
+    public UpdateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper, IDomainNotificationAdapter notification)
     {
         _saleRepository = saleRepository;
         _productRepository = productRepository;
         _branchRepository = branchRepository;
         _mapper = mapper;
+        _notification = notification;
     }
 
     public async Task<UpdateSaleResult> Handle(UpdateSaleCommand command, CancellationToken cancellationToken)
@@ -65,8 +68,11 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
         simulatedSale.SaleDate = existing.SaleDate;
         simulatedSale.UserId = existing.UserId;
 
+        var saleEvent = simulatedSale.UpdateSale();
         var updated = await _saleRepository.UpdateAsync(simulatedSale, cancellationToken);
+
         var result = _mapper.Map<UpdateSaleResult>(updated);
+        _notification.Publish(saleEvent, cancellationToken);
 
         return result;
     }

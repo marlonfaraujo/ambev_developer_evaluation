@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
 
@@ -24,10 +25,16 @@ public class DeleteSaleHandler : IRequestApplicationHandler<DeleteSaleCommand, D
         var sale = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
         if (sale == null)
             throw new KeyNotFoundException($"Sale with ID {command.Id} not found");
+        
+        if (sale.SaleStatus != SaleStatusEnum.Cancelled.ToString())
+        {
+            throw new ValidationException("Cannot delete a sale unless it has a canceled status");
+        }
 
         var success = await _saleRepository.DeleteAsync(command.Id, cancellationToken);
         if (!success)
             throw new KeyNotFoundException($"Error when trying to delete sale");
+
 
         return new DeleteSaleResult { Success = true };
     }

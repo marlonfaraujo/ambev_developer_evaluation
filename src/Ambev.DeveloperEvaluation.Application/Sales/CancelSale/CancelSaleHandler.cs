@@ -1,21 +1,24 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
 {
-    public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleResult>
+    public class CancelSaleHandler : IRequestApplicationHandler<CancelSaleCommand, CancelSaleResult>
     {
         private readonly ISaleRepository _saleRepository;
         private readonly IMapper _mapper;
+        private readonly IDomainNotificationAdapter _notification;
 
-        public CancelSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+        public CancelSaleHandler(ISaleRepository saleRepository, IMapper mapper, IDomainNotificationAdapter notification)
         {
             _saleRepository = saleRepository;
             _mapper = mapper;
+            _notification = notification;
         }
 
         public async Task<CancelSaleResult> Handle(CancelSaleCommand command, CancellationToken cancellationToken)
@@ -35,8 +38,15 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
 
             var sale = _mapper.Map<Sale>(existing);
 
-            sale.CancelSale();
+            var saleEvent = sale.CancelSale();
+            var saleItemsEvent = sale.CancelSaleItems();
             var result = await _saleRepository.UpdateAsync(sale, cancellationToken);
+
+            _notification.Publish(saleEvent, cancellationToken);
+            foreach (var item in saleItemsEvent)
+            {
+                _notification.Publish(item, cancellationToken);
+            }
 
             return _mapper.Map<CancelSaleResult>(result);
         }

@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Factories;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
@@ -44,9 +45,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             ProductItemQuantity = quantity;
         }
 
-        public void CancelItem()
+        public SaleItemCancelledEvent CancelItem()
         {
             SaleItemStatus = SaleItemStatusEnum.Cancelled.ToString();
+            return new SaleItemCancelledEvent(this);
         }
     }
 }

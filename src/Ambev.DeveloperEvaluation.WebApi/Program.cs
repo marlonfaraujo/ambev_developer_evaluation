@@ -1,9 +1,9 @@
 using Ambev.DeveloperEvaluation.Application;
-using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Adapters;
@@ -89,7 +89,9 @@ public class Program
             });
 
             builder.Services.AddTransient<IDomainNotificationAdapter, MediatRNotificationAdapter>();
-            builder.Services.AddTransient(typeof(IRequestApplicationHandler<,>), typeof(MediatRRequestHandlerAdapter<,>));
+
+            builder.Services.RegisterAllAdapterHandlers(typeof(ApplicationLayer).Assembly);
+            builder.Services.RegisterAllApplicationHandlers(typeof(ApplicationLayer).Assembly);
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 

@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using Moq;
@@ -17,6 +18,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Application
             var branchRepoMock = new Mock<IBranchRepository>();
             var mapperMock = new Mock<IMapper>();
             var command = new UpdateSaleCommand();
+            var adapter = new Mock<IDomainNotificationAdapter>();
             command.Id = Guid.NewGuid();
             command.BranchSaleId = Guid.NewGuid();
             command.SaleItems = new List<SaleItem>()
@@ -43,7 +45,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Application
             mapperMock.Setup(m => m.Map<Sale>(command)).Returns(sale);
             mapperMock.Setup(m => m.Map<UpdateSaleResult>(sale)).Returns(new UpdateSaleResult(sale.Id, sale.SaleNumber, sale.SaleDate, sale.UserId, sale.TotalSalePrice, sale.BranchSaleId, sale.SaleStatus, sale.SaleItems));
 
-            var handler = new UpdateSaleHandler(saleRepoMock.Object, productRepoMock.Object, branchRepoMock.Object, mapperMock.Object);
+            var handler = new UpdateSaleHandler(saleRepoMock.Object, productRepoMock.Object, branchRepoMock.Object, mapperMock.Object, adapter.Object);
 
             var result = await handler.Handle(command, CancellationToken.None);
 

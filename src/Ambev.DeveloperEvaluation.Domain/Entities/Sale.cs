@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
@@ -25,26 +26,38 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             SaleItems = saleItems;
         }
 
-        public void CancelSale()
+        public SaleCreatedEvent CreateSaleEvent()
         {
-            SaleStatus = SaleStatusEnum.Cancelled.ToString();
-            CancelSaleItems();
+            return new SaleCreatedEvent(this);
         }
 
-        private void CancelSaleItems()
+        public SaleCancelledEvent CancelSale()
         {
+            SaleStatus = SaleStatusEnum.Cancelled.ToString();
+            return new SaleCancelledEvent(this);
+        }
+
+        public IEnumerable<SaleItemCancelledEvent> CancelSaleItems()
+        {
+            var events = new List<SaleItemCancelledEvent>();
             if (SaleItems != null && SaleItems.Any())
             {
                 foreach (var item in SaleItems)
                 {
-                    item.CancelItem();
+                    if (item.SaleItemStatus != SaleItemStatusEnum.Cancelled.ToString())
+                    {
+                        events.Add(item.CancelItem());
+                    }
+                        
                 }
             }
+            return events;
         }
 
-        public void UpdateSale()
+        public SaleChangedEvent UpdateSale()
         {
             SaleStatus = SaleStatusEnum.Modified.ToString();
+            return new SaleChangedEvent(this);
         }
 
         public void SetSaleNumber(int saleNumber)
