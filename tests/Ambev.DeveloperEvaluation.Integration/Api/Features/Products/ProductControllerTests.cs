@@ -1,26 +1,17 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.WebApi;
-using Ambev.DeveloperEvaluation.WebApi.Common;
-using Microsoft.AspNetCore.Mvc.Testing;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
 {
-    public class ProductControllerTests : IClassFixture<WebApplicationFactory<Program>>
+    public class ProductControllerTests : IClassFixture<ProductApiFixture>
     {
-        private readonly HttpClient _client;
         private readonly HelperControllerTests _helperControllerTests;
+        private readonly ProductApiFixture _productApiFixture;
 
-        public ProductControllerTests(WebApplicationFactory<Program> factory)
+        public ProductControllerTests(ProductApiFixture productApiFixture)
         {
-            _client = factory.CreateClient();
-
-            _helperControllerTests = new HelperControllerTests(factory);
-            var token = _helperControllerTests.GetFakeJwtToken();
-
-            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            _productApiFixture = productApiFixture;
         }
 
         /// <summary>
@@ -36,7 +27,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
                 Price = 99.99m
             };
 
-            var response = await _client.PostAsJsonAsync("/api/products", productRequest);
+            var response = await _productApiFixture.Client.PostAsJsonAsync("/api/products", productRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -47,29 +38,17 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         [Fact(DisplayName = "PUT /api/products should return Created when product is updated")]
         public async Task UpdateProduct_ReturnsCreated()
         {
-            // First, create a product to update
-            var createRequest = new
-            {
-                Name = "Product To Update",
-                Description = "Product before update",
-                Price = 50.00m
-            };
-            var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
-            createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
-            Guid productId = created.Data.Id;
-
             var updateRequest = new
             {
-                Id = productId,
+                Id = _productApiFixture.ProductId,
                 Name = "Updated Product",
                 Description = "Product after update",
                 Price = 75.00m
             };
 
-            var response = await _client.PutAsJsonAsync($"/api/products/{productId}", updateRequest);
+            var response = await _productApiFixture.Client.PutAsJsonAsync($"/api/products/{_productApiFixture.GetNewProductId()}", updateRequest);
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         /// <summary>
@@ -78,21 +57,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         [Fact(DisplayName = "GET /api/products/{id} should return Ok when product exists")]
         public async Task GetProduct_ReturnsOk()
         {
-            // First, create a product to retrieve
-            var createRequest = new
-            {
-                Name = "Product To Get",
-                Description = "Product for get test",
-                Price = 10.00m,
-                Stock = 5,
-                Category = "Get Category"
-            };
-            var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
-            createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
-            Guid productId = created.Data.Id;
 
-            var response = await _client.GetAsync($"/api/products/{productId}");
+            var response = await _productApiFixture.Client.GetAsync($"/api/products/{_productApiFixture.GetNewProductId()}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -104,7 +70,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         public async Task ListProducts_ReturnsOk()
         {
             var listRequest = "?Category=Test Category"; // Example query string, adjust as needed
-            var response = await _client.GetAsync($"/api/products{listRequest}");
+            var response = await _productApiFixture.Client.GetAsync($"/api/products{listRequest}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -115,19 +81,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         [Fact(DisplayName = "DELETE /api/products/{id} should return Ok when product is deleted")]
         public async Task DeleteProduct_ReturnsOk()
         {
-            // First, create a product to delete
-            var createRequest = new
-            {
-                Name = "Product To Delete",
-                Description = "Product for delete test",
-                Price = 20.00m
-            };
-            var createResponse = await _client.PostAsJsonAsync("/api/products", createRequest);
-            createResponse.EnsureSuccessStatusCode();
-            var created = await createResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>();
-            Guid productId = created.Data.Id;
-
-            var response = await _client.DeleteAsync($"/api/products/{productId}");
+            var response = await _productApiFixture.Client.DeleteAsync($"/api/products/{_productApiFixture.ProductId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

@@ -2,7 +2,6 @@
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
 using Npgsql;
 using System.Text;
-using System.Xml.Linq;
 
 namespace Ambev.DeveloperEvaluation.ORM.Queries
 {
