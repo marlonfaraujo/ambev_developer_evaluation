@@ -3,173 +3,67 @@
 ### Products
 
 #### GET /products
-- Description: Retrieve a list of all products
-- Query Parameters:
-  - `_page` (optional): Page number for pagination (default: 1)
-  - `_size` (optional): Number of items per page (default: 10)
-  - `_order` (optional): Ordering of results (e.g., "price desc, title asc")
+```
+  bash
+curl -X 'GET' \
+  'https://localhost:8081/api/Products?Name=teste&PageNumber=1&PageSize=10' \
+  -H 'accept: text/plain' \
+  -H 'Authorization: Bearer e'
+```
 - Response: 
   ```json
   {
-    "data": [
-      {
-        "id": "integer",
-        "title": "string",
-        "price": "number",
-        "description": "string",
-        "category": "string",
-        "image": "string",
-        "rating": {
-          "rate": "number",
-          "count": "integer"
+    "data": {
+      "data": [
+        {
+          "id": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
+          "name": "teste",
+          "description": "teste",
+          "price": 10
         }
-      }
-    ],
-    "totalItems": "integer",
-    "currentPage": "integer",
-    "totalPages": "integer"
+      ],
+      "success": true,
+      "message": "Products retrieved successfully",
+      "errors": []
+    },
+    "success": true,
+    "message": "",
+    "errors": []
   }
   ```
 
 #### POST /products
 - Description: Add a new product
 - Request Body:
-  ```json
-  {
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
-    }
-  }
+  ```bash
+  curl -X 'POST' \
+  'https://localhost:8081/api/Products' \
+  -H 'accept: text/plain' \
+  -H 'Authorization: Bearer e' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "name": "teste",
+  "description": "teste",
+  "price": 10
+  }'
   ```
 - Response: 
   ```json
   {
-    "id": "integer",
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
-    }
-  }
-  ```
-
-#### GET /products/{id}
-- Description: Retrieve a specific product by ID
-- Path Parameters:
-  - `id`: Product ID
-- Response: 
-  ```json
-  {
-    "id": "integer",
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
-    }
-  }
-  ```
-
-#### PUT /products/{id}
-- Description: Update a specific product
-- Path Parameters:
-  - `id`: Product ID
-- Request Body:
-  ```json
-  {
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
-    }
-  }
-  ```
-- Response: 
-  ```json
-  {
-    "id": "integer",
-    "title": "string",
-    "price": "number",
-    "description": "string",
-    "category": "string",
-    "image": "string",
-    "rating": {
-      "rate": "number",
-      "count": "integer"
-    }
-  }
-  ```
-
-#### DELETE /products/{id}
-- Description: Delete a specific product
-- Path Parameters:
-  - `id`: Product ID
-- Response: 
-  ```json
-  {
-    "message": "string"
-  }
-  ```
-
-#### GET /products/categories
-- Description: Retrieve all product categories
-- Response: 
-  ```json
-  [
-    "string"
-  ]
-  ```
-
-#### GET /products/category/{category}
-- Description: Retrieve products in a specific category
-- Path Parameters:
-  - `category`: Category name
-- Query Parameters:
-  - `_page` (optional): Page number for pagination (default: 1)
-  - `_size` (optional): Number of items per page (default: 10)
-  - `_order` (optional): Ordering of results (e.g., "price desc, title asc")
-- Response: 
-  ```json
-  {
-    "data": [
-      {
-        "id": "integer",
-        "title": "string",
-        "price": "number",
-        "description": "string",
-        "category": "string",
-        "image": "string",
-        "rating": {
-          "rate": "number",
-          "count": "integer"
-        }
-      }
-    ],
-    "totalItems": "integer",
-    "currentPage": "integer",
-    "totalPages": "integer"
+    "data": {
+      "id": "f04ae628-2f31-463b-b517-1eeb548673a1",
+      "name": "teste",
+      "description": "teste",
+      "price": 10
+    },
+    "success": true,
+    "message": "Product created successfully",
+    "errors": []
   }
   ```
 
 <br>
 <div style="display: flex; justify-content: space-between;">
-  <a href="./general-api.md">Previous: General API</a>
+  <a href="./auth-api.md">Previous: Auth API</a>
   <a href="./carts-api.md">Next: Carts API</a>
 </div>
