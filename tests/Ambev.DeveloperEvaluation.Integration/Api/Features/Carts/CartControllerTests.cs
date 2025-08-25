@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.WebApi;
+﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.WebApi;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -19,7 +20,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             _client = factory.CreateClient();
 
             _helperControllerTests = new HelperControllerTests(factory);
-            var token = _helperControllerTests.GetJwtToken();
+            var token = _helperControllerTests.GetFakeJwtToken();
 
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
@@ -36,7 +37,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "POST /api/carts should return Created when cart is valid")]
         public async Task CreateCart_ReturnsCreated()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
+
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             var cartRequest = new
@@ -76,7 +78,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "PUT /api/carts should return Created when cart is updated")]
         public async Task UpdateCart_ReturnsCreated()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // First, create a cart
@@ -91,7 +93,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             var createResponse = await _client.PostAsJsonAsync("/api/carts", createRequest);
             createResponse.EnsureSuccessStatusCode();
 
-            var responseData2 = await _helperControllerTests.GetTestData();
+            var responseData2 = await _helperControllerTests.GetWithTestData();
 
             // Now, update the cart
             var updateRequest = new
@@ -114,7 +116,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "PUT /api/carts should return BadRequest when update is invalid")]
         public async Task UpdateCart_InvalidData_ReturnsBadRequest()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             var updateRequest = new
@@ -138,7 +140,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "GET /api/carts should return Ok when cart exists")]
         public async Task GetCart_ReturnsOk()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // Ensure a cart exists
@@ -164,7 +166,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "DELETE /api/carts should return Ok when cart is deleted")]
         public async Task DeleteCart_ReturnsOk()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // Ensure a cart exists
@@ -189,7 +191,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "POST /api/sales should return Created when checkout is successful")]
         public async Task CheckoutCart_ReturnsCreated()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // Ensure a cart exists

@@ -18,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
             _client = factory.CreateClient();
 
             _helperControllerTests = new HelperControllerTests(factory);
-            var token = _helperControllerTests.GetJwtToken();
+            var token = _helperControllerTests.GetFakeJwtToken();
 
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }

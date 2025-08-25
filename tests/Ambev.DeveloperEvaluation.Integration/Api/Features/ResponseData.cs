@@ -5,6 +5,14 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features
 {
     public class ResponseData
     {
+        public ResponseData()
+        {
+            User = new User();
+            Product = new Product();
+            Branch = new Branch();
+            AuthUser = new AuthenticateUserResponse();
+        }
+
         public User User { get; set; }
         public Product Product { get; set; }    
         public Branch Branch { get; set; }

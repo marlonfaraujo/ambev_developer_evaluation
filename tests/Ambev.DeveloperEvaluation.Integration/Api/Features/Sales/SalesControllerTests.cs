@@ -18,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             _client = factory.CreateClient();
 
             _helperControllerTests = new HelperControllerTests(factory);
-            var token = _helperControllerTests.GetJwtToken();
+            var token = _helperControllerTests.GetFakeJwtToken();
 
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
@@ -34,7 +34,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "POST /api/sales should return Created when sale is valid")]
         public async Task Post_Sale_ReturnsCreated()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // Arrange
@@ -67,7 +67,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "GET /api/sales/{id} should return Ok when sale exists")]
         public async Task Get_Sale_By_Id_ReturnsOk()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // Arrange
@@ -104,7 +104,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "PUT /api/sales/{id} should return NoContent when update is successful")]
         public async Task Put_Sale_ReturnsNoContent()
         {
-            var responseData = await _helperControllerTests.GetTestData();
+            var responseData = await _helperControllerTests.GetWithTestData();
             SetAuthorizationHeader(responseData.AuthUser.Token);
 
             // Arrange
