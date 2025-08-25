@@ -1,88 +1,171 @@
-[![.NET 8 Build and Test](https://github.com/marlonfaraujo/ambev_developerevaluation_backend/actions/workflows/main.yml/badge.svg)](https://github.com/marlonfaraujo/ambev_developerevaluation_backend/actions/workflows/main.yml)
+## Use case
 
-# Developer Evaluation Project
+See [Use Case](/.doc/use-case.md)
 
-`READ CAREFULLY`
+# Table of Contents
 
-## Instructions
-**The test below will have up to 7 calendar days to be delivered from the date of receipt of this manual.**
+- [Project description](#project-description)
+- [Process and Decisions](#process-and-decisions)
+- [Achievements](#achievements)
+- [What can be improved](#what-can-be-improved)
+- [Getting started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Running the project](#running-the-project)
+- [Technologies and Technical Features](#technologies-and-technical-features)
+  - [Technical Features](#technical-features)
+  - [Technologies Used - Overview](#technologies-used---overview)
+- [Documentation](#documentation)
+- [Project structure](#project-structure)
+- [Conclusion](#conclusion)
 
-- The code must be versioned in a public Github repository and a link must be sent for evaluation once completed
-- Upload this template to your repository and start working from it
-- Read the instructions carefully and make sure all requirements are being addressed
-- The repository must provide instructions on how to configure, execute and test the project
-- Documentation and overall organization will also be taken into consideration
+# Project description 
 
-## Use Case
-**You are a developer on the DeveloperStore team. Now we need to implement the API prototypes.**
+Backend API project for handling sales records, with the aim of calculating discounts according to the quantity of identical products. The API could function as part or microservice of a complete E-commerce system, which contains registration of sellers or branches, products, payment processing (gateways), etc.
 
-As we work with `DDD`, to reference entities from other domains, we use the `External Identities` pattern with denormalization of entity descriptions.
+# Process and decisions
 
-Therefore, you will write an API (complete CRUD) that handles sales records. The API needs to be able to inform:
+A sales context was created, and a product cart for simulating prices with the discount rules ([See:] (/.doc/use-case.md)). Therefore, it is not possible to make sales without a registered cart.
 
-* Sale number
-* Date when the sale was made
-* Customer
-* Total sale amount
-* Branch where the sale was made
-* Products
-* Quantities
-* Unit prices
-* Discounts
-* Total amount for each item
-* Cancelled/Not Cancelled
+The cart is just data saved in cache using the redis database in memory. The cart APIs only interact with the application and domain layer, for the purpose of using the domain service that simulates prices with discounts.
 
-It's not mandatory, but it would be a differential to build code for publishing events of:
-* SaleCreated
-* SaleModified
-* SaleCancelled
-* ItemCancelled
+# Achievements
 
-If you write the code, **it's not required** to actually publish to any Message Broker. You can log a message in the application log or however you find most convenient.
+I removed the dependency on the MediatR framework from the application layer. MediatR is used to implement the CQRS pattern, centralizing the sending of commands and queries, promoting decoupling between application layers and facilitating maintenance and testing.
 
-### Business Rules
+Additionally, when listing data from all APIs, I opted for paginated SQL queries to avoid retrieving all records through the repository layer and loading them entirely into memory.
 
-* Purchases above 4 identical items have a 10% discount
-* Purchases between 10 and 20 identical items have a 20% discount
-* It's not possible to sell above 20 identical items
-* Purchases below 4 items cannot have a discount
+# What can be improved
 
-These business rules define quantity-based discounting tiers and limitations:
+With more time, my goal for the project would be to remove the Fluent framework from the domain layer, so as not to run the risk of having to change it for another one in the future. The impact would be great on this important layer. I believe that with the inversion of dependencies and the use of adapter patterns, this case would be solved.
 
-1. Discount Tiers:
-   - 4+ items: 10% discount
-   - 10-20 items: 20% discount
+In addition, the next step would be to write consolidated and denormalized data to a NoSQL database (MongoDB), to facilitate queries and use by some other microservice.
 
-2. Restrictions:
-   - Maximum limit: 20 items per product
-   - No discounts allowed for quantities below 4 items
+# Getting started
 
-## Overview
-This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
+## Prerequisites
 
-See [Overview](/.doc/overview.md)
+Make sure you have docker installed.
+ 
+To run the project, you must have the following installed on your local environment:
 
-## Tech Stack
-This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
+* **Git** to clone repository ([link](https://git-scm.com/downloads))
+* **Docker** should be installed ([link](https://docs.docker.com/engine/install/))
+* **docker-compose** should be installed, if your docker installation does not install it automatically ([link](https://docs.docker.com/compose/install/))
+* **.NET-SDK-8** For running database migrations and local development ([link](https://dotnet.microsoft.com/en-us/download/dotnet/8.0))
 
-See [Tech Stack](/.doc/tech-stack.md)
+## Running the project
 
-## Frameworks
-This section outlines the frameworks and libraries that are leveraged in the project to enhance development productivity and maintainability. 
+In order to run the application you need to follow the steps below:
+* Run: 
+```bash
+ git clone https://github.com/marlonfaraujo/ambev_developerevaluation_backend.git
+```
+* Access the folder, example: 
+```bash
+cd ambev_developerevaluation_backend
+```
 
-See [Frameworks](/.doc/frameworks.md)
+* Run docker compose: 
 
-<!-- 
-## API Structure
-This section includes links to the detailed documentation for the different API resources:
-- [API General](./docs/general-api.md)
-- [Products API](/.doc/products-api.md)
-- [Carts API](/.doc/carts-api.md)
-- [Users API](/.doc/users-api.md)
-- [Auth API](/.doc/auth-api.md)
--->
+```bash
+docker-compose up -d
+``` 
 
-## Project Structure
-This section describes the overall structure and organization of the project files and directories. 
+* Run migrations: 
 
-See [Project Structure](/.doc/project-structure.md)
+```bash
+cd ambev_developerevaluation_backend
+
+``` 
+
+```bash
+dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM/Ambev.DeveloperEvaluation.ORM.csproj --startup-project src/Ambev.DeveloperEvaluation.WebApi/Ambev.DeveloperEvaluation.WebApi.csproj --context Ambev.DeveloperEvaluation.ORM.DefaultContext
+``` 
+
+# Technologies and Technical Features 
+
+
+## Technical Features 
+
+* **Clean Code**
+* **DDD**
+* **SOLID**
+* **DRY**
+* **Clean Code**
+* **CQRS**
+* **JWT**
+* **Unit and integration tests**
+* **Github Copilot**
+
+## Technologies Used - Overview
+Here are listed some of the specific technologies used for the implementation of the project:
+* **Authentication**: [JSON Web Tokens - JWT](https://jwt.io/)
+* **Databases - Persistence**: [Redis](https://redis.io/), [PostgeSQL](https://www.postgresql.org/), [EntityFrameworkCore] (https://learn.microsoft.com/en-us/ef/core/)
+* **Testing**: [XUnit](https://xunit.net/), [Bogus](https://github.com/bchavez/Bogus), [Moq](https://github.com/devlooped/moq)
+* **External Communication Protocols**: [REST](https://en.wikipedia.org/wiki/Representational_state_transfer)
+* **Frameworks**: [AutoMapper](https://automapper.org/), [FluentValidation](https://docs.fluentvalidation.net/en/latest/), [MediatR](https://www.nuget.org/packages/mediatr/), [Newtonsoft.Json](https://www.newtonsoft.com/json)
+* **Container Technology**: [Docker](https://www.docker.com/)
+
+
+# Documentation
+Access the documentation and make requests to the API at https://localhost:8081/swagger/index.html
+
+
+# Project structure
+```
+  $ tree
+  .
+  ├── docker-compose.yml
+  ├── Dockerfile
+  ├── launchSettings.json
+  ├── README.md
+  └──tests
+  │  ├── Functional
+  │  ├── Integration
+  │  └── Unit
+  │  
+  └── src
+       ├── Application
+       │     ├── Auth
+       │     ├── Branchs
+       │     ├── Exceptions
+       │     ├── Products
+       │     ├── Requests
+       │     ├── Sales
+       │     └── Users  
+       ├── Common
+       ├── Domain
+       │     ├── Common
+       │     ├── Entities
+       │     ├── Enums
+       │     ├── Events
+       │     ├── Exceptions
+       │     ├── Factories
+       │     ├── Repositories
+       │     ├── Services
+       │     ├── Specifications
+       │     ├── Validation
+       │     └── ValueObjects  
+       ├── IoC
+       ├── ORM
+       │     ├── Common
+       │     ├── Dtos
+       │     ├── Mapping
+       │     ├── Migrations
+       │     ├── Queries
+       │     ├── Repositories
+       │     └── Services  
+       └── WebApi
+             ├── Adapters
+             ├── Common
+             ├── Features
+             ├── Mappings
+             ├── Middleware
+             └── Notifications  
+      
+
+```
+
+# Conclusion
+
+My goal was to generate value and pay special attention to avoiding layer corruption in the project. In addition to complying with the business rules of the use case, I value clean, testable and reusable code.
