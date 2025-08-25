@@ -40,6 +40,8 @@ With more time, my goal for the project would be to remove the Fluent framework 
 
 In addition, the next step would be to write consolidated and denormalized data to a NoSQL database (MongoDB), to facilitate queries and use by some other microservice.
 
+See more pending issues in [Link](https://github.com/marlonfaraujo/ambev_developerevaluation_backend/issues).
+
 # Getting started
 
 ## Environment Setup Instructions - Prerequisites
@@ -52,7 +54,7 @@ To run the project, you must have the following installed on your local environm
 * **Docker** should be installed ([link](https://docs.docker.com/engine/install/))
 * **docker-compose** should be installed, if your docker installation does not install it automatically ([link](https://docs.docker.com/compose/install/))
 * **.NET-SDK-8** For running database migrations and local development ([link](https://dotnet.microsoft.com/en-us/download/dotnet/8.0))
-* **PostgreSQL** (local ou via Docker)]([link](https://www.postgresql.org/))
+* **PostgreSQL** (local or via Docker)([link](https://www.postgresql.org/))
 * Recommended IDE: Visual Studio 2022 for local development
 
 ## Installation and Execution
@@ -116,7 +118,7 @@ This project consists of a REST API built in .NET 8 with a focus on clarity, sca
 ## Technologies Used - Overview
 Here are listed some of the specific technologies used for the implementation of the project:
 * **Authentication**: [JSON Web Tokens - JWT](https://jwt.io/)
-* **Databases - Persistence**: [Redis](https://redis.io/), [PostgeSQL](https://www.postgresql.org/), [EntityFrameworkCore](https://learn.microsoft.com/en-us/ef/core/) (ORM for database access with support for migrations with entity framework, PostgreSQL was used for relational database, and Redis is a fast and versatile in-memory database ideal for caching )
+* **Databases - Persistence**: [Redis](https://redis.io/), [PostgreSQL](https://www.postgresql.org/), [EntityFrameworkCore](https://learn.microsoft.com/en-us/ef/core/) (ORM for database access with support for migrations with entity framework, PostgreSQL was used for relational database, and Redis is a fast and versatile in-memory database ideal for caching )
 * **Testing**: [XUnit](https://xunit.net/), [Bogus](https://github.com/bchavez/Bogus), [Moq](https://github.com/devlooped/moq) (Unit tests to ensure code stability)
 * **External Communication Protocols**: [REST](https://en.wikipedia.org/wiki/Representational_state_transfer)
 * **Frameworks**: [AutoMapper](https://automapper.org/), [FluentValidation](https://docs.fluentvalidation.net/en/latest/), [MediatR](https://www.nuget.org/packages/mediatr/) (AutoMapper is a convention-based object-to-object mapping library designed to simplify and automate data transformation between objects with similar structures. Fluent for data validation, and MediatR helps reduce complex dependencies between objects by encapsulating their interactions, promoting loose coupling and easier maintainability.)
