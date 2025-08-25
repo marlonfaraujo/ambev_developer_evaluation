@@ -20,17 +20,17 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore template/backend/Ambev.DeveloperEvaluation.sln
+        run: dotnet restore Ambev.DeveloperEvaluation.sln
 
       - name: Build project
-        run: dotnet build template/backend/Ambev.DeveloperEvaluation.sln --no-restore --configuration Release
+        run: dotnet build Ambev.DeveloperEvaluation.sln --no-restore --configuration Release
 
       - name: Run unit tests
-        run: dotnet test template/backend/Ambev.DeveloperEvaluation.sln --no-restore --configuration Release --collect:"XPlat Code Coverage"
+        run: dotnet test Ambev.DeveloperEvaluation.sln --no-restore --configuration Release --collect:"XPlat Code Coverage"
 
       - name: Publish test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: 'template/backend/tests/TestResults/*.trx'
+          path: 'tests/TestResults/*.trx'
