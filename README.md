@@ -24,13 +24,13 @@ Backend API project developed to manage sales records and calculate discounts ba
 
 # Process and decisions
 
-A sales context was created, and a product cart for simulating prices with the discount rules [(See discount rule)](/.doc/use-case.md). Therefore, it is not possible to make sales without a registered cart.
+A sales context and a product cart context have been created to simulate prices with discount rules [(See discount rule)](/.doc/use-case.md). Therefore, it is not possible to make sales without a registered cart.
 
-The cart is just data saved in cache using the redis database in memory. The cart APIs only interact with the application and domain layer, for the purpose of using the domain service that simulates prices with discounts.
+The cart consists only of data cached using the in-memory Redis database. The cart APIs, when interacting with the application and domain layer, have the sole purpose of using the domain service that simulates prices with discounts. For data persistence it does not use repositories.
 
 # Achievements
 
-I removed the dependency on the MediatR framework from the application layer. MediatR is used to implement the CQRS pattern, centralizing the sending of commands and queries, promoting decoupling between application layers and facilitating maintenance and testing.
+I removed the dependency on the MediatR framework from the application layer. This brought benefits to the project, such as ease of changing the framework without compromising business rules, ease of testing, etc. MediatR is used in the project to implement the CQRS pattern, centralizing the sending of commands and queries, promoting decoupling between the application layers and facilitating maintenance and testing.
 
 Additionally, when listing data from all APIs, I opted for paginated SQL queries to avoid retrieving all records through the repository layer and loading them entirely into memory.
 
@@ -56,11 +56,11 @@ To run the project, you must have the following installed on your local environm
 ## Running the project
 
 In order to run the application you need to follow the steps below:
-* Run: 
+* Run in terminal: 
 ```bash
  git clone https://github.com/marlonfaraujo/ambev_developerevaluation_backend.git
 ```
-* Access the folder, example: 
+* Access the folder in terminal, example: 
 ```bash
 cd ambev_developerevaluation_backend
 ```
