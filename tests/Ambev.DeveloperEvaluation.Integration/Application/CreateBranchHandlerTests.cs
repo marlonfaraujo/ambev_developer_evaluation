@@ -1,33 +1,39 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Branchs.CreateBranch;
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Integration.Data;
+using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.ORM.Repositories;
 using AutoMapper;
 using Moq;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application
+namespace Ambev.DeveloperEvaluation.Integration.Application
 {
     public class CreateBranchHandlerTests
     {
+        private readonly DefaultContext _context;
+
+        public CreateBranchHandlerTests()
+        {
+            _context = new DatabaseInMemory().Context;
+        }
 
         [Fact]
         public async Task Handle_ValidCommand_CreatesBranch()
         {
-            var repoMock = new Mock<IBranchRepository>();
+            var repoMock = new BranchRepository(_context);
             var mapperMock = new Mock<IMapper>();
             var command = new CreateBranchCommand("FakeName", "FakeDesc");
             var branch = new Branch(Guid.NewGuid(), command.Name, command.Description);
 
-            repoMock.Setup(r => r.CreateAsync(It.IsAny<Branch>(), It.IsAny<CancellationToken>())).ReturnsAsync(branch);
             mapperMock.Setup(m => m.Map<Branch>(command)).Returns(branch);
             mapperMock.Setup(m => m.Map<CreateBranchResult>(branch)).Returns(new CreateBranchResult(branch.Id, branch.Name, branch.Description));
 
-            var handler = new CreateBranchHandler(repoMock.Object, mapperMock.Object);
+            var handler = new CreateBranchHandler(repoMock, mapperMock.Object);
 
             var result = await handler.Handle(command, CancellationToken.None);
 
             Assert.NotNull(result);
-            repoMock.Verify(r => r.CreateAsync(It.IsAny<Branch>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

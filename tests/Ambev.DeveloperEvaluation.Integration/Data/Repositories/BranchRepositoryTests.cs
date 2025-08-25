@@ -1,25 +1,15 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
 {
     public class BranchRepositoryTests
     {
-        private DefaultContext CreateContext()
-        {
-            var options = new DbContextOptionsBuilder<DefaultContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            return new DefaultContext(options);
-        }
-
         [Fact(DisplayName = "Should create a branch successfully")]
         public async Task CreateAsync_ShouldAddBranch()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var repository = new BranchRepository(context);
             var branch = new Branch(Guid.NewGuid(), "Branch 1", "Description 1");
 
@@ -32,7 +22,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return branch by id when it exists")]
         public async Task GetByIdAsync_ShouldReturnBranch_WhenExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var branch = new Branch(Guid.NewGuid(), "Branch 2", "Description 2");
             context.Branchs.Add(branch);
             context.SaveChanges();
@@ -47,7 +37,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return null when branch does not exist")]
         public async Task GetByIdAsync_ShouldReturnNull_WhenNotExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var repository = new BranchRepository(context);
 
             var result = await repository.GetByIdAsync(Guid.NewGuid());
@@ -58,7 +48,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should delete branch when it exists")]
         public async Task DeleteAsync_ShouldRemoveBranch_WhenExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var branch = new Branch(Guid.NewGuid(), "Branch 3", "Description 3");
             context.Branchs.Add(branch);
             context.SaveChanges();
@@ -73,7 +63,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return false when deleting non-existent branch")]
         public async Task DeleteAsync_ShouldReturnFalse_WhenNotExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var repository = new BranchRepository(context);
 
             var deleted = await repository.DeleteAsync(Guid.NewGuid());
@@ -81,14 +71,20 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
             Assert.False(deleted);
         }
 
-        [Fact(DisplayName = "Should throw NotImplementedException on update")]
-        public async Task UpdateAsync_ShouldThrowNotImplementedException()
+        [Fact(DisplayName = "Should return equal when updating branch name")]
+        public async Task UpdateAsync_ShouldReturnEqual_WhenBranchName()
         {
-            using var context = CreateContext();
-            var repository = new BranchRepository(context);
+            using var context = new DatabaseInMemory().Context;
             var branch = new Branch(Guid.NewGuid(), "Branch 4", "Description 4");
+            context.Branchs.Add(branch);
+            context.SaveChanges();
 
-            await Assert.ThrowsAsync<NotImplementedException>(() => repository.UpdateAsync(branch));
+            branch.Name = "Branch 4 Edited";
+            var repository = new BranchRepository(context);
+            var updated = await repository.UpdateAsync(branch);
+
+            var current = await repository.GetByIdAsync(branch.Id);
+            Assert.Equal(current.Name, updated.Name);
         }
     }
 }

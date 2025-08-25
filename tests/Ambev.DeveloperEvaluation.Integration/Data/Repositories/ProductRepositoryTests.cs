@@ -1,25 +1,16 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
 {
     public class ProductRepositoryTests
     {
-        private DefaultContext CreateContext()
-        {
-            var options = new DbContextOptionsBuilder<DefaultContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .Options;
-            return new DefaultContext(options);
-        }
 
         [Fact(DisplayName = "Should create a product successfully")]
         public async Task CreateAsync_ShouldAddProduct()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var repository = new ProductRepository(context);
             var product = new Product(Guid.NewGuid(), "Product 1", "Description 1", 10.5m);
 
@@ -32,7 +23,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return product by id when it exists")]
         public async Task GetByIdAsync_ShouldReturnProduct_WhenExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var product = new Product(Guid.NewGuid(), "Product 2", "Description 2", 20.0m);
             context.Products.Add(product);
             context.SaveChanges();
@@ -47,7 +38,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return null when product does not exist")]
         public async Task GetByIdAsync_ShouldReturnNull_WhenNotExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var repository = new ProductRepository(context);
 
             var result = await repository.GetByIdAsync(Guid.NewGuid());
@@ -58,7 +49,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should delete product when it exists")]
         public async Task DeleteAsync_ShouldRemoveProduct_WhenExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var product = new Product(Guid.NewGuid(), "Product 3", "Description 3", 30.0m);
             context.Products.Add(product);
             context.SaveChanges();
@@ -73,7 +64,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return false when deleting non-existent product")]
         public async Task DeleteAsync_ShouldReturnFalse_WhenNotExists()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var repository = new ProductRepository(context);
 
             var deleted = await repository.DeleteAsync(Guid.NewGuid());
@@ -84,7 +75,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return products by ids")]
         public async Task ListByIdsAsync_ShouldReturnProducts_WhenIdsExist()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var product1 = new Product(Guid.NewGuid(), "Product 4", "Description 4", 40.0m);
             var product2 = new Product(Guid.NewGuid(), "Product 5", "Description 5", 50.0m);
             context.Products.AddRange(product1, product2);
@@ -103,7 +94,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
         [Fact(DisplayName = "Should return empty list when no ids match")]
         public async Task ListByIdsAsync_ShouldReturnEmpty_WhenNoIdsMatch()
         {
-            using var context = CreateContext();
+            using var context = new DatabaseInMemory().Context;
             var repository = new ProductRepository(context);
 
             var result = await repository.ListByIdsAsync(new[] { Guid.NewGuid(), Guid.NewGuid() });
@@ -112,14 +103,20 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
             Assert.Empty(result);
         }
 
-        [Fact(DisplayName = "Should throw NotImplementedException on update")]
-        public async Task UpdateAsync_ShouldThrowNotImplementedException()
+        [Fact(DisplayName = "Should return equal when updating product name")]
+        public async Task UpdateAsync_ShouldReturnEqual_WhenProductName()
         {
-            using var context = CreateContext();
-            var repository = new ProductRepository(context);
+            using var context = new DatabaseInMemory().Context;
             var product = new Product(Guid.NewGuid(), "Product 6", "Description 6", 60.0m);
+            context.Products.Add(product);
+            context.SaveChanges();
 
-            await Assert.ThrowsAsync<NotImplementedException>(() => repository.UpdateAsync(product));
+            var repository = new ProductRepository(context);
+            product.Price = 100.0m;
+            var updated = await repository.UpdateAsync(product);
+            
+            var current = await repository.GetByIdAsync(product.Id);
+            Assert.Equal(current.Price, updated.Price);
         }
     }
 }
