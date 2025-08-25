@@ -40,7 +40,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.DeleteProduct
             }
             async Task hasProductInSaleItems()
             {
-                var hasProductInItems = await _queryDbService.ProductsInSaleItems(command.Id);
+                var hasProductInItems = await _queryDbService.ProductInSaleItems(command.Id);
                 if (hasProductInItems)
                     throw new InvalidOperationException($"Product with ID {command.Id} cannot be deleted because it is referenced in sales items.");
             }

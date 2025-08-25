@@ -39,10 +39,9 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.DeleteBranch
                 if (existing == null)
                     throw new KeyNotFoundException($"Branch with ID {command.Id} not found");
             }
-
             async Task hasBranchIdInSale()
             {
-                var hasBranchIdInSale = await _queryDbService.BranchsInSale(command.Id);
+                var hasBranchIdInSale = await _queryDbService.BranchInSales(command.Id);
                 if (hasBranchIdInSale)
                     throw new InvalidOperationException($"Branch with ID {command.Id} cannot be deleted because it is referenced in sales");
             }

@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
+using Ambev.DeveloperEvaluation.ORM.Dtos.User;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Reflection;
@@ -18,12 +19,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             _context = context;
         }
 
-        public async Task<bool> BranchsInSale(Guid branchId)
+        public async Task<bool> BranchInSales(Guid branchId)
         {
             var query = new StringBuilder();
             query.Append(@"
                 SELECT
-                    s.*
+                    b.*
                 FROM public.""Sales"" s
                     INNER JOIN public.""Branchs"" b ON s.""BranchSaleId"" = b.""Id""
                 WHERE s.""BranchSaleId"" = b.""Id""    
@@ -42,12 +43,36 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             return result;
         }
 
-        public async Task<bool> ProductsInSaleItems(Guid productId)
+        public async Task<bool> UserInSales(Guid userId)
         {
             var query = new StringBuilder();
             query.Append(@"
                 SELECT
-                    si.*
+                    s.*
+                FROM public.""Sales"" s
+                    INNER JOIN public.""Users"" u ON s.""UserId"" = u.""Id""
+                WHERE s.""UserId"" = u.""Id""    
+            ");
+
+            var sqlParameters = new List<NpgsqlParameter>();
+
+            if (Guid.Empty != userId)
+            {
+                query.AppendLine(@"AND s.""UserId"" = @userId");
+                sqlParameters.Add(new NpgsqlParameter("userId", userId));
+            }
+
+            var result = await _context.Database.SqlQueryRaw<ListUserQueryResult>(query.ToString(), sqlParameters.ToArray()).AnyAsync();
+
+            return result;
+        }
+
+        public async Task<bool> ProductInSaleItems(Guid productId)
+        {
+            var query = new StringBuilder();
+            query.Append(@"
+                SELECT
+                    p.*
                 FROM public.""SaleItems"" si
                     INNER JOIN public.""Products"" p ON si.""ProductId"" = p.""Id""
                 WHERE si.""ProductId"" = p.""Id""  

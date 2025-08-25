@@ -3,8 +3,9 @@
     public interface IQueryDatabaseService
     {
         Task<IEnumerable<TEntity>> Select<TEntity>(string query, params object[] parameters) where TEntity : class;
-        Task<bool> ProductsInSaleItems(Guid productId);
-        Task<bool> BranchsInSale(Guid branchId);
+        Task<bool> ProductInSaleItems(Guid productId);
+        Task<bool> BranchInSales(Guid branchId);
         object[] GetSqlParameters<T>(T parameters);
+        Task<bool> UserInSales(Guid userId);
     }
 }
