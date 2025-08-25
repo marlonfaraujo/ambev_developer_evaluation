@@ -101,6 +101,6 @@ curl -X 'GET' \
 
 <br>
 <div style="display: flex; justify-content: space-between;">
-  <a href="./cart-api.md">Previous: Cart API</a>
-  <a href="./auth-api.md">Next: Auth API</a>
+  <a href="./carts-api.md">Previous: Cart API</a>
+  <a href="./branch-api.md">Next: Branch API</a>
 </div>
