@@ -46,8 +46,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             UserId = (Guid)(user.Data?.Id);
 
             var authResponse = Client.PostAsJsonAsync("/api/auth", new { Email = userRequest.Email, Password = userRequest.Password }).Result;
-            var auth = authResponse.Content.ReadFromJsonAsync<ApiResponseWithData<ApiResponseWithData<AuthenticateUserResponse>>>().Result;
-            JwtToken = auth.Data.Data.Token;
+            var auth = authResponse.Content.ReadFromJsonAsync<ApiResponseWithData<AuthenticateUserResponse>>().Result;
+            JwtToken = auth.Data?.Token;
             Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", JwtToken);
 
             var branchResponse = Client.PostAsJsonAsync("/api/branchs", new Branch { Name = "Initial", Description = "Initial" }).Result;

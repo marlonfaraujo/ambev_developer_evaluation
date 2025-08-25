@@ -48,7 +48,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             var query = new StringBuilder();
             query.Append(@"
                 SELECT
-                    s.*
+                    u.*
                 FROM public.""Sales"" s
                     INNER JOIN public.""Users"" u ON s.""UserId"" = u.""Id""
                 WHERE s.""UserId"" = u.""Id""    

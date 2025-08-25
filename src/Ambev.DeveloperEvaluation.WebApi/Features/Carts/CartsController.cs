@@ -67,16 +67,21 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         {
             var validator = new UpdateCartRequestValidator();
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
-            var result = await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
-
+            var existingCart = await _redisService.GetAsync<CreateCartResponse>(GetCurrentUserGuid().ToString());
+            if (existingCart == null)
+            {
+                return Ok(new ApiResponse
+                {
+                    Success = false,
+                    Message = "cart not found"
+                });
+            }
             var query = _mapper.Map<SimulateSaleQuery>(request);
             var response = await _mediator.Send(new MediatRRequestAdapter<SimulateSaleQuery, SimulateSaleResult>(query), cancellationToken);
             response.UserId = GetCurrentUserGuid();
-
             var redisResult = await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<UpdateCartResponse>(response), TimeSpan.FromHours(1));
             if (redisResult == null || !redisResult)
             {
@@ -86,7 +91,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
                     Message = "cart not found"
                 });
             }
-
             return Ok(new ApiResponseWithData<UpdateCartResponse>
             {
                 Success = true,
@@ -107,7 +111,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             {
                 return Ok(new ApiResponse
                 {
-                    Success = true,
+                    Success = false,
                     Message = "cart not found"
                 });
             }

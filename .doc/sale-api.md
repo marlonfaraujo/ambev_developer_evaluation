@@ -13,7 +13,6 @@ curl -X 'GET' \
 - Response: 
   ```json
   {
-  "data": {
     "data": [
       {
         "saleId": "f5ba2389-a493-4f1b-8398-3856e49f2b07",
@@ -54,10 +53,6 @@ curl -X 'GET' \
     "success": true,
     "message": "sale retrieved successfully",
     "errors": []
-  },
-  "success": true,
-  "message": "",
-  "errors": []
   }
   ```
 
@@ -75,27 +70,27 @@ curl -X 'GET' \
 - Response: 
   ```json
   {
-  "data": {
-    "id": "f5ba2389-a493-4f1b-8398-3856e49f2b07",
-    "saleNumber": 1,
-    "totalSalePrice": 96,
-    "saleStatus": "Created",
-    "saleItems": [
-      {
-        "productId": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
-        "productItemQuantity": 12,
-        "unitProductItemPrice": 10,
-        "discountAmount": 24,
-        "totalSaleItemPrice": 96,
-        "totalWithoutDiscount": 120,
-        "saleItemStatus": "Created",
-        "id": "a7b5733b-ec5c-4c41-828a-a8859958ee0c"
-      }
-    ]
-  },
-  "success": true,
-  "message": "Sale created successfully",
-  "errors": []
+    "data": {
+      "id": "f5ba2389-a493-4f1b-8398-3856e49f2b07",
+      "saleNumber": 1,
+      "totalSalePrice": 96,
+      "saleStatus": "Created",
+      "saleItems": [
+        {
+          "productId": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
+          "productItemQuantity": 12,
+          "unitProductItemPrice": 10,
+          "discountAmount": 24,
+          "totalSaleItemPrice": 96,
+          "totalWithoutDiscount": 120,
+          "saleItemStatus": "Created",
+          "id": "a7b5733b-ec5c-4c41-828a-a8859958ee0c"
+        }
+      ]
+    },
+    "success": true,
+    "message": "Sale created successfully",
+    "errors": []
   }
   ```
 
