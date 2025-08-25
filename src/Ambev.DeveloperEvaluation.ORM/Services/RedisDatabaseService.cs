@@ -12,10 +12,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             _database = redis.GetDatabase();
         }
 
-        public async Task SetAsync<T>(string key, T value, TimeSpan? expiry = null)
+        public async Task<bool> SetAsync<T>(string key, T value, TimeSpan? expiry = null)
         {
             var json = JsonSerializer.Serialize(value);
-            await _database.StringSetAsync(key, json, expiry);
+            return await _database.StringSetAsync(key, json, expiry);
         }
 
         public async Task<T?> GetAsync<T>(string key)

@@ -1,32 +1,43 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Integration.Application.TestData;
+using Ambev.DeveloperEvaluation.Integration.Data;
+using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.ORM.Repositories;
 using AutoMapper;
 using Moq;
 using Xunit;
 
-namespace Ambev.DeveloperEvaluation.Unit.Application
+namespace Ambev.DeveloperEvaluation.Integration.Application
 {
     public class UpdateProductHandlerTests
     {
+
+        private readonly DefaultContext _context;
+
+        public UpdateProductHandlerTests()
+        {
+            _context = new DatabaseInMemory().Context;
+        }
+
         [Fact]
         public async Task Handle_ValidCommand_UpdatesProduct()
         {
-            var repoMock = new Mock<IProductRepository>();
+            var repoMock = new ProductRepository(_context);
             var mapperMock = new Mock<IMapper>();
-            var command = new UpdateProductCommand(Guid.NewGuid(), "FakeProduct", "FakeProductDescription", 10.0m);
+            var productExisting = ProductHandlerTestData.GetProduct();
+            var command = new UpdateProductCommand(productExisting.Id, "FakeProduct Updated", "FakeProductDescription Updated", 10.0m);
             var product = new Product(command.Id, command.Name, command.Description, command.Price);
 
-            repoMock.Setup(r => r.GetByIdAsync(command.Id, It.IsAny<CancellationToken>())).ReturnsAsync(product);
-            repoMock.Setup(r => r.UpdateAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>())).ReturnsAsync(product);
             mapperMock.Setup(m => m.Map<Product>(command)).Returns(product);
             mapperMock.Setup(m => m.Map<UpdateProductResult>(product)).Returns(new UpdateProductResult(command.Id,command.Name,command.Description,command.Price));
 
-            var handler = new UpdateProductHandler(repoMock.Object, mapperMock.Object);
+            var handler = new UpdateProductHandler(repoMock, mapperMock.Object);
 
             var result = await handler.Handle(command, CancellationToken.None);
 
             Assert.NotNull(result);
         }
+
     }
 }

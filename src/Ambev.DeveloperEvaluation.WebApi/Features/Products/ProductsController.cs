@@ -74,7 +74,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
             var command = _mapper.Map<UpdateProductCommand>(request);
             var response = await _mediator.Send(new MediatRRequestAdapter<UpdateProductCommand, UpdateProductResult>(command), cancellationToken);
 
-            return Created(string.Empty, new ApiResponseWithData<UpdateProductResponse>
+            return Ok(new ApiResponseWithData<UpdateProductResponse>
             {
                 Success = true,
                 Message = "Product updated successfully",

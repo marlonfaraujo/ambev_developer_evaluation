@@ -72,7 +72,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
             var command = _mapper.Map<UpdateBranchCommand>(request);
             var response = await _mediator.Send(new MediatRRequestAdapter<UpdateBranchCommand, UpdateBranchResult>(command), cancellationToken);
 
-            return Created(string.Empty, new ApiResponseWithData<UpdateBranchResponse>
+            return Ok(new ApiResponseWithData<UpdateBranchResponse>
             {
                 Success = true,
                 Message = "Branch updated successfully",
