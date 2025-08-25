@@ -24,7 +24,7 @@ Backend API project developed to manage sales records and calculate discounts ba
 
 # Process and decisions
 
-A sales context was created, and a product cart for simulating prices with the discount rules [See:](/.doc/use-case.md). Therefore, it is not possible to make sales without a registered cart.
+A sales context was created, and a product cart for simulating prices with the discount rules [(See discount rule)](/.doc/use-case.md). Therefore, it is not possible to make sales without a registered cart.
 
 The cart is just data saved in cache using the redis database in memory. The cart APIs only interact with the application and domain layer, for the purpose of using the domain service that simulates prices with discounts.
 
