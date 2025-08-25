@@ -1,9 +1,9 @@
+using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.GetSale;
 
-public record GetSaleQuery : IRequest<GetSaleResult>
+public record GetSaleQuery : IRequestApplication<GetSaleResult>
 {
     public Guid Id { get; }
 

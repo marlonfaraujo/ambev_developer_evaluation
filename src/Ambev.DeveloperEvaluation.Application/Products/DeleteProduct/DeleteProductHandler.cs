@@ -1,12 +1,12 @@
-﻿using Ambev.DeveloperEvaluation.Application.Services;
-using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
 using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.DeleteProduct
 {
-    public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, DeleteProductResult>
+    public class DeleteProductHandler : IRequestApplicationHandler<DeleteProductCommand, DeleteProductResult>
     {
         private readonly IProductRepository _productRepository;
         private readonly IQueryDatabaseService _queryDbService;

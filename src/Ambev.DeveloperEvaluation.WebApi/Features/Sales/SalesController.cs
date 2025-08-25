@@ -8,6 +8,7 @@ using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
 using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale;
@@ -17,7 +18,6 @@ using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.UpdateSale;
 using AutoMapper;
-using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +63,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 return BadRequest(validationResult.Errors);
             
             var command = _mapper.Map<CreateSaleCommand>(cartCache);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<CreateSaleCommand, CreateSaleResult>(command), cancellationToken);
 
             await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
 
@@ -87,7 +87,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 return BadRequest(validationResult.Errors);
             
             var command = _mapper.Map<UpdateSaleCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<UpdateSaleCommand, UpdateSaleResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<UpdateSaleResponse>
             {
@@ -109,7 +109,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<CancelSaleCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<CancelSaleCommand, CancelSaleResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<CancelSaleResponse>
             {
@@ -133,7 +133,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 return BadRequest(validationResult.Errors);
             
             var query = _mapper.Map<GetSaleQuery>(request.Id);
-            var response = await _mediator.Send(query, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<GetSaleQuery, GetSaleResult>(query), cancellationToken);
 
             return Ok(new ApiResponseWithData<GetSaleResponse>
             {
@@ -226,7 +226,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales
                 return BadRequest(validationResult.Errors);
             
             var command = _mapper.Map<DeleteSaleCommand>(request.Id);
-            await _mediator.Send(command, cancellationToken);
+            await _mediator.Send(new MediatRRequestAdapter<DeleteSaleCommand, DeleteSaleResult>(command), cancellationToken);
 
             return Ok(new ApiResponse
             {

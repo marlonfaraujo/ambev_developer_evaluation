@@ -1,10 +1,10 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
-public class CreateSaleCommand : IRequest<CreateSaleResult>
+public class CreateSaleCommand : IRequestApplication<CreateSaleResult>
 {
     public Guid UserId { get; set; }
     public Guid BranchSaleId { get; set; }

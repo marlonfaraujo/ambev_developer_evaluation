@@ -1,10 +1,10 @@
-using MediatR;
-using FluentValidation;
+using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using FluentValidation;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.DeleteSale;
 
-public class DeleteSaleHandler : IRequestHandler<DeleteSaleCommand, DeleteSaleResult>
+public class DeleteSaleHandler : IRequestApplicationHandler<DeleteSaleCommand, DeleteSaleResult>
 {
     private readonly ISaleRepository _saleRepository;
 

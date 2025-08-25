@@ -1,10 +1,12 @@
 using Ambev.DeveloperEvaluation.Application;
+using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
@@ -85,6 +87,9 @@ public class Program
                     typeof(Program).Assembly
                 );
             });
+
+            builder.Services.AddTransient<IDomainNotificationAdapter, MediatRNotificationAdapter>();
+            builder.Services.AddTransient(typeof(IRequestApplicationHandler<,>), typeof(MediatRRequestHandlerAdapter<,>));
 
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 

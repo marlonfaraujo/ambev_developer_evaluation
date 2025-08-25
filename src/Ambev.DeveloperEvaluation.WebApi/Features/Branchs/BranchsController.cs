@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch;
 using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Ambev.DeveloperEvaluation.ORM.Queries;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.CreateBranch;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.DeleteBranch;
@@ -46,7 +47,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<CreateBranchCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<CreateBranchCommand, CreateBranchResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<CreateBranchResponse>
             {
@@ -69,7 +70,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<UpdateBranchCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<UpdateBranchCommand, UpdateBranchResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<UpdateBranchResponse>
             {
@@ -93,7 +94,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var query = _mapper.Map<GetBranchQuery>(request.Id);
-            var response = await _mediator.Send(query, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<GetBranchQuery, GetBranchResult>(query), cancellationToken);
 
             return Ok(new ApiResponseWithData<GetBranchResponse>
             {
@@ -154,7 +155,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<DeleteBranchCommand>(request.Id);
-            await _mediator.Send(command, cancellationToken);
+            await _mediator.Send(new MediatRRequestAdapter<DeleteBranchCommand, DeleteBranchResult>(command), cancellationToken);
 
             return Ok(new ApiResponse
             {

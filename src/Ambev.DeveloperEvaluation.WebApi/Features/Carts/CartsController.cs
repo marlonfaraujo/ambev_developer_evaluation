@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
 using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.UpdateCart;
@@ -40,7 +41,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
                 return BadRequest(validationResult.Errors);
             
             var query = _mapper.Map<SimulateSaleQuery>(request);
-            var response = await _mediator.Send(query, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<SimulateSaleQuery, SimulateSaleResult>(query), cancellationToken);
 
             response.UserId = GetCurrentUserGuid();
             await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<CreateCartResponse>(response), TimeSpan.FromHours(1));
@@ -67,7 +68,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             var result = await _redisService.RemoverAsync(GetCurrentUserGuid().ToString());
 
             var query = _mapper.Map<SimulateSaleQuery>(request);
-            var response = await _mediator.Send(query, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<SimulateSaleQuery, SimulateSaleResult>(query), cancellationToken);
 
             await _redisService.SetAsync(GetCurrentUserGuid().ToString(), _mapper.Map<UpdateCartResponse>(response), TimeSpan.FromHours(1));
 

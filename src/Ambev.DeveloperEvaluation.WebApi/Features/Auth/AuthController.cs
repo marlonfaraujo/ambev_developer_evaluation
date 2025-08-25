@@ -1,4 +1,5 @@
 using Ambev.DeveloperEvaluation.Application.Auth.AuthenticateUser;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
 using AutoMapper;
@@ -49,7 +50,7 @@ public class AuthController : BaseController
             return BadRequest(validationResult.Errors);
 
         var command = _mapper.Map<AuthenticateUserCommand>(request);
-        var response = await _mediator.Send(command, cancellationToken);
+        var response = await _mediator.Send(new MediatRRequestAdapter<AuthenticateUserCommand, AuthenticateUserResult>(command), cancellationToken);
 
         return Ok(new ApiResponseWithData<AuthenticateUserResponse>
         {

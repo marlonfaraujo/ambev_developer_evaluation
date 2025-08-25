@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
 using Ambev.DeveloperEvaluation.ORM.Queries;
+using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
@@ -48,7 +49,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<CreateProductCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<CreateProductCommand, CreateProductResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<CreateProductResponse>
             {
@@ -71,7 +72,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<UpdateProductCommand>(request);
-            var response = await _mediator.Send(command, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<UpdateProductCommand, UpdateProductResult>(command), cancellationToken);
 
             return Created(string.Empty, new ApiResponseWithData<UpdateProductResponse>
             {
@@ -95,7 +96,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
                 return BadRequest(validationResult.Errors);
 
             var query = _mapper.Map<GetProductQuery>(request.Id);
-            var response = await _mediator.Send(query, cancellationToken);
+            var response = await _mediator.Send(new MediatRRequestAdapter<GetProductQuery,GetProductResult>(query), cancellationToken);
 
             return Ok(new ApiResponseWithData<GetProductResponse>
             {
@@ -155,7 +156,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
                 return BadRequest(validationResult.Errors);
 
             var command = _mapper.Map<DeleteProductCommand>(request.Id);
-            await _mediator.Send(command, cancellationToken);
+            await _mediator.Send(new MediatRRequestAdapter<DeleteProductCommand, DeleteProductResult>(command), cancellationToken);
 
             return Ok(new ApiResponse
             {

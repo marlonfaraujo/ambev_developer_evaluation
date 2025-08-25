@@ -1,10 +1,10 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
 {
-    public class SimulateSaleQuery : IRequest<SimulateSaleResult>
+    public class SimulateSaleQuery : IRequestApplication<SimulateSaleResult>
     {
         public Guid BranchSaleId { get; set; }
         public IEnumerable<SaleItem> SaleItems { get; set; }

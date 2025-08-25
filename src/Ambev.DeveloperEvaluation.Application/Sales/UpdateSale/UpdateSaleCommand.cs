@@ -1,10 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Entities;
-using MediatR;
-
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
-public class UpdateSaleCommand : IRequest<UpdateSaleResult>
+public class UpdateSaleCommand : IRequestApplication<UpdateSaleResult>
 {
     public Guid Id { get; set; }    
     public Guid BranchSaleId { get;set; }

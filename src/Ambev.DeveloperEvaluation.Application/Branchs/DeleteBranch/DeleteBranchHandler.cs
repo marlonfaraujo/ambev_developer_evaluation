@@ -1,11 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Application.Services;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Branchs.DeleteBranch
 {
-    public class DeleteBranchHandler : IRequestHandler<DeleteBranchCommand, DeleteBranchResult>
+    public class DeleteBranchHandler : IRequestApplicationHandler<DeleteBranchCommand, DeleteBranchResult>
     {
         private readonly IBranchRepository _branchRepository;
         private readonly IQueryDatabaseService _queryDbService;

@@ -1,9 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
-using MediatR;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Common.Validation;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
 {
-    public record UpdateProductCommand(Guid Id, string Name, string Description, decimal Price) : IRequest<UpdateProductResult>
+    public record UpdateProductCommand(Guid Id, string Name, string Description, decimal Price) : IRequestApplication<UpdateProductResult>
     {
         public ValidationResultDetail Validate()
         {

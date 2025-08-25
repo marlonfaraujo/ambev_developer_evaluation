@@ -1,13 +1,13 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
 using FluentValidation;
-using MediatR;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
 {
-    public class SimulateSaleHandler : IRequestHandler<SimulateSaleQuery, SimulateSaleResult>
+    public class SimulateSaleHandler : IRequestApplicationHandler<SimulateSaleQuery, SimulateSaleResult>
     {
         private readonly IProductRepository _productRepository;
         private readonly IBranchRepository _branchRepository;
