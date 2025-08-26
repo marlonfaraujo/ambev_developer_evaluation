@@ -6,7 +6,6 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
 {
     public class BranchControllerTests : IClassFixture<BranchApiFixture>
     {
-        private readonly HelperControllerTests _helperControllerTests;
         private readonly BranchApiFixture _branchApiFixture;
 
         public BranchControllerTests(BranchApiFixture branchApiFixture)

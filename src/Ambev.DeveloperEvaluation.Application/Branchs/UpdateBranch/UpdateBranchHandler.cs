@@ -22,19 +22,22 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch
         {
             var validator = new UpdateBranchCommandValidator();
             var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
-            var existing = await _branchRepository.GetByIdAsync(command.Id, cancellationToken);
-            if (existing == null)
-                throw new InvalidOperationException($"Branch ID not found");
+            await existingBranchById();
 
             var branch = _mapper.Map<Branch>(command);
-
             var updated = await _branchRepository.UpdateAsync(branch, cancellationToken);
             var result = _mapper.Map<UpdateBranchResult>(updated);
             return result;
+
+            async Task existingBranchById()
+            {
+                var existing = await _branchRepository.GetByIdAsync(command.Id, cancellationToken);
+                if (existing == null)
+                    throw new InvalidOperationException($"Branch ID not found");
+            }
         }
     }
 }

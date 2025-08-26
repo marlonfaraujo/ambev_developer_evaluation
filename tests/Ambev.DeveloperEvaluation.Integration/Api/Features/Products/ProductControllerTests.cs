@@ -6,7 +6,6 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
 {
     public class ProductControllerTests : IClassFixture<ProductApiFixture>
     {
-        private readonly HelperControllerTests _helperControllerTests;
         private readonly ProductApiFixture _productApiFixture;
 
         public ProductControllerTests(ProductApiFixture productApiFixture)

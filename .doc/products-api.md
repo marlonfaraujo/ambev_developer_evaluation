@@ -13,21 +13,16 @@ curl -X 'GET' \
 - Response: 
   ```json
   {
-    "data": {
-      "data": [
-        {
-          "id": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
-          "name": "teste",
-          "description": "teste",
-          "price": 10
-        }
-      ],
-      "success": true,
-      "message": "Products retrieved successfully",
-      "errors": []
-    },
+    "data": [
+      {
+        "id": "2da3bb88-6767-4fe7-b0a3-5def8f7985ba",
+        "name": "teste",
+        "description": "teste",
+        "price": 10
+      }
+    ],
     "success": true,
-    "message": "",
+    "message": "Products retrieved successfully",
     "errors": []
   }
   ```
