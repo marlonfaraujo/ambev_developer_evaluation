@@ -6,8 +6,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Factories
     {
         public static DiscountAmountCalculator Create(int productItemQuantity)
         {
-            if (productItemQuantity > 10 && productItemQuantity <= 20) return new MaxDiscountAmountCalculator();
-            if (productItemQuantity >= 4) return new MinDiscountAmountCalculator();
+            if (productItemQuantity >= 10 && productItemQuantity <= 20) return new MaxDiscountAmountCalculator();
+            if (productItemQuantity >= 4 && productItemQuantity <= 9) return new MinDiscountAmountCalculator();
 
             return new NoneDiscountAmountCalculator();   
         }
