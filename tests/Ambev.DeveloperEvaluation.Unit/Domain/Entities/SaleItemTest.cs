@@ -12,7 +12,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities
             int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(1);
             decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
             var saleItem = SaleItemTestData.GenerateValidSaleItem(productId, itemQuantity, price);
-            decimal discountAmount = (itemQuantity > 10 && itemQuantity <= 20) ? 0.2m : (itemQuantity >= 4 ) ? 0.1m : 0;
+            decimal discountAmount = (itemQuantity >= 10 && itemQuantity <= 20) ? 0.2m : (itemQuantity >= 4 && itemQuantity <= 9) ? 0.1m : 0;
             decimal expectedTotal = (price * itemQuantity) - ((price * itemQuantity) * discountAmount);
             decimal totalSaleItemPrice = saleItem.CalculateTotalSaleItemPrice();
             Assert.Equal(totalSaleItemPrice, expectedTotal);

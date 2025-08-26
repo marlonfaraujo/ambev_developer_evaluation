@@ -59,14 +59,14 @@ curl -X 'GET' \
 #### POST /sales
 - Description: Add a new sale
 - Request Body:
-  ```
+ ```
   bash
  curl -X 'POST' \
   'https://localhost:8081/api/Sales' \
   -H 'accept: text/plain' \
   -H 'Authorization: Bearer e' \
   -d ''
-  ```
+```
 - Response: 
   ```json
   {
