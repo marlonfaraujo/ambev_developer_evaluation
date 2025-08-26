@@ -30,50 +30,56 @@ public class UpdateSaleHandler : IRequestApplicationHandler<UpdateSaleCommand, U
     {
         var validator = new UpdateSaleCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
-        if (existing == null)
-            throw new InvalidOperationException($"Sale with ID not found");
-
-        if (existing.SaleStatus == SaleStatusEnum.Cancelled.ToString())
+        var existingSale = await existingSaleById();
+        if (existingSale.SaleStatus == SaleStatusEnum.Cancelled.ToString())
             throw new InvalidOperationException($"Sale with ID {command.Id} is already canceled");
 
         if (string.IsNullOrWhiteSpace(command.SaleStatus))
         {
-            command.SaleStatus = existing.SaleStatus;
+            command.SaleStatus = existingSale.SaleStatus;
         }
         if (command.BranchSaleId == null || command.BranchSaleId == Guid.Empty)
         {
-            command.BranchSaleId = existing.BranchSaleId;
+            command.BranchSaleId = existingSale.BranchSaleId;
         }
-
-        var products = await _productRepository.ListByIdsAsync(command.SaleItems.Select(x => x.ProductId).ToArray(), cancellationToken);
-        if (products == null || !products.Any() || command.SaleItems.ToList().Count != products.ToList().Count)
-            throw new KeyNotFoundException($"Product with ID not found");
-
-        var branch = await _branchRepository.GetByIdAsync(command.BranchSaleId, cancellationToken);
-        if (branch == null)
-            throw new KeyNotFoundException($"Branch with ID not found");
+        var products = await GetProductsById();
+        await hasBranchById();
 
         var sale = _mapper.Map<Sale>(command);
         sale.UpdateSale();
-
         var simulateSaleService = new SimulateSaleService(sale, products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
-
-        simulatedSale.SetSaleNumber(existing.SaleNumber);
-        simulatedSale.SaleDate = existing.SaleDate;
-        simulatedSale.UserId = existing.UserId;
-
+        simulatedSale.SetSaleNumber(existingSale.SaleNumber);
+        simulatedSale.SaleDate = existingSale.SaleDate;
+        simulatedSale.UserId = existingSale.UserId;
         var saleEvent = simulatedSale.UpdateSale();
         var updated = await _saleRepository.UpdateAsync(simulatedSale, cancellationToken);
-
         var result = _mapper.Map<UpdateSaleResult>(updated);
         _notification.Publish(saleEvent, cancellationToken);
-
         return result;
+
+        async Task<Sale> existingSaleById()
+        {
+            var existing = await _saleRepository.GetByIdAsync(command.Id, cancellationToken);
+            if (existing == null)
+                throw new InvalidOperationException($"Sale with ID not found");
+            return existing;
+        }
+        async Task<IEnumerable<Product>> GetProductsById()
+        {
+            var products = await _productRepository.ListByIdsAsync(command.SaleItems.Select(x => x.ProductId).ToArray(), cancellationToken);
+            if (products == null || !products.Any() || command.SaleItems.ToList().Count != products.ToList().Count)
+                throw new KeyNotFoundException($"Product with ID not found");
+            return products;
+        }
+        async Task hasBranchById()
+        {
+            var branch = await _branchRepository.GetByIdAsync(command.BranchSaleId, cancellationToken);
+            if (branch == null)
+                throw new KeyNotFoundException($"Branch with ID not found");
+        }
     }
 }

@@ -18,7 +18,6 @@ public class DeleteSaleHandler : IRequestApplicationHandler<DeleteSaleCommand, D
     {
         var validator = new DeleteSaleValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
@@ -30,11 +29,9 @@ public class DeleteSaleHandler : IRequestApplicationHandler<DeleteSaleCommand, D
         {
             throw new ValidationException("Cannot delete a sale unless it has a canceled status");
         }
-
         var success = await _saleRepository.DeleteAsync(command.Id, cancellationToken);
         if (!success)
             throw new KeyNotFoundException($"Error when trying to delete sale");
-
 
         return new DeleteSaleResult { Success = true };
     }

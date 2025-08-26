@@ -30,23 +30,15 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
     {
         var validator = new CreateSaleCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
-
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var products = await _productRepository.ListByIdsAsync(command.SaleItems.Select(x => x.ProductId).ToArray(), cancellationToken);
-        if (products == null || !products.Any() || command.SaleItems.ToList().Count != products.ToList().Count)
-            throw new KeyNotFoundException($"Product with ID not found");
-
-        var branch = await _branchRepository.GetByIdAsync(command.BranchSaleId, cancellationToken);
-        if (branch == null)
-            throw new KeyNotFoundException($"Branch not found");
+        var products = await GetProductsById();
+        await hasBranchById();
 
         var cacheSale = _mapper.Map<Sale>(command);
-
         var simulateSaleService = new SimulateSaleService(_mapper.Map<Sale>(command), products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
-
         if (cacheSale.TotalSalePrice != simulatedSale.TotalSalePrice)
         {
             throw new PriceProductsDifferentException($"The price of the products in the cart and the new price are different, delete cart and try again");
@@ -54,10 +46,23 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
 
         var created = await _saleRepository.CreateAsync(simulatedSale, cancellationToken);
         var saleEvent = created.CreateSaleEvent();
-
         var result = _mapper.Map<CreateSaleResult>(created);
         _notification.Publish(saleEvent, cancellationToken);
 
         return result;
+
+        async Task<IEnumerable<Product>> GetProductsById()
+        {
+            var products = await _productRepository.ListByIdsAsync(command.SaleItems.Select(x => x.ProductId).ToArray(), cancellationToken);
+            if (products == null || !products.Any() || command.SaleItems.ToList().Count != products.ToList().Count)
+                throw new KeyNotFoundException($"Product with ID not found");
+            return products;
+        }
+        async Task hasBranchById()
+        {
+            var branch = await _branchRepository.GetByIdAsync(command.BranchSaleId, cancellationToken);
+            if (branch == null)
+                throw new KeyNotFoundException($"Branch not found");
+        }
     }
 }

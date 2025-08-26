@@ -8,7 +8,6 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
 {
     public class SalesControllerTests : IClassFixture<SaleApiFixture>
     {
-        private readonly HelperControllerTests _helperControllerTests;
         private readonly SaleApiFixture _saleApiFixture;
 
         public SalesControllerTests(SaleApiFixture saleApiFixture)
@@ -74,9 +73,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         }
 
         /// <summary>
-        /// Verifies that deleting a sale via DELETE returns HTTP 204 No Content.
+        /// Verifies that deleting a sale via DELETE returns HTTP 200 OK.
         /// </summary>
-        [Fact(DisplayName = "DELETE /api/sales/{id} should return NoContent when delete is successful")]
+        [Fact(DisplayName = "DELETE /api/sales/{id} should return OK when delete is successful")]
         public async Task Delete_Sale_ReturnsNoContent()
         {
             _saleApiFixture.NewSaleId();

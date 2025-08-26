@@ -14,20 +14,15 @@ curl -X 'GET' \
  Response: 
   ```json
 {
-  "data": {
-    "data": [
-      {
-        "id": "035f4be0-ddec-42d5-bde7-6d45b4d39fb8",
-        "name": "teste",
-        "description": "teste"
-      }
-    ],
-    "success": true,
-    "message": "Branchs retrieved successfully",
-    "errors": []
-  },
+  "data": [
+    {
+      "id": "035f4be0-ddec-42d5-bde7-6d45b4d39fb8",
+      "name": "teste",
+      "description": "teste"
+    }
+  ],
   "success": true,
-  "message": "",
+  "message": "Branchs retrieved successfully",
   "errors": []
 }
   ```
@@ -51,15 +46,15 @@ curl -X 'GET' \
 - Response: 
   ```json
   {
-  "data": {
-    "id": "035f4be0-ddec-42d5-bde7-6d45b4d39fb8",
-    "name": "teste",
-    "description": "teste"
-  },
-  "success": true,
-  "message": "Branch created successfully",
-  "errors": []
-    }
+    "data": {
+      "id": "035f4be0-ddec-42d5-bde7-6d45b4d39fb8",
+      "name": "teste",
+      "description": "teste"
+    },
+    "success": true,
+    "message": "Branch created successfully",
+    "errors": []
+  }
   ```
 
 <br>

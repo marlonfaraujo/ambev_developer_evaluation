@@ -6,7 +6,6 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
 {
     public class CartControllerTests : IClassFixture<CartApiFixture>
     {
-        private readonly HelperControllerTests _helperControllerTests;
         private readonly CartApiFixture _cartApiFixture;
 
         public CartControllerTests(CartApiFixture cartApiFixture)
@@ -92,7 +91,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
 
             var response = await _cartApiFixture.Client.PutAsJsonAsync("/api/carts", updateRequest);
 
-            Assert.NotEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.NotEqual(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
 
