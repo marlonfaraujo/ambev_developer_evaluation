@@ -16,10 +16,10 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Specifications
             int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(21,50);
             decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
             var saleItems = new List<SaleItem> {
-                SaleItemTestData.GenerateValidSaleItem(productId, itemQuantity, price)
+                new SaleItem { ProductId = productId, ProductItemQuantity = itemQuantity, UnitProductItemPrice = price }
             };
 
-            Assert.Equal(spec.IsSatisfiedBy(saleItems), false);
+            Assert.Equal(false, spec.IsSatisfiedBy(saleItems));
         }
 
         /// <summary>
