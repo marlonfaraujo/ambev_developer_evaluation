@@ -59,8 +59,8 @@ public class SaleTest
         var sale = SaleTestData.GenerateValidSale();
         sale.AddSaleItems(new List<SaleItem>
             {
-                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), 16, 90.29m),
-                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), 4, 122.73m)
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 16, UnitProductItemPrice = 90.29m },
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 4, UnitProductItemPrice = 122.73m }
             }
         );
         decimal price1 = (90.29m * 16) - ((90.29m * 16) * 0.2m);
@@ -68,7 +68,7 @@ public class SaleTest
         decimal expectedTotal = price1 + price2;
         var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
         decimal totalSalePrice = simulateSaleService.TotalSalePrice();
-        Assert.Equal(totalSalePrice, expectedTotal);
+        Assert.Equal(expectedTotal, totalSalePrice);
     }
 
     [Fact(DisplayName = "When trying to calculate the total value of the items, it should not allow it to continue if there are more than 20 products")]
