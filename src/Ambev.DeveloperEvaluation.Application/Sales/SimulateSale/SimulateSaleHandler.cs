@@ -41,7 +41,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
             async Task<IEnumerable<Product>> GetProductsById()
             {
                 var products = await _productRepository.ListByIdsAsync(query.SaleItems.Select(x => x.ProductId).ToArray(), cancellationToken);
-                if (products == null || !products.Any() || query.SaleItems.ToList().Count != products.ToList().Count)
+                if (products == null || !products.Any() || !query.SaleItems.All(x => products.Select(p => p.Id).Contains(x.ProductId)))
                     throw new KeyNotFoundException($"Product with ID not found");
                 return products;
             }
