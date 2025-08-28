@@ -48,7 +48,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public SaleItemCancelledEvent CancelItem()
         {
             SaleItemStatus = SaleItemStatusEnum.Cancelled.ToString();
-            return new SaleItemCancelledEvent(this);
+            return new SaleItemCancelledEvent(this.Id);
         }
     }
 }

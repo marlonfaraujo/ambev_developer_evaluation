@@ -12,7 +12,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public decimal TotalSalePrice { get; set; }
         public Guid BranchSaleId { get; set; }
         public string SaleStatus { get; private set; }
-        public List<SaleItem> SaleItems { get; private set; }
+        public ICollection<SaleItem> SaleItems { get; private set; }
 
         public Sale()
         {
@@ -28,13 +28,13 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         public SaleCreatedEvent CreateSaleEvent()
         {
-            return new SaleCreatedEvent(this);
+            return new SaleCreatedEvent(this.Id);
         }
 
         public SaleCancelledEvent CancelSale()
         {
             SaleStatus = SaleStatusEnum.Cancelled.ToString();
-            return new SaleCancelledEvent(this);
+            return new SaleCancelledEvent(this.Id);
         }
 
         public IEnumerable<SaleItemCancelledEvent> CancelSaleItems()
@@ -57,7 +57,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public SaleChangedEvent UpdateSale()
         {
             SaleStatus = SaleStatusEnum.Modified.ToString();
-            return new SaleChangedEvent(this);
+            return new SaleChangedEvent(this.Id);
         }
 
         public void SetSaleNumber(int saleNumber)

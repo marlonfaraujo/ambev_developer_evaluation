@@ -87,5 +87,41 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             // Assert
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
         }
+
+        /// <summary>
+        /// Verifies that listing sales via GET returns HTTP 200 OK and a valid response.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/sales should return Ok and sales list when query is valid")]
+        public async Task Get_Sales_ReturnsOkAndSalesList()
+        {
+            // Arrange: create query params for ListSalesRequest (using fixture values)
+            var query = $"?PageNumber=1&PageSize=5";
+            // Act
+            var response = await _saleApiFixture.Client.GetAsync($"/api/sales{query}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrWhiteSpace(content));
+        }
+
+
+        /// <summary>
+        /// Verifies that listing sales via GET returns HTTP 200 OK and a valid response.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/sales should return Ok and sales list when query by sale id")]
+        public async Task Get_Sales_ReturnsOkAndSalesListBySaleId()
+        {
+            _saleApiFixture.NewSaleId();
+            // Arrange: create query params for ListSalesRequest (using fixture values)
+            var query = $"?PageNumber=1&PageSize=5&SaleId={_saleApiFixture.SaleId}";
+            // Act
+            var response = await _saleApiFixture.Client.GetAsync($"/api/sales{query}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrWhiteSpace(content));
+        }
     }
 }

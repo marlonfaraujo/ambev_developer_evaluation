@@ -14,7 +14,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Notifications
 
         public Task Handle(MediatRDomainNotification<SaleItemCancelledEvent> notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Event log SaleItemCancelledEvent Id: {notification.Notification.SaleItem.Id}");
+            _logger.LogInformation($"Event log SaleItemCancelledEvent Id: {notification.Notification.SaleItemId}");
             return Task.CompletedTask;
         }
     }

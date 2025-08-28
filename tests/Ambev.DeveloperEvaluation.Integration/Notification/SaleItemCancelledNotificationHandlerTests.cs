@@ -17,7 +17,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Notification
             var handler = new SaleItemCancelledNotificationHandler(loggerMock.Object);
 
             var saleItem = new SaleItem(Guid.NewGuid(), Guid.NewGuid(), 1, 10, 0, 10, 10, "Cancelled");
-            var saleItemCancelledEvent = new SaleItemCancelledEvent(saleItem);
+            var saleItemCancelledEvent = new SaleItemCancelledEvent(saleItem.Id);
             var notification = new MediatRDomainNotification<SaleItemCancelledEvent>(saleItemCancelledEvent);
 
             // Act

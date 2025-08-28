@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.ORM.Dtos
+﻿namespace Ambev.DeveloperEvaluation.Application.Dtos
 {
     public class Pager
     {
