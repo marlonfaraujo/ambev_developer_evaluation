@@ -78,8 +78,8 @@ public class SaleTest
         var sale = SaleTestData.GenerateValidSale();
         sale.AddSaleItems(new List<SaleItem>
             {
-                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(20,30), price),
-                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(20,30), price)
+                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(21,30), price),
+                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(21,30), price)
             }
         );
         var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());

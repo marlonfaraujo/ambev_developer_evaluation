@@ -7,5 +7,6 @@
         Task<bool> BranchInSales(Guid branchId);
         object[] GetSqlParameters<T>(T parameters);
         Task<bool> UserInSales(Guid userId);
+        Task<IEnumerable<TEntity>> GetSaleQueryById<TEntity>(Guid saleId) where TEntity : class;
     }
 }

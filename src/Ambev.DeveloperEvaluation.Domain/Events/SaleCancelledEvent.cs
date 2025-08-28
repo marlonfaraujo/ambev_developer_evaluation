@@ -1,13 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-
-namespace Ambev.DeveloperEvaluation.Domain.Events
+﻿namespace Ambev.DeveloperEvaluation.Domain.Events
 {
     public class SaleCancelledEvent : IDomainNotification
     {
-        public Sale Sale { get; }
-        public SaleCancelledEvent(Sale sale)
+        public Guid SaleId { get; }
+        public SaleCancelledEvent(Guid saleId)
         {
-            Sale = sale;
+            SaleId = saleId;
         }
     }
 }

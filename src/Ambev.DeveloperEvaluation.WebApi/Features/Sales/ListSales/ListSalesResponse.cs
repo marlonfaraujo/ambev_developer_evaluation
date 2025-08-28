@@ -18,17 +18,6 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
             BranchId = items.BranchId;
             BranchName = items.BranchName;
             BranchDescription = items.BranchDescription;
-            SaleItemId = items.SaleItemId;
-            ProductItemQuantity = items.ProductItemQuantity;
-            UnitProductItemPrice = items.UnitProductItemPrice;
-            DiscountAmount = items.DiscountAmount;
-            TotalSaleItemPrice = items.TotalSaleItemPrice;
-            TotalWithoutDiscount = items.TotalWithoutDiscount;
-            SaleItemStatus = items.SaleItemStatus;
-            ProductId = items.ProductId;
-            ProductName = items.ProductName;
-            ProductDescription = items.ProductDescription;
-            ProductPrice = items.ProductPrice;
         }
 
         public Guid SaleId { get; set; }
@@ -41,17 +30,20 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
         public Guid BranchId { get; set; }
         public string BranchName { get; set; } = string.Empty;
         public string BranchDescription { get; set; } = string.Empty;
+        public IEnumerable<ListSaleItemResponse> SaleItems { get; set; } = new List<ListSaleItemResponse>();
+    }
+
+    public class ListSaleItemResponse
+    {
         public Guid SaleItemId { get; set; }
+        public Guid ProductId { get; set; }
         public int ProductItemQuantity { get; set; }
         public decimal UnitProductItemPrice { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal TotalSaleItemPrice { get; set; }
         public decimal TotalWithoutDiscount { get; set; }
-        public string SaleItemStatus { get; set; } = string.Empty;
-        public Guid ProductId { get; set; }
-        public string ProductName { get; set; } = string.Empty;
-        public string ProductDescription { get; set; } = string.Empty;
-        public decimal ProductPrice { get; set; }
-        public List<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
+        public string SaleItemStatus { get; set; }
+        public string ProductName { get; set; }
+        public string ProductDescription { get; set; }
     }
 }

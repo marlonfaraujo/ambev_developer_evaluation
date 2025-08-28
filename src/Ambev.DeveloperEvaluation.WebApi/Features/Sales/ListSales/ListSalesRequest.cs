@@ -1,12 +1,14 @@
 ﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
 {
     public record ListSalesRequest(
-        string SaleId = null,
-        string UserId= null,
-        string BranchId = null,
-        string ProductId = null,
+        Guid? SaleId = null,
+        Guid? UserId = null,
+        Guid? BranchId = null,
+        Guid? ProductId = null,
         int PageNumber = 1,
-        int PageSize = 10
+        int PageSize = 10,
+        string SortBy = "",
+        string SortDirection = ""
     )
     {
     }

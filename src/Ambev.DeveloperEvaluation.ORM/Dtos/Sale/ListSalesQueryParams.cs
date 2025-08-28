@@ -1,4 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.ORM.Dtos.Sale
+﻿using Ambev.DeveloperEvaluation.Application.Dtos;
+
+namespace Ambev.DeveloperEvaluation.ORM.Dtos.Sale
 {
     public class ListSalesQueryParams
     {
@@ -7,11 +9,11 @@
             Pager = new Pager();
         }
 
-        public string SaleId { get; set; } = string.Empty;
+        public Guid? SaleId { get; set; } = null;
         public int SaleNumber { get; set; }
-        public string UserId { get; set; } = string.Empty;
-        public string ProductId { get; set; } = string.Empty;
-        public string BranchId { get; set; } = string.Empty;
+        public Guid? UserId { get; set; } = null;
+        public Guid? ProductId { get; set; } = null;
+        public Guid? BranchId { get; set; } = null;
         public Pager Pager { get; set; }
     }
 }

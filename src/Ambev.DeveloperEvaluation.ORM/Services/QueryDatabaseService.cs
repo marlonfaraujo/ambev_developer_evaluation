@@ -1,8 +1,9 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Services;
-using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
+using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
 using Ambev.DeveloperEvaluation.ORM.Dtos.User;
+using Ambev.DeveloperEvaluation.ORM.Queries;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Reflection;
@@ -89,6 +90,16 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             var result = await _context.Database.SqlQueryRaw<ListProductsQueryResult>(query.ToString(), sqlParameters.ToArray()).AnyAsync();
             return result;
 
+        }
+
+        public async Task<IEnumerable<TEntity>> GetSaleQueryById<TEntity>(Guid saleId) where TEntity : class
+        {
+            var sqlQueryParameters = ListSalesSqlQuery.GetSqlQuery(new ListSalesQueryParams()
+            {
+                SaleId = saleId
+            });
+            var result = await Select<TEntity>(sqlQueryParameters.QuerySql, sqlQueryParameters.SqlParameters.ToArray());
+            return result;
         }
 
         public async Task<IEnumerable<TEntity>> Select<TEntity>(string query, params object[] parameters) where TEntity : class

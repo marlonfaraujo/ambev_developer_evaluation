@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Application.Services;
+﻿using Ambev.DeveloperEvaluation.Application.Dtos;
+using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.NoSql;
 using Ambev.DeveloperEvaluation.ORM;
@@ -17,7 +18,12 @@ public class InfrastructureModuleInitializer : IModuleInitializer
     {
         builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<DefaultContext>());
         builder.Services.AddScoped<RedisDatabaseService>();
-        builder.Services.AddScoped(typeof(MongoDbService<>));
+        builder.Services.AddScoped<IMongoDbServiceFactory, MongoDbServiceFactory>();
+        builder.Services.AddScoped<IMongoDbService<ISaleModel>>(sp =>
+        {
+            var factory = sp.GetRequiredService<IMongoDbServiceFactory>();
+            return factory.Create<ISaleModel>("sales");
+        });
         builder.Services.AddScoped<IQueryDatabaseService, QueryDatabaseService>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();

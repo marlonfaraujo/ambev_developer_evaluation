@@ -2,6 +2,7 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 
 namespace Ambev.DeveloperEvaluation.NoSql
 {
@@ -11,10 +12,10 @@ namespace Ambev.DeveloperEvaluation.NoSql
 
         public MongoDbContext(string connectionString, string dbName)
         {
-            Configuration();
-
             if (string.IsNullOrWhiteSpace(connectionString))
                 throw new ArgumentException("MongoDB connection string is required.", nameof(connectionString));
+
+            Configuration();
 
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(dbName);
@@ -25,12 +26,17 @@ namespace Ambev.DeveloperEvaluation.NoSql
             return _database.GetCollection<T>(name);
         }
 
-        public IMongoCollection<SaleModel> Sales =>
-            _database.GetCollection<SaleModel>("sales");
-
         private void Configuration()
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+            if (!BsonClassMap.IsClassMapRegistered(typeof(SaleModel)))
+            {
+                BsonClassMap.RegisterClassMap<SaleModel>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.MapIdMember(c => c.Id);
+                });
+            }
         }
 
     }

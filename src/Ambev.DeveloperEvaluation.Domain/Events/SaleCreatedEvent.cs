@@ -4,10 +4,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Events
 {
     public class SaleCreatedEvent : IDomainNotification
     {
-        public Sale Sale { get; }
-        public SaleCreatedEvent(Sale sale)
+        public Guid SaleId { get; }
+        public SaleCreatedEvent(Guid saleId)
         {
-            Sale = sale;
+            SaleId = saleId;
         }
     }
 }
