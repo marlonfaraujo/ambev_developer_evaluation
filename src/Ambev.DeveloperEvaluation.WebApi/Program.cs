@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.IoC;
+using Ambev.DeveloperEvaluation.NoSql;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -73,6 +74,12 @@ public class Program
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(options => 
                 ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")));
+
+            builder.Services.AddSingleton<MongoDbContext>(sp =>
+                new MongoDbContext(
+                    builder.Configuration.GetConnectionString("MongoConnection")!,
+                    builder.Configuration["MongoDatabase"]!
+                ));
 
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
