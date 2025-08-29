@@ -7,7 +7,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
     {
         public ListSaleProfile()
         {
-            CreateMap<ISaleModel, ListSaleResultItem>()
+            CreateMap<ISaleModel, ListSaleResultData>()
                 .ForMember(dest => dest.SaleId, opt => opt.MapFrom(src => src.SaleId))
                 .ForMember(dest => dest.SaleNumber, opt => opt.MapFrom(src => src.SaleNumber))
                 .ForMember(dest => dest.SaleDate, opt => opt.MapFrom(src => src.SaleDate))

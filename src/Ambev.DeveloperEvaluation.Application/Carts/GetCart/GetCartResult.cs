@@ -1,6 +1,8 @@
+using Ambev.DeveloperEvaluation.Domain.Entities;
+
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart
 {
-    public record GetCartResult(Guid Id, Guid UserId, Guid BranchSaleId, decimal TotalSalePrice, string BranchName)
+    public record GetCartResult(Guid Id, Guid UserId, Guid BranchSaleId, decimal TotalSalePrice, string BranchName, IEnumerable<CartItem> CartItems)
     {
     }
 }

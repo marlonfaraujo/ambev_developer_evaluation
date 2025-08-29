@@ -1,8 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Domain.Dtos;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Ambev.DeveloperEvaluation.Domain.Common;
 
 namespace Ambev.DeveloperEvaluation.Domain.Repositories
 {
@@ -12,6 +9,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
         Task<Cart?> UpdateAsync(Cart cart, CancellationToken cancellationToken = default);
         Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<PagedResult<Cart>> GetPagedAsync(int page, int pageSize, Dictionary<string, object>? filters = null, string? sortBy = null, bool sortDescending = false, CancellationToken cancellationToken = default);
+        Task<PagedResult<Cart>> GetPagedAsync(QueryOptions options, CancellationToken cancellationToken = default);
     }
 }

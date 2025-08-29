@@ -9,6 +9,7 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart
             RuleFor(x => x.UserId).NotEmpty();
             RuleFor(x => x.BranchSaleId).NotEmpty();
             RuleFor(x => x.TotalSalePrice).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.CartItems).NotEmpty();
         }
     }
 }

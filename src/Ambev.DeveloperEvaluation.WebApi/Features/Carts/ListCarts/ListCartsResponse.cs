@@ -1,26 +1,19 @@
-namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
+﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.ListCarts
 {
-    public class ListCartResult
-    {
-        public IEnumerable<ListCartResultData> Items { get; set; }
-        public long TotalCount { get; set; }
-        public int Page { get; set; }
-        public int PageSize { get; set; }
-    }
-
-    public class ListCartResultData
+    public class ListCartsResponse
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid BranchSaleId { get; set; }
         public decimal TotalSalePrice { get; set; }
         public string BranchName { get; set; }
-        public IEnumerable<ListCartItemResult> CartItems { get; set; }
+        public IEnumerable<ListCartItemResponse> CartItems { get; set; }
     }
 
-    public class ListCartItemResult
+
+    public class ListCartItemResponse
     {
-        public Guid Id { get; set; }
+        public Guid CartItemId { get; set; }
         public Guid ProductId { get; set; }
         public int ProductItemQuantity { get; set; }
         public decimal UnitProductItemPrice { get; set; }

@@ -27,6 +27,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
             var saleRepoMock = new SaleRepository(_context);
             var productRepoMock = new ProductRepository(_context);
             var branchRepoMock = new BranchRepository(_context);
+            var cartRepoMock = new CartRepository(_context);
             var mapperMock = new Mock<IMapper>();
             var adapter = new Mock<IDomainNotificationAdapter>();
             var branchExisting = BranchHandlerTestData.GetBranch();
@@ -52,7 +53,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
 
             mapperMock.Setup(m => m.Map<Sale>(command)).Returns(sale);
             mapperMock.Setup(m => m.Map<CreateSaleResult>(sale)).Returns(new CreateSaleResult(Guid.NewGuid(), sale.UserId, sale.BranchSaleId, 0, sale.TotalSalePrice, sale.SaleStatus, sale.SaleItems));
-            var handler = new CreateSaleHandler(saleRepoMock, productRepoMock, branchRepoMock, mapperMock.Object, adapter.Object);
+            var handler = new CreateSaleHandler(saleRepoMock, productRepoMock, branchRepoMock, cartRepoMock, mapperMock.Object, adapter.Object);
             var result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);
         }

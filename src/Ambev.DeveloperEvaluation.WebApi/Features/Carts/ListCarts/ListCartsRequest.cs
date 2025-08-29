@@ -1,7 +1,7 @@
-﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales
+﻿namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.ListCarts
 {
-    public record ListSalesRequest(
-        Guid? SaleId = null,
+    public record ListCartsRequest(
+        Guid? CartId = null,
         Guid? UserId = null,
         Guid? BranchId = null,
         int PageNumber = 1,
@@ -9,6 +9,5 @@
         string SortBy = "",
         string SortDirection = ""
     )
-    {
-    }
+    { }
 }

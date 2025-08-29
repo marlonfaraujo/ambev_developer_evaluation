@@ -1,4 +1,4 @@
-﻿namespace Ambev.DeveloperEvaluation.Application.Dtos
+﻿namespace Ambev.DeveloperEvaluation.Domain.Common
 {
     public class QueryOptions
     {

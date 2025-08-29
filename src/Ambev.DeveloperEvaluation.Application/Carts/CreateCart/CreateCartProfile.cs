@@ -7,8 +7,8 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart
     {
         public CreateCartProfile()
         {
-            CreateMap<Cart, CreateCartResult>()
-                .ForMember(dest => dest.TotalSalePrice, opt => opt.MapFrom(src => src.TotalSalePrice.Value));
+            CreateMap<CreateCartCommand, Cart>();
+            CreateMap<Cart, CreateCartResult>();
         }
     }
 }

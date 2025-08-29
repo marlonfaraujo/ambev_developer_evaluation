@@ -1,12 +1,8 @@
+using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.ORM.Common;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Ambev.DeveloperEvaluation.Domain.Dtos;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
 {
@@ -70,34 +66,52 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             return cart;
         }
 
-        public async Task<PagedResult<Cart>> GetPagedAsync(int page, int pageSize, Dictionary<string, object>? filters = null, string? sortBy = null, bool sortDescending = false, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<Cart>> GetPagedAsync(QueryOptions options, CancellationToken cancellationToken = default)
         {
             var query = _context.Carts.Include(x => x.CartItems).AsQueryable();
-
-            if (filters != null)
+            if (options.Filters != null && options.Filters.Any())
             {
-                if (filters.TryGetValue("UserId", out var userIdObj) && userIdObj is Guid userId)
-                    query = query.Where(x => x.UserId == userId);
-                if (filters.TryGetValue("BranchSaleId", out var branchSaleIdObj) && branchSaleIdObj is Guid branchSaleId)
-                    query = query.Where(x => x.BranchSaleId == branchSaleId);
+                foreach (var kv in options.Filters)
+                {
+                    var property = typeof(Cart).GetProperty(kv.Key);
+                    if (property != null)
+                    {
+                        var value = kv.Value;
+                        if (property.PropertyType == typeof(Guid) && value != null)
+                        {
+                            var guidValue = Guid.Parse(value.ToString()!);
+                            query = query.Where(x => EF.Property<Guid>(x, kv.Key) == guidValue);
+                        }
+                        else
+                        {
+                            query = query.Where(x => EF.Property<string>(x, kv.Key) == value.ToString());
+                        }
+                        
+                    }
+                }
             }
 
-            if (!string.IsNullOrWhiteSpace(sortBy))
+            if (!string.IsNullOrWhiteSpace(options.SortBy))
             {
-                // Exemplo: só suporta sort por TotalSalePrice
-                if (sortBy == "TotalSalePrice")
-                    query = sortDescending ? query.OrderByDescending(x => x.TotalSalePrice.Value) : query.OrderBy(x => x.TotalSalePrice.Value);
+                var property = typeof(Cart).GetProperty(options.SortBy);
+                if (property != null)
+                {
+                    if (options.SortDescending)
+                        query = query.OrderByDescending(x => EF.Property<object>(x, options.SortBy));
+                    else
+                        query = query.OrderBy(x => EF.Property<object>(x, options.SortBy));
+                }
             }
 
             var totalCount = await query.CountAsync(cancellationToken);
-            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(cancellationToken);
+            var items = await query.Skip((options.Page - 1) * options.PageSize).Take(options.PageSize).ToListAsync(cancellationToken);
 
             return new PagedResult<Cart>
             {
                 Items = items,
                 TotalCount = totalCount,
-                Page = page,
-                PageSize = pageSize
+                Page = options.Page,
+                PageSize = options.PageSize
             };
         }
     }

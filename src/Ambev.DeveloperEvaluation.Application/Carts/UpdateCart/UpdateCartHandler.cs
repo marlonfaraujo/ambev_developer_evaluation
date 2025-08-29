@@ -19,7 +19,12 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.UpdateCart
 
         public async Task<UpdateCartResult> Handle(UpdateCartCommand command, CancellationToken cancellationToken)
         {
-            // Adicione validação se necessário
+            var validator = new UpdateCartCommandValidator();
+            var validationResult = await validator.ValidateAsync(command, cancellationToken);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
+
             var cart = _mapper.Map<Cart>(command);
             var updated = await _cartRepository.UpdateAsync(cart, cancellationToken);
             var result = _mapper.Map<UpdateCartResult>(updated);

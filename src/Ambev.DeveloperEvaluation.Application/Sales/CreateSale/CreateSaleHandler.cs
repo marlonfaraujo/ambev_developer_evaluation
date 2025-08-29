@@ -14,14 +14,16 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
     private readonly IBranchRepository _branchRepository;
+    private readonly ICartRepository _cartRepository;
     private readonly IMapper _mapper;
     private readonly IDomainNotificationAdapter _notification;
 
-    public CreateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper, IDomainNotificationAdapter notification)
+    public CreateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, ICartRepository cartRepository, IMapper mapper, IDomainNotificationAdapter notification)
     {
         _saleRepository = saleRepository;
         _productRepository = productRepository;
         _branchRepository = branchRepository;
+        _cartRepository = cartRepository;
         _mapper = mapper;
         _notification = notification;
     }
@@ -33,13 +35,16 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
+        var cart = await GetCartById(command.CartId);
+        command = _mapper.Map<CreateSaleCommand>(cart);
+
         var products = await GetProductsById();
         await hasBranchById();
 
-        var cacheSale = _mapper.Map<Sale>(command);
+        var cartSale = _mapper.Map<Sale>(command);
         var simulateSaleService = new SimulateSaleService(_mapper.Map<Sale>(command), products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
-        if (cacheSale.TotalSalePrice != simulatedSale.TotalSalePrice)
+        if (cartSale.TotalSalePrice != simulatedSale.TotalSalePrice)
         {
             throw new PriceProductsDifferentException($"The price of the products in the cart and the new price are different, delete cart and try again");
         }
@@ -63,6 +68,14 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
             var branch = await _branchRepository.GetByIdAsync(command.BranchSaleId, cancellationToken);
             if (branch == null)
                 throw new KeyNotFoundException($"Branch not found");
+        }
+        async Task<Cart?> GetCartById(Guid cartId)
+        {
+            if (command.CartId == null) return null;
+            var cart = await _cartRepository.GetByIdAsync(command.CartId, cancellationToken);
+            if (cart == null)
+                throw new KeyNotFoundException($"Cart with ID not found");
+            return cart;
         }
     }
 }

@@ -1,5 +1,4 @@
 using AutoMapper;
-using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.DeleteCart
 {
@@ -7,7 +6,6 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.DeleteCart
     {
         public DeleteCartProfile()
         {
-            CreateMap<Cart, DeleteCartResult>();
         }
     }
 }

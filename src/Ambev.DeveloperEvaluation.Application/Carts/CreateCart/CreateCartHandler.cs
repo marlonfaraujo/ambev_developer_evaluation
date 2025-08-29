@@ -19,8 +19,15 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.CreateCart
 
         public async Task<CreateCartResult> Handle(CreateCartCommand command, CancellationToken cancellationToken)
         {
-            // Adicione validação se necessário
+            var validator = new CreateCartCommandValidator();
+            var validationResult = await validator.ValidateAsync(command, cancellationToken);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
+
             var cart = _mapper.Map<Cart>(command);
+            cart.BranchName = "";
+            //ProducName
             var created = await _cartRepository.CreateAsync(cart, cancellationToken);
             var result = _mapper.Map<CreateCartResult>(created);
             return result;

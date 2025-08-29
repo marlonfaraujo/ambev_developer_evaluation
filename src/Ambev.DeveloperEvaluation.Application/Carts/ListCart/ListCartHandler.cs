@@ -1,10 +1,7 @@
 using Ambev.DeveloperEvaluation.Application.Requests;
+using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
 {
@@ -22,21 +19,32 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
         public async Task<ListCartResult> Handle(ListCartQuery request, CancellationToken cancellationToken)
         {
             var filters = new Dictionary<string, object>();
+            var options = new QueryOptions();
+
+            if (request.CartId.HasValue)
+                filters["CartId"] = request.CartId.Value;
             if (request.UserId.HasValue)
                 filters["UserId"] = request.UserId.Value;
             if (request.BranchSaleId.HasValue)
                 filters["BranchSaleId"] = request.BranchSaleId.Value;
 
-            var pagedResult = await _cartRepository.GetPagedAsync(
-                request.PageNumber > 0 ? request.PageNumber : 1,
-                request.PageSize > 0 ? request.PageSize : 10,
-                filters,
-                request.SortBy,
-                string.Equals(request.SortDirection, "desc", System.StringComparison.OrdinalIgnoreCase),
-                cancellationToken
-            );
+            if (request.PageNumber > 0)
+            {
+                options.Page = request.PageNumber;
+            }
+            if (request.PageSize > 0)
+            {
+                options.PageSize = request.PageSize;
+            }
+            if (!string.IsNullOrWhiteSpace(request.SortBy))
+            {
+                options.SortBy = request.SortBy;
+                options.SortDescending = string.Equals(request.SortDirection, "desc", StringComparison.OrdinalIgnoreCase);
+            }
+            options.Filters = filters;
 
-            var items = _mapper.Map<IEnumerable<ListCartResultItem>>(pagedResult.Items);
+            var pagedResult = await _cartRepository.GetPagedAsync(options, cancellationToken);
+            var items = _mapper.Map<IEnumerable<ListCartResultData>>(pagedResult.Items);
             return new ListCartResult
             {
                 Items = items,

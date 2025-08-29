@@ -18,7 +18,12 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart
 
         public async Task<GetCartResult> Handle(GetCartQuery query, CancellationToken cancellationToken)
         {
-            // Adicione validação se necessário
+            var validator = new GetCartQueryValidator();
+            var validationResult = await validator.ValidateAsync(query, cancellationToken);
+
+            if (!validationResult.IsValid)
+                throw new ValidationException(validationResult.Errors);
+
             var cart = await _cartRepository.GetByIdAsync(query.Id, cancellationToken);
             if (cart == null)
                 throw new KeyNotFoundException($"Cart with ID {query.Id} not found");

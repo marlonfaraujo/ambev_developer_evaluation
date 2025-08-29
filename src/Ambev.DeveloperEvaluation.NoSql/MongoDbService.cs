@@ -1,5 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Application.Dtos;
-using Ambev.DeveloperEvaluation.Application.Services;
+﻿using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Common;
 using MongoDB.Driver;
 
 namespace Ambev.DeveloperEvaluation.NoSql

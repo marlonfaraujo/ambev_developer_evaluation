@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart.UpdateCart
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart
 {
     public class UpdateCartRequestValidator : AbstractValidator<UpdateCartRequest>
     {
@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart.UpdateCart
                 .NotEmpty().WithMessage("BranchId ID is required.")
                 .NotNull().WithMessage("BranchId ID cannot be null.");
 
-            RuleFor(x => x.SaleItems)
+            RuleFor(x => x.CartItems)
                 .NotEmpty().WithMessage("Items is required.");
         }
     }
