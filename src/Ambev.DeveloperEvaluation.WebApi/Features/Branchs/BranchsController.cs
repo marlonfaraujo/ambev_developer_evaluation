@@ -130,7 +130,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 parameters.Pager.PageSize = request.PageSize;
             }
 
-            var sqlQueryParams = ListBranchsQuery.GetSqlQuery(parameters);
+            var sqlQueryParams = ListBranchsSqlQuery.GetSqlQuery(parameters);
             var response = await _queryDbService.Select<ListBranchsQueryResult>(sqlQueryParams.QuerySql, _queryDbService.GetSqlParameters(request));
 
             return Ok(new ApiResponseWithData<IEnumerable<ListBranchsResponse>>

@@ -131,7 +131,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
             {
                 parameters.Pager.PageSize = request.PageSize;
             }
-            var sqlQueryParams = ListProductsQuery.GetSqlQuery(parameters);
+            var sqlQueryParams = ListProductsSqlQuery.GetSqlQuery(parameters);
             var response = await _queryDbService.Select<ListProductsQueryResult>(sqlQueryParams.QuerySql, _queryDbService.GetSqlParameters(request));
 
             return Ok(new ApiResponseWithData<IEnumerable<ListProductsResponse>>

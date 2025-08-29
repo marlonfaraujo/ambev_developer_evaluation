@@ -1,6 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Integration.Data.Services.TestData;
-using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.NoSql;
 using StackExchange.Redis;
 using System.Text.Json;
 using Xunit;

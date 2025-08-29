@@ -1,5 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
-using Ambev.DeveloperEvaluation.ORM.Services;
+using Ambev.DeveloperEvaluation.NoSql;
 using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
