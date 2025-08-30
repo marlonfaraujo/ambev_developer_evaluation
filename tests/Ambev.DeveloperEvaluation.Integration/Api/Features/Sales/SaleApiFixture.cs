@@ -88,7 +88,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             var cartRequest = new
             {
                 BranchSaleId = BranchId,
-                Carttems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = ProductId, ProductItemQuantity = 2 }
                 }

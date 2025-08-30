@@ -22,7 +22,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "POST /api/sales should return Created when sale is valid")]
         public async Task Post_Sale_ReturnsCreated()
         {
-            //_saleApiFixture.NewCartUserId();
+            _saleApiFixture.NewCartId();
             var saleRequest = new
             {
                 CartId = _saleApiFixture.CartId

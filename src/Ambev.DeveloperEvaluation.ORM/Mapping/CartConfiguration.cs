@@ -32,6 +32,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
             builder.HasMany(c => c.CartItems)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Property(s => s.CartStatus)
+                .HasMaxLength(50)
+                .IsRequired();
         }
     }
 }

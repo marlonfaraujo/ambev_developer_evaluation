@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Exceptions;
 using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
@@ -31,6 +32,10 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
     public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
     {
         var cart = await GetCartById(command.CartId);
+        if (cart != null && cart.CartStatus.Equals(CartStatusEnum.Finished.ToString()))
+        {
+            throw new CartFinishedException("The cart is already finished, create a new cart to proceed with the sale");
+        }
         command = _mapper.Map<CreateSaleCommand>(cart);
 
         var validator = new CreateSaleCommandValidator();
@@ -53,6 +58,7 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
         var saleEvent = created.CreateSaleEvent();
         var result = _mapper.Map<CreateSaleResult>(created);
         _notification.Publish(saleEvent, cancellationToken);
+        await FinishCart();
 
         return result;
 
@@ -76,6 +82,12 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
             if (cart == null)
                 throw new KeyNotFoundException($"Cart with ID not found");
             return cart;
+        }
+
+        async Task FinishCart()
+        {
+            cart.FinishCart();
+            await _cartRepository.UpdateAsync(cart, cancellationToken);
         }
     }
 }

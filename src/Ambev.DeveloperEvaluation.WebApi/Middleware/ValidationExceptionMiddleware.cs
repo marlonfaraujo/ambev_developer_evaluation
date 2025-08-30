@@ -30,7 +30,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     Errors = ex.Errors
                         .Select(error => (ValidationErrorDetail)error)
                 };
-                await HandleValidationExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
+                await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
             }
             catch (InvalidOperationException ex)
             {
@@ -40,7 +40,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     Message = ex.Message,
                     Errors = Enumerable.Empty<ValidationErrorDetail>()
                 };
-                await HandleValidationExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
+                await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
             }
             catch (ArgumentException ex)
             {
@@ -50,7 +50,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     Message = ex.Message,
                     Errors = Enumerable.Empty<ValidationErrorDetail>()
                 };
-                await HandleValidationExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
+                await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -60,7 +60,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     Message = ex.Message,
                     Errors = Enumerable.Empty<ValidationErrorDetail>()
                 };
-                await HandleValidationExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
+                await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
             }
             catch (KeyNotFoundException ex)
             {
@@ -70,7 +70,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     Message = ex.Message,
                     Errors = Enumerable.Empty<ValidationErrorDetail>()
                 };
-                await HandleValidationExceptionAsync(context, ex, StatusCodes.Status404NotFound, response);
+                await HandleExceptionAsync(context, ex, StatusCodes.Status404NotFound, response);
             }
             catch (Exception ex)
             {
@@ -80,11 +80,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     Message = "An unexpected error occurred.",
                     Errors = Enumerable.Empty<ValidationErrorDetail>()
                 };
-                await HandleValidationExceptionAsync(context, ex, StatusCodes.Status500InternalServerError, response);
+                await HandleExceptionAsync(context, ex, StatusCodes.Status500InternalServerError, response);
             }
         }
 
-        private static Task HandleValidationExceptionAsync(HttpContext context, Exception exception, int statusCode, ApiResponse response)
+        private static Task HandleExceptionAsync(HttpContext context, Exception exception, int statusCode, ApiResponse response)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = statusCode;

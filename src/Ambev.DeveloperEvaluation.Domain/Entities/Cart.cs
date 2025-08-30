@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
@@ -10,6 +11,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public Guid BranchSaleId { get; set; }
         public string BranchName { get; set; } = string.Empty;
         public ICollection<CartItem> CartItems { get; private set; }
+        public string CartStatus { get; private set; }
 
 
         public Cart(Guid userId, Money totalSalePrice, Guid branchSaleId, string branchName)
@@ -19,6 +21,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             BranchSaleId = branchSaleId;
             BranchName = branchName;
             CartItems = new List<CartItem>();
+            CartStatus = CartStatusEnum.Opened.ToString();
         }
 
         public Cart(Guid userId, Money totalSalePrice, Guid branchSaleId, string branchName, ICollection<CartItem> cartItems)
@@ -28,10 +31,18 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             BranchSaleId = branchSaleId;
             BranchName = branchName;
             CartItems = cartItems;
+            CartStatus = CartStatusEnum.Opened.ToString();
         }
 
         public Cart()
         {
+            CartStatus = CartStatusEnum.Opened.ToString();
+        }
+
+
+        public void FinishCart()
+        {
+            CartStatus = CartStatusEnum.Finished.ToString();
         }
     }
 }
