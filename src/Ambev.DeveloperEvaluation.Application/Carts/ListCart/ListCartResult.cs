@@ -13,8 +13,8 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid BranchSaleId { get; set; }
-        public decimal TotalSalePrice { get; set; }
         public string BranchName { get; set; }
+        public decimal TotalSalePrice { get; set; }
         public IEnumerable<ListCartItemResult> CartItems { get; set; }
     }
 

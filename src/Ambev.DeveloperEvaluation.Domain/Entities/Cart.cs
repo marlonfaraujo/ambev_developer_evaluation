@@ -10,5 +10,28 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public Guid BranchSaleId { get; set; }
         public string BranchName { get; set; } = string.Empty;
         public ICollection<CartItem> CartItems { get; private set; }
+
+
+        public Cart(Guid userId, Money totalSalePrice, Guid branchSaleId, string branchName)
+        {
+            UserId = userId;
+            TotalSalePrice = totalSalePrice;
+            BranchSaleId = branchSaleId;
+            BranchName = branchName;
+            CartItems = new List<CartItem>();
+        }
+
+        public Cart(Guid userId, Money totalSalePrice, Guid branchSaleId, string branchName, ICollection<CartItem> cartItems)
+        {
+            UserId = userId;
+            TotalSalePrice = totalSalePrice;
+            BranchSaleId = branchSaleId;
+            BranchName = branchName;
+            CartItems = cartItems;
+        }
+
+        public Cart()
+        {
+        }
     }
 }

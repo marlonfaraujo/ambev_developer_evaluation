@@ -8,6 +8,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.GetCart
         public GetCartProfile()
         {
             CreateMap<GetCartResult, GetCartResponse>();
+            CreateMap<GetCartItemResult, GetCartItemResponse>();
         }
     }
 }

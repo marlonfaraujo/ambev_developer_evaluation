@@ -1,5 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
-using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
+﻿using Ambev.DeveloperEvaluation.Application.Carts.UpdateCart;
+using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart
@@ -8,7 +8,9 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart
     {
         public UpdateCartProfile()
         {
-            CreateMap<UpdateCartRequest, SimulateSaleQuery>();
+            CreateMap<UpdateCartRequest, SimulateSaleQuery>()
+                .ForMember(dest => dest.SaleItems, opt => opt.MapFrom(x => x.CartItems))
+                .ForMember(dest => dest.BranchSaleId, opt => opt.MapFrom(x => x.BranchSaleId));
             CreateMap<SimulateSaleResult, UpdateCartResponse>();
             CreateMap<SimulateSaleResult, UpdateCartCommand>()
                 .ForMember(dest => dest.BranchSaleId, opt => opt.MapFrom(src => src.BranchSaleId))

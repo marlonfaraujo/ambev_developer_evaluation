@@ -53,7 +53,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             {
                 Success = true,
                 Message = "Cart created successfully",
-                Data = _mapper.Map<CreateCartResponse>(simulateResponse)
+                Data = _mapper.Map<CreateCartResponse>(response)
             });
         }
 
@@ -71,13 +71,15 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             var simulateResponse = await _mediator.Send(new MediatRRequestAdapter<SimulateSaleQuery, SimulateSaleResult>(simulateQuery), cancellationToken);
 
             var command = _mapper.Map<UpdateCartCommand>(simulateResponse);
+            command.Id = id;
+            command.UserId = GetCurrentUserGuid();
             var response = await _mediator.Send(new MediatRRequestAdapter<UpdateCartCommand, UpdateCartResult>(command), cancellationToken);
 
             return Ok(new ApiResponseWithData<UpdateCartResponse>
             {
                 Success = true,
                 Message = "Cart updated successfully",
-                Data = _mapper.Map<UpdateCartResponse>(simulateResponse)
+                Data = _mapper.Map<UpdateCartResponse>(response)
             });
         }
 
@@ -107,7 +109,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
         }
 
         [HttpGet("")]
-        [ProducesResponseType(typeof(ApiResponseWithData<ListCartsResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<ListCartsResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCarts([FromQuery] ListCartsRequest request,CancellationToken cancellationToken)
@@ -121,11 +123,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart
             var query = _mapper.Map<ListCartQuery>(request);
             var response = await _mediator.Send(new MediatRRequestAdapter<ListCartQuery, ListCartResult>(query), cancellationToken);
 
-            return Ok(new ApiResponseWithData<ListCartsResponse>
+            return Ok(new ApiResponseWithData<IEnumerable<ListCartsResponse>>
             {
                 Success = true,
                 Message = "cart retrieved successfully",
-                Data = _mapper.Map<ListCartsResponse>(response.Items)
+                Data = _mapper.Map<IEnumerable<ListCartsResponse>>(response.Items)
             });
         }
 

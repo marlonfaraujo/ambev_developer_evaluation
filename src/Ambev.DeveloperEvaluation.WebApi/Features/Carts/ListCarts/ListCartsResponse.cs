@@ -13,7 +13,7 @@
 
     public class ListCartItemResponse
     {
-        public Guid CartItemId { get; set; }
+        public Guid Id { get; set; }
         public Guid ProductId { get; set; }
         public int ProductItemQuantity { get; set; }
         public decimal UnitProductItemPrice { get; set; }

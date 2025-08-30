@@ -12,6 +12,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
     public class CartApiFixture : IDisposable
     {
         public HttpClient Client { get; }
+        public Guid CartId { get; private set; }
         public Guid CartUserId { get; private set; }
         public string JwtToken { get; }
         public Guid BranchId { get; private set; }
@@ -53,7 +54,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             var cartRequest = new
             {
                 BranchSaleId = BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = ProductId, ProductItemQuantity = 2 }
                 }
@@ -61,15 +62,16 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
 
             var response = Client.PostAsJsonAsync("/api/carts", cartRequest).Result;
             var cart = response.Content.ReadFromJsonAsync<ApiResponseWithData<CreateCartResponse>>().Result;
+            CartId = (Guid)(cart.Data?.Id);
             CartUserId = (Guid)(cart.Data?.UserId);
         }
 
-        public void NewCartUserId()
+        public void NewCartId()
         {
             var cartRequest = new
             {
                 BranchSaleId = BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = ProductId, ProductItemQuantity = 2 }
                 }
@@ -77,6 +79,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
 
             var response = Client.PostAsJsonAsync("/api/carts", cartRequest).Result;
             var cart = response.Content.ReadFromJsonAsync<ApiResponseWithData<CreateCartResponse>>().Result!;
+            CartId = (Guid)(cart.Data?.Id);
             CartUserId = (Guid)(cart.Data?.UserId);
         }
 

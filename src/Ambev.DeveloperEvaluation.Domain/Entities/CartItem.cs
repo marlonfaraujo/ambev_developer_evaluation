@@ -12,5 +12,20 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public Money DiscountAmount { get; private set; }
         public Money TotalSaleItemPrice { get; private set; }
         public Money TotalWithoutDiscount { get; private set; }
+
+        public CartItem(Guid productId, string productName, int productItemQuantity, Money unitProductItemPrice, Money discountAmount, Money totalSaleItemPrice, Money totalWithoutDiscount)
+        {
+            ProductId = productId;
+            ProductName = productName;
+            ProductItemQuantity = productItemQuantity;
+            UnitProductItemPrice = unitProductItemPrice;
+            DiscountAmount = discountAmount;
+            TotalSaleItemPrice = totalSaleItemPrice;
+            TotalWithoutDiscount = totalWithoutDiscount;
+        }
+
+        public CartItem()
+        {
+        }
     }
 }

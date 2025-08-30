@@ -21,8 +21,17 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.DeleteCart
             if (!validationResult.IsValid)
                 throw new ValidationException(validationResult.Errors);
 
+            await existingCartById();
+
             var success = await _cartRepository.DeleteAsync(command.Id, cancellationToken);
             return new DeleteCartResult { Success = success };
+
+            async Task existingCartById()
+            {
+                var existing = await _cartRepository.GetByIdAsync(command.Id, cancellationToken);
+                if (existing == null)
+                    throw new KeyNotFoundException($"Cart with ID {command.Id} not found");
+            }
         }
     }
 }

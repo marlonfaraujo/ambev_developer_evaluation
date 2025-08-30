@@ -30,13 +30,13 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
 
     public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
     {
+        var cart = await GetCartById(command.CartId);
+        command = _mapper.Map<CreateSaleCommand>(cart);
+
         var validator = new CreateSaleCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
-
-        var cart = await GetCartById(command.CartId);
-        command = _mapper.Map<CreateSaleCommand>(cart);
 
         var products = await GetProductsById();
         await hasBranchById();
