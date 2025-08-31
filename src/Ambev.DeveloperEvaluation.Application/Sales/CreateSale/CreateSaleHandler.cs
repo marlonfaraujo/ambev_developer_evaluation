@@ -57,7 +57,7 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
         var created = await _saleRepository.CreateAsync(simulatedSale, cancellationToken);
         var saleEvent = created.CreateSaleEvent();
         var result = _mapper.Map<CreateSaleResult>(created);
-        _notification.Publish(saleEvent, cancellationToken);
+        await _notification.Publish(saleEvent, cancellationToken);
         await FinishCart();
 
         return result;

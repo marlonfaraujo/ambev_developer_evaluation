@@ -3,27 +3,32 @@ using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Common;
+using Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
+using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
+using Bogus;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using Xunit;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Xunit.Abstractions;
 
 namespace Ambev.DeveloperEvaluation.Functional
 {
-    public class SalesFunctionalTests : IClassFixture<CustomWebApplicationFactory>
+    public class SalesFunctionalTests : IClassFixture<CustomWebApplicationDbTestFactory>
     {
         private readonly HttpClient _client;
-        private readonly CustomWebApplicationFactory _factory;
+        private readonly CustomWebApplicationDbTestFactory _factory;
         private string JwtToken { get; }
+        private readonly ITestOutputHelper _output;
 
-        public SalesFunctionalTests(CustomWebApplicationFactory factory)
+        public SalesFunctionalTests(CustomWebApplicationDbTestFactory factory, ITestOutputHelper output)
         {
             _factory = factory;
+            _output = output;
             _client = factory.CreateClient();
             var key = "YourSuperSecretKeyForJwtTokenGenerationThatShouldBeAtLeast32BytesLong";
             JwtToken = FakeJwtTokenGenerator.GenerateToken(key, string.Empty, string.Empty);
@@ -58,14 +63,31 @@ namespace Ambev.DeveloperEvaluation.Functional
             return cart;
         }
 
+        private static readonly Faker<User> userFaker = new Faker<User>()
+            .RuleFor(u => u.Username, f => f.Internet.UserName())
+            .RuleFor(u => u.Phone, f => $"+55{f.Random.Number(11, 99)}{f.Random.Number(100000000, 999999999)}")
+            .RuleFor(u => u.Email, f => f.Internet.Email())
+            .RuleFor(u => u.Username, f => f.Internet.UserName())
+            .RuleFor(u => u.Status, UserStatus.Active)
+            .RuleFor(u => u.Role, UserRole.Admin);
+
         [Fact(DisplayName = "Sale flow")]
         public async Task Sale_Crud_Flow_Should_Work()
         {
+            var userRequest = userFaker.Generate();
+            userRequest.Password = "t3stC@rtUs#r";
+            var userResponse = await _client.PostAsJsonAsync("/api/users", userRequest);
+            var user = await userResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateUserResponse>>();
+
+            var authResponse = await _client.PostAsJsonAsync("/api/auth", new { Email = userRequest.Email, Password = userRequest.Password });
+            var auth = await authResponse.Content.ReadFromJsonAsync<ApiResponseWithData<AuthenticateUserResponse>>();
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth.Data?.Token);
+
             var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
             var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = 100 });
             var cart = await SeedCartAsync(
                 new Cart(
-                    Guid.NewGuid(), 
+                    user.Data.Id, 
                     new Money(product.Price * 2), 
                     branch.Id, 
                     branch.Name, 
@@ -114,11 +136,20 @@ namespace Ambev.DeveloperEvaluation.Functional
         [Fact(DisplayName = "Sales update and synchronization with mongodb")]
         public async Task Sales_Update_And_Synchronization_Should_Work()
         {
+            var userRequest = userFaker.Generate();
+            userRequest.Password = "t3stC@rtUs#r";
+            var userResponse = await _client.PostAsJsonAsync("/api/users", userRequest);
+            var user = await userResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateUserResponse>>();
+
+            var authResponse = await _client.PostAsJsonAsync("/api/auth", new { Email = userRequest.Email, Password = userRequest.Password });
+            var auth = await authResponse.Content.ReadFromJsonAsync<ApiResponseWithData<AuthenticateUserResponse>>();
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth.Data?.Token);
+
             var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
             var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = 100 });
             var cart = await SeedCartAsync(
                 new Cart(
-                    Guid.NewGuid(),
+                    user.Data.Id,
                     new Money(product.Price * 2),
                     branch.Id,
                     branch.Name,
@@ -152,7 +183,6 @@ namespace Ambev.DeveloperEvaluation.Functional
 
             var check = await _client.GetFromJsonAsync<ApiResponseWithData<GetSaleResponse>>($"/api/sales/{created.Data.Id}");
             check!.Data.SaleStatus.Should().Be(SaleStatusEnum.Modified.ToString());
-
 
             var query = $"?PageNumber=1&PageSize=5&SaleId={created.Data.Id}";
             var listResponse = await _client.GetAsync($"/api/sales{query}");

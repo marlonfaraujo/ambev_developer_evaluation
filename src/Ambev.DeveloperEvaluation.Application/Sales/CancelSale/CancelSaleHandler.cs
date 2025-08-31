@@ -37,10 +37,10 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale
             var saleItemsEvent = existingSale.CancelSaleItems();
             var result = await _saleRepository.UpdateAsync(existingSale, cancellationToken);
 
-            _notification.Publish(saleEvent, cancellationToken);
+            await _notification.Publish(saleEvent, cancellationToken);
             foreach (var item in saleItemsEvent)
             {
-                _notification.Publish(item, cancellationToken);
+                await _notification.Publish(item, cancellationToken);
             }
 
             return _mapper.Map<CancelSaleResult>(result);

@@ -93,6 +93,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
+            Console.WriteLine($"Handler Exception: {exception.Message}");
             return context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
         }
     }
