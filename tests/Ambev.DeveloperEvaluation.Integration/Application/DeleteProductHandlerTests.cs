@@ -22,11 +22,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
         public async Task Handle_ValidId_DeletesProduct()
         {
             var productRepoMock = new ProductRepository(_context);
+            var cartRepoMock = new CartRepository(_context);
             var queryDbServiceMock = new Mock<IQueryDatabaseService>();
             var productExisting = ProductHandlerTestData.GetProduct();
             var command = new DeleteProductCommand(productExisting.Id);
 
-            var handler = new DeleteProductHandler(productRepoMock, queryDbServiceMock.Object);
+            var handler = new DeleteProductHandler(productRepoMock, queryDbServiceMock.Object, cartRepoMock);
 
             var result = await handler.Handle(command, CancellationToken.None);
 
