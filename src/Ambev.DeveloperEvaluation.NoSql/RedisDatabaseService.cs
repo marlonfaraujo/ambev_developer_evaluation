@@ -1,7 +1,7 @@
 ﻿using StackExchange.Redis;
 using System.Text.Json;
 
-namespace Ambev.DeveloperEvaluation.ORM.Services
+namespace Ambev.DeveloperEvaluation.NoSql
 {
     public class RedisDatabaseService
     {

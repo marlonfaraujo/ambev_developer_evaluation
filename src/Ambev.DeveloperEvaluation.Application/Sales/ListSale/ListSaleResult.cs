@@ -1,6 +1,6 @@
 namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
 {
-    public class ListSaleResultItem
+    public class ListSaleResultData
     {
         public Guid SaleId { get; set; }
         public int SaleNumber { get; set; }
@@ -17,7 +17,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
 
     public class ListSaleResult
     {
-        public IEnumerable<ListSaleResultItem> Items { get; set; } = new List<ListSaleResultItem>();
+        public IEnumerable<ListSaleResultData> Items { get; set; } = new List<ListSaleResultData>();
         public long TotalCount { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }

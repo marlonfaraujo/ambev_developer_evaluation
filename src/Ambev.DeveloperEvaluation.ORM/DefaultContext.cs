@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.ORM.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ public class DefaultContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Branch> Branchs { get; set; }
     public DbSet<Sale> Sales { get; set; }
+    public DbSet<Cart> Carts { get; set; }
 
     public DefaultContext(DbContextOptions<DefaultContext> options) : base(options)
     {
@@ -19,6 +21,28 @@ public class DefaultContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var moneyConverter = new MoneyConverter();
+
+        modelBuilder.Entity<CartItem>()
+            .Property(e => e.UnitProductItemPrice)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<CartItem>()
+            .Property(e => e.DiscountAmount)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<CartItem>()
+            .Property(e => e.TotalSaleItemPrice)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<CartItem>()
+            .Property(e => e.TotalWithoutDiscount)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<Cart>()
+            .Property(e => e.TotalSalePrice)
+            .HasConversion(moneyConverter);
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }

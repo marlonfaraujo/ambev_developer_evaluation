@@ -1,4 +1,4 @@
-﻿using Ambev.DeveloperEvaluation.Application.Dtos;
+﻿using Ambev.DeveloperEvaluation.Domain.Common;
 
 namespace Ambev.DeveloperEvaluation.Application.Services
 {

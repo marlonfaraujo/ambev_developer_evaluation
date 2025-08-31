@@ -22,7 +22,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             var cartRequest = new
             {
                 BranchSaleId = _cartApiFixture.BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = _cartApiFixture.ProductId, ProductItemQuantity = 2 }
                 }
@@ -41,7 +41,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             var cartRequest = new
             {
                 BranchSaleId = Guid.NewGuid(),
-                SaleItems = Array.Empty<object>()
+                CartItems = Array.Empty<object>()
             };
 
             var response = await _cartApiFixture.Client.PostAsJsonAsync("/api/carts", cartRequest);
@@ -56,20 +56,19 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "PUT /api/carts should return Created when cart is updated")]
         public async Task UpdateCart_ReturnsCreated()
         {
-            //_cartApiFixture.NewCartUserId();
+            _cartApiFixture.NewCartId();
 
             // Now, update the cart
             var updateRequest = new
             {
                 BranchSaleId = _cartApiFixture.BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = _cartApiFixture.ProductId, ProductItemQuantity = 3 }
-                },
-                UserId = _cartApiFixture.CartUserId
+                }
             };
 
-            var response = await _cartApiFixture.Client.PutAsJsonAsync("/api/carts", updateRequest);
+            var response = await _cartApiFixture.Client.PutAsJsonAsync($"/api/carts/{_cartApiFixture.CartId}", updateRequest);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -83,7 +82,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             var updateRequest = new
             {
                 BranchSaleId = _cartApiFixture.BranchId, // Invalid Guid
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = _cartApiFixture.ProductId, ProductItemQuantity = 0 } // Invalid quantity
                 }
@@ -96,12 +95,28 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
 
 
         /// <summary>
+        /// Verifies that retrieving a cart by ID via GET returns HTTP 200 OK.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/carts/{id} should return Ok when cart exists")]
+        public async Task Get_Cart_By_Id_ReturnsOk()
+        {
+            _cartApiFixture.NewCartId();
+            // Act
+            var getResponse = await _cartApiFixture.Client.GetAsync($"/api/carts/{_cartApiFixture.CartId}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
+        }
+
+
+        /// <summary>
         /// Verifies that retrieving the cart via GET returns HTTP 200 OK.
         /// </summary>
         [Fact(DisplayName = "GET /api/carts should return Ok when cart exists")]
         public async Task GetCart_ReturnsOk()
         {
-            var response = await _cartApiFixture.Client.GetAsync($"/api/carts");
+            var query = $"?PageNumber=1&PageSize=5";
+            var response = await _cartApiFixture.Client.GetAsync($"/api/carts{query}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -112,7 +127,8 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "DELETE /api/carts should return Ok when cart is deleted")]
         public async Task DeleteCart_ReturnsOk()
         {
-            var response = await _cartApiFixture.Client.DeleteAsync("/api/carts");
+            _cartApiFixture.NewCartId();
+            var response = await _cartApiFixture.Client.DeleteAsync($"/api/carts/{_cartApiFixture.CartId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -123,9 +139,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         [Fact(DisplayName = "POST /api/sales should return Created when checkout is successful")]
         public async Task CheckoutCart_ReturnsCreated()
         {
-            _cartApiFixture.NewCartUserId();
-            // You may need to create a cart first before checkout
-            var response = await _cartApiFixture.Client.PostAsync("/api/sales", null);
+            _cartApiFixture.NewCartId();
+            var saleRequest = new
+            {
+                CartId = _cartApiFixture.CartId
+            };
+            var response = await _cartApiFixture.Client.PostAsJsonAsync("/api/sales", saleRequest);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
@@ -137,9 +156,13 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
         public async Task CheckoutCart_EmptyCart_ReturnsBadRequest()
         {
             // Delete cart to ensure it's empty
-            await _cartApiFixture.Client.DeleteAsync("/api/carts");
+            await _cartApiFixture.Client.DeleteAsync($"/api/carts/{_cartApiFixture.CartId}");
 
-            var response = await _cartApiFixture.Client.PostAsync("/api/sales", null);
+            var saleRequest = new
+            {
+                CartId = Guid.Empty
+            };
+            var response = await _cartApiFixture.Client.PostAsJsonAsync("/api/sales", saleRequest);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }

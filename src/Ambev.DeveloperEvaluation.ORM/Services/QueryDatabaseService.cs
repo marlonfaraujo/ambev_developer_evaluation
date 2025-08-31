@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Sale;
@@ -132,6 +133,43 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             }
 
             return parameters;
+        }
+
+        public async Task<int> UpdateProductInCart(Guid productId, string productName)
+        {
+            var sql = @"
+                UPDATE public.""CartItems"" ci
+                    SET ""ProductName"" = @productName
+                FROM public.""Carts"" c
+                WHERE ci.""CartId"" = c.""Id""
+                    AND c.""CartStatus"" = @cartStatus
+                    AND ""ProductId"" = @productId
+            ";
+
+            var sqlParameters = new List<NpgsqlParameter>();
+            sqlParameters.Add(new NpgsqlParameter("productId", productId));
+            sqlParameters.Add(new NpgsqlParameter("productName", productName));
+            sqlParameters.Add(new NpgsqlParameter("cartStatus", CartStatusEnum.Opened.ToString()));
+
+            var result = await _context.Database.ExecuteSqlRawAsync(sql, sqlParameters.ToArray());
+            return result;
+        }
+
+        public async Task<int> UpdateBranchInCart(Guid branchId, string branchName)
+        {
+            var sql = @"
+                UPDATE public.""Carts""
+                    SET ""BranchName"" = @branchName
+                WHERE ""BranchSaleId"" = @branchId AND ""CartStatus"" = @cartStatus
+            ";
+
+            var sqlParameters = new List<NpgsqlParameter>();
+            sqlParameters.Add(new NpgsqlParameter("branchId", branchId));
+            sqlParameters.Add(new NpgsqlParameter("branchName", branchName));
+            sqlParameters.Add(new NpgsqlParameter("cartStatus", CartStatusEnum.Opened.ToString()));
+
+            var result = await _context.Database.ExecuteSqlRawAsync(sql, sqlParameters.ToArray());
+            return result;
         }
     }
 }

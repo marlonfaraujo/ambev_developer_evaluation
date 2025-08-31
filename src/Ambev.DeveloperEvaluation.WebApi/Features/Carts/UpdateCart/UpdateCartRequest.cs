@@ -1,8 +1,8 @@
-﻿using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
+﻿using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
 
-namespace Ambev.DeveloperEvaluation.WebApi.Features.Cart.UpdateCart
+namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.UpdateCart
 {
-    public record UpdateCartRequest(Guid BranchSaleId, IEnumerable<CreateCartItemsRequest> SaleItems)
+    public record UpdateCartRequest(Guid BranchSaleId, IEnumerable<CreateCartItemsRequest> CartItems)
     {
     }
 }

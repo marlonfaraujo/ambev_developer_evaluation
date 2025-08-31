@@ -84,7 +84,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
         [ProducesResponseType(typeof(ApiResponseWithData<GetBranchResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetBranch(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetBranch([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var request = new GetBranchRequest { Id = id };
             var validator = new GetBranchRequestValidator();
@@ -130,7 +130,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
                 parameters.Pager.PageSize = request.PageSize;
             }
 
-            var sqlQueryParams = ListBranchsQuery.GetSqlQuery(parameters);
+            var sqlQueryParams = ListBranchsSqlQuery.GetSqlQuery(parameters);
             var response = await _queryDbService.Select<ListBranchsQueryResult>(sqlQueryParams.QuerySql, _queryDbService.GetSqlParameters(request));
 
             return Ok(new ApiResponseWithData<IEnumerable<ListBranchsResponse>>
@@ -145,7 +145,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteBranch(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteBranch([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var request = new DeleteBranchRequest { Id = id };
             var validator = new DeleteBranchRequestValidator();

@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Application.Dtos;
 using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Common;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
@@ -29,10 +30,6 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
             {
                 filters["BranchId"] = request.BranchId.GetValueOrDefault();
             }
-            if (request.ProductId.HasValue)
-            {
-                filters["ProductId"] = request.ProductId.GetValueOrDefault();
-            }
             if (request.PageNumber > 0)
             {
                 options.Page = request.PageNumber;
@@ -51,7 +48,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
             var queryResult = await _mongoDbService.QueryAsync(options);
             var result = new ListSaleResult
             {
-                Items = _mapper.Map<IEnumerable<ListSaleResultItem>>(queryResult.Items),
+                Items = _mapper.Map<IEnumerable<ListSaleResultData>>(queryResult.Items),
                 TotalCount = queryResult.TotalCount,
                 Page = queryResult.Page,
                 PageSize = queryResult.PageSize

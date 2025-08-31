@@ -2,7 +2,7 @@
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
-using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Bogus;
@@ -17,6 +17,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         public string JwtToken { get; private set; }
         public Guid BranchId { get; private set; }
         public Guid ProductId { get; private set; }
+        public Guid CartId { get; private set; }
         public Guid UserId { get; private set; }
         public List<SaleItem> SaleItems { get; private set; }
 
@@ -61,7 +62,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             var cartRequest = new
             {
                 BranchSaleId = BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = ProductId, ProductItemQuantity = 2 }
                 }
@@ -69,19 +70,25 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
 
             var cartResponse = Client.PostAsJsonAsync("/api/carts", cartRequest).Result;
             var cart = cartResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateCartResponse>>().Result;
+            CartId = (Guid)(cart.Data?.Id);
 
-            var saleResponse = Client.PostAsync("/api/sales", null).Result;
+
+            var saleRequest = new
+            {
+                CartId = CartId
+            };
+            var saleResponse = Client.PostAsJsonAsync("/api/sales", saleRequest).Result;
             var sale = saleResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateSaleResponse>>().Result;
             SaleId = (Guid)(sale.Data?.Id);
             SaleItems = sale.Data?.SaleItems.ToList();
         }
 
-        public void NewCartUserId()
+        public void NewCartId()
         {
             var cartRequest = new
             {
                 BranchSaleId = BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = ProductId, ProductItemQuantity = 2 }
                 }
@@ -89,6 +96,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
 
             var response = Client.PostAsJsonAsync("/api/carts", cartRequest).Result;
             var cart = response.Content.ReadFromJsonAsync<ApiResponseWithData<CreateCartResponse>>().Result!;
+            CartId = (Guid)(cart.Data?.Id);
             UserId = (Guid)(cart.Data?.UserId);
         }
 
@@ -99,6 +107,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
 
         public void Dispose()
         {
+            Client.PostAsJsonAsync($"/api/sales/{SaleId}/cancel", new { Id = SaleId }).Wait();
             Client.DeleteAsync($"/api/sales/{SaleId}").Wait();
         }
     }
