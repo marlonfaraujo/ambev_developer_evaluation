@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Events;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
@@ -16,6 +17,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         }
         public Product()
         {
+        }
+
+        public ProductChangedEvent CreateProductChangedEvent()
+        {
+            return new ProductChangedEvent(this.Id, this.Name);
         }
     }
 }

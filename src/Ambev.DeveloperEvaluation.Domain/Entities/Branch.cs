@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Events;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
@@ -14,6 +15,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         }
         public Branch()
         {
+        }
+
+        public BranchChangedEvent CreateBranchChangedEvent()
+        {
+            return new BranchChangedEvent(this.Id, this.Name);
         }
     }
 }

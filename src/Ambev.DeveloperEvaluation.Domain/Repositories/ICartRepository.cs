@@ -10,5 +10,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
         Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
         Task<PagedResult<Cart>> GetPagedAsync(QueryOptions options, CancellationToken cancellationToken = default);
+        Task UpdateBranchInCartAsync(Guid branchId, string newBranchName, CancellationToken cancellationToken = default);
     }
 }

@@ -1,5 +1,6 @@
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.ORM.Common;
 using Microsoft.EntityFrameworkCore;
@@ -73,20 +74,41 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             {
                 foreach (var kv in options.Filters)
                 {
-                    var property = typeof(Cart).GetProperty(kv.Key);
-                    if (property != null)
+                    if (kv.Key.StartsWith("CartItems."))
                     {
-                        var value = kv.Value;
-                        if (property.PropertyType == typeof(Guid) && value != null)
+                        var propertyName = kv.Key.Replace("CartItems.", "");
+                        var property = typeof(CartItem).GetProperty(propertyName);
+
+                        if (property != null)
                         {
-                            var guidValue = Guid.Parse(value.ToString()!);
-                            query = query.Where(x => EF.Property<Guid>(x, kv.Key) == guidValue);
+                            var value = kv.Value;
+                            if (property.PropertyType == typeof(Guid) && value != null)
+                            {
+                                var guidValue = Guid.Parse(value.ToString()!);
+                                query = query.Where(c => c.CartItems.Any(ci => EF.Property<Guid>(ci, propertyName) == guidValue));
+                            }
+                            else
+                            {
+                                query = query.Where(c => c.CartItems.Any(ci => EF.Property<string>(ci, propertyName) == value.ToString()));
+                            }
                         }
-                        else
+                    } 
+                    else
+                    {
+                        var property = typeof(Cart).GetProperty(kv.Key);
+                        if (property != null)
                         {
-                            query = query.Where(x => EF.Property<string>(x, kv.Key) == value.ToString());
+                            var value = kv.Value;
+                            if (property.PropertyType == typeof(Guid) && value != null)
+                            {
+                                var guidValue = Guid.Parse(value.ToString()!);
+                                query = query.Where(x => EF.Property<Guid>(x, kv.Key) == guidValue);
+                            }
+                            else
+                            {
+                                query = query.Where(x => EF.Property<string>(x, kv.Key) == value.ToString());
+                            }
                         }
-                        
                     }
                 }
             }
@@ -113,6 +135,14 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
                 Page = options.Page,
                 PageSize = options.PageSize
             };
+        }
+
+        public async Task UpdateBranchInCartAsync(Guid branchId, string newBranchName, CancellationToken cancellationToken = default)
+        {
+            await _context.Carts
+                .Where(x => x.BranchSaleId == branchId)
+                .ExecuteUpdateAsync(setters =>
+                    setters.SetProperty(x => x.BranchName, _ => newBranchName));
         }
     }
 }

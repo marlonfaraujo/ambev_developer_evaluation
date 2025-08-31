@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Ambev.DeveloperEvaluation.Functional
 {
-    public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+    public class CustomWebApplicationDbTestFactory : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -19,7 +19,15 @@ namespace Ambev.DeveloperEvaluation.Functional
                     services.Remove(descriptor);
 
                 services.AddDbContext<DefaultContext>(options =>
-                    options.UseInMemoryDatabase("FunctionalTestDb"));
+                {
+                    options.UseNpgsql("Server=localhost:5432;Database=DbTest;User Id=developer;Password=ev@luAt10n");
+                });
+
+                var sp = services.BuildServiceProvider();
+                using var scope = sp.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<DefaultContext>();
+                context.Database.EnsureCreated();
+                //context.Database.Migrate();
             });
         }
     }

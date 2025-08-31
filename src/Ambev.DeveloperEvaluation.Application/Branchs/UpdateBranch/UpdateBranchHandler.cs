@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
@@ -11,11 +12,13 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch
 
         private readonly IBranchRepository _branchRepository;
         private readonly IMapper _mapper;
+        private readonly IDomainNotificationAdapter _notification;
 
-        public UpdateBranchHandler(IBranchRepository branchRepository, IMapper mapper)
+        public UpdateBranchHandler(IBranchRepository branchRepository, IMapper mapper, IDomainNotificationAdapter notification)
         {
             _branchRepository = branchRepository;
             _mapper = mapper;
+            _notification = notification;
         }
 
         public async Task<UpdateBranchResult> Handle(UpdateBranchCommand command, CancellationToken cancellationToken)
@@ -29,7 +32,9 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch
 
             var branch = _mapper.Map<Branch>(command);
             var updated = await _branchRepository.UpdateAsync(branch, cancellationToken);
+            var branchEvent = updated.CreateBranchChangedEvent();
             var result = _mapper.Map<UpdateBranchResult>(updated);
+            _notification.Publish(branchEvent, cancellationToken);
             return result;
 
             async Task existingBranchById()

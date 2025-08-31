@@ -8,5 +8,7 @@
         object[] GetSqlParameters<T>(T parameters);
         Task<bool> UserInSales(Guid userId);
         Task<IEnumerable<TEntity>> GetSaleQueryById<TEntity>(Guid saleId) where TEntity : class;
+        Task<int> UpdateProductInCart(Guid productId, string productName);
+        Task<int> UpdateBranchInCart(Guid branchId, string branchName);
     }
 }

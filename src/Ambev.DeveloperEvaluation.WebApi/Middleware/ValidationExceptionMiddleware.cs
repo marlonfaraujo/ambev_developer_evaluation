@@ -77,7 +77,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                 var response = new ApiResponse
                 {
                     Success = false,
-                    Message = "An unexpected error occurred.",
+                    Message = ex.Message,
                     Errors = Enumerable.Empty<ValidationErrorDetail>()
                 };
                 await HandleExceptionAsync(context, ex, StatusCodes.Status500InternalServerError, response);
