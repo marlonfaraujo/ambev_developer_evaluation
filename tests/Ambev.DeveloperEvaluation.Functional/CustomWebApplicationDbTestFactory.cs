@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.ORM;
+﻿using Ambev.DeveloperEvaluation.NoSql;
+using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -28,6 +29,13 @@ namespace Ambev.DeveloperEvaluation.Functional
                 var context = scope.ServiceProvider.GetRequiredService<DefaultContext>();
                 context.Database.EnsureCreated();
                 //context.Database.Migrate();
+
+
+                services.AddSingleton<MongoDbContext>(sp =>
+                    new MongoDbContext(
+                        "mongodb://developer:ev%40luAt10n@localhost:27017/?authSource=admin",
+                        "test_developer_evaluation"
+                    ));
             });
         }
     }

@@ -171,5 +171,15 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             var result = await _context.Database.ExecuteSqlRawAsync(sql, sqlParameters.ToArray());
             return result;
         }
+
+        public async Task<IEnumerable<TEntity>> GetSaleQueryBySaleItemId<TEntity>(Guid saleItemId) where TEntity : class
+        {
+            var sqlQueryParameters = ListSalesSqlQuery.GetSqlQuery(new ListSalesQueryParams()
+            {
+                SaleItemId = saleItemId
+            });
+            var result = await Select<TEntity>(sqlQueryParameters.QuerySql, sqlQueryParameters.SqlParameters.ToArray());
+            return result;
+        }
     }
 }

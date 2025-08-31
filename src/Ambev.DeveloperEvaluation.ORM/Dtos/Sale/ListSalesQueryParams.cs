@@ -15,5 +15,6 @@ namespace Ambev.DeveloperEvaluation.ORM.Dtos.Sale
         public Guid? ProductId { get; set; } = null;
         public Guid? BranchId { get; set; } = null;
         public Pager Pager { get; set; }
+        public Guid? SaleItemId { get; set; } = null;
     }
 }

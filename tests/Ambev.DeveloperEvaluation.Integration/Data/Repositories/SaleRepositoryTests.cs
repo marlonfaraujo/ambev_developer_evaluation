@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
 using Xunit;
 
@@ -17,7 +18,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
                 Id = Guid.NewGuid(),
                 SaleDate = DateTime.UtcNow,
                 UserId = Guid.NewGuid(),
-                TotalSalePrice = 100,
+                TotalSalePrice = new Money(100),
                 BranchSaleId = Guid.NewGuid()
             };
             sale.AddSaleItems(new List<SaleItem>());
@@ -37,7 +38,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
                 Id = Guid.NewGuid(),
                 SaleDate = DateTime.UtcNow,
                 UserId = Guid.NewGuid(),
-                TotalSalePrice = 200,
+                TotalSalePrice = new Money(200),
                 BranchSaleId = Guid.NewGuid()
             };
             context.Sales.Add(sale);
@@ -70,7 +71,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
                 Id = Guid.NewGuid(),
                 SaleDate = DateTime.UtcNow,
                 UserId = Guid.NewGuid(),
-                TotalSalePrice = 300,
+                TotalSalePrice = new Money(300),
                 BranchSaleId = Guid.NewGuid()
             };
             context.Sales.Add(sale);
@@ -103,7 +104,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
                 Id = Guid.NewGuid(),
                 SaleDate = DateTime.UtcNow,
                 UserId = Guid.NewGuid(),
-                TotalSalePrice = 400,
+                TotalSalePrice = new Money(400),
                 BranchSaleId = Guid.NewGuid()
             };
             context.Sales.Add(sale);

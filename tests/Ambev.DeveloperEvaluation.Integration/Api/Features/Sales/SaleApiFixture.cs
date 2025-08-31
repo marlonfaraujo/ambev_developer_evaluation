@@ -80,7 +80,16 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             var saleResponse = Client.PostAsJsonAsync("/api/sales", saleRequest).Result;
             var sale = saleResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateSaleResponse>>().Result;
             SaleId = (Guid)(sale.Data?.Id);
-            SaleItems = sale.Data?.SaleItems.ToList();
+            SaleItems = sale.Data?.SaleItems.Select(x => 
+                new SaleItem(
+                    x.Id, 
+                    x.ProductId, 
+                    x.ProductItemQuantity, 
+                    x.UnitProductItemPrice, 
+                    x.DiscountAmount, 
+                    x.TotalSaleItemPrice, 
+                    x.TotalWithoutDiscount, 
+                    x.SaleItemStatus)).ToList();
         }
 
         public void NewCartId()

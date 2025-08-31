@@ -58,7 +58,7 @@ public class UpdateSaleHandler : IRequestApplicationHandler<UpdateSaleCommand, U
         var saleEvent = simulatedSale.UpdateSale();
         var updated = await _saleRepository.UpdateAsync(simulatedSale, cancellationToken);
         var result = _mapper.Map<UpdateSaleResult>(updated);
-        _notification.Publish(saleEvent, cancellationToken);
+        await _notification.Publish(saleEvent, cancellationToken);
         return result;
 
         async Task<Sale> existingSaleById()

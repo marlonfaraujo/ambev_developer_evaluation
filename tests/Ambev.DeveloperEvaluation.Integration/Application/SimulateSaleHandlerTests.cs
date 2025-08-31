@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.SimulateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.Integration.Application.TestData;
 using Ambev.DeveloperEvaluation.Integration.Data;
 using Ambev.DeveloperEvaluation.ORM;
@@ -34,7 +35,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
                 new SaleItem
                 {
                     ProductId = productExisting.Id,
-                    UnitProductItemPrice = productExisting.Price,
+                    UnitProductItemPrice = new Money(productExisting.Price),
                     ProductItemQuantity = 10
                 }
             };
@@ -42,12 +43,12 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
             var sale = new Sale
             {
                 BranchSaleId = branchExisting.Id,
-                TotalSalePrice = 0
+                TotalSalePrice = new Money(0)
             };
             sale.AddSaleItems(simulateQuery.SaleItems.ToList());
             // Setup repository and mapper mocks as needed for simulation
             mapperMock.Setup(m => m.Map<Sale>(simulateQuery)).Returns(sale);
-            mapperMock.Setup(m => m.Map<SimulateSaleResult>(sale)).Returns(new SimulateSaleResult { BranchSaleId = branchExisting.Id, UserId = sale.UserId, TotalSalePrice = sale.TotalSalePrice, SaleItems = sale.SaleItems});
+            mapperMock.Setup(m => m.Map<SimulateSaleResult>(sale)).Returns(new SimulateSaleResult { BranchSaleId = branchExisting.Id, UserId = sale.UserId, TotalSalePrice = sale.TotalSalePrice.Value, SaleItems = sale.SaleItems});
             var handler = new SimulateSaleHandler(productRepoMock, branchRepoMock, mapperMock.Object);
             var result = await handler.Handle(simulateQuery, CancellationToken.None);
             Assert.NotNull(result);

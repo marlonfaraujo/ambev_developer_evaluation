@@ -2,7 +2,6 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using MongoDB.Driver.Core.Configuration;
 
 namespace Ambev.DeveloperEvaluation.NoSql
 {
@@ -28,7 +27,15 @@ namespace Ambev.DeveloperEvaluation.NoSql
 
         private void Configuration()
         {
-            BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
+            try
+            {
+                BsonSerializer.RegisterSerializer(typeof(Guid), new GuidSerializer(GuidRepresentation.Standard));
+            }
+            catch (BsonSerializationException exception)
+            {
+                Console.WriteLine($"BsonSerializationException Exception: {exception.Message}");
+            }
+            
             if (!BsonClassMap.IsClassMapRegistered(typeof(SaleModel)))
             {
                 BsonClassMap.RegisterClassMap<SaleModel>(cm =>

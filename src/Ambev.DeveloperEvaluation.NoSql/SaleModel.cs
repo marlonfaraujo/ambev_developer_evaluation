@@ -4,6 +4,7 @@ namespace Ambev.DeveloperEvaluation.NoSql
 {
     public class SaleModel : ISaleModel
     {
+
         public Guid Id { get; set; }
         public Guid SaleId { get; set; }
         public int SaleNumber { get; set; }
@@ -16,6 +17,50 @@ namespace Ambev.DeveloperEvaluation.NoSql
         public string BranchName { get; set; } = string.Empty;
         public string BranchDescription { get; set; } = string.Empty;
         public IEnumerable<ISaleItemModel> SaleItems { get; set; } = new List<SaleItemModel>();
+
+        public SaleModel()
+        {
+        }
+
+        public static SaleModel Create(IEnumerable<ListSalesQueryResult> queryResult)
+        {
+            var saleModel = WithSaleItems(queryResult);
+            saleModel.Id = Guid.NewGuid();
+            return saleModel;
+        }
+
+        public static SaleModel WithSaleItems(IEnumerable<ListSalesQueryResult> queryResult)
+        {
+            if (!queryResult.Any()) return new SaleModel();
+
+            var saleItems = queryResult.Select(x => new SaleItemModel(
+                x.SaleItemId,
+                x.ProductId,
+                x.ProductItemQuantity,
+                x.UnitProductItemPrice,
+                x.DiscountAmount,
+                x.TotalSaleItemPrice,
+                x.TotalWithoutDiscount,
+                x.SaleItemStatus,
+                x.ProductName,
+                x.ProductDescription
+            )).ToList();
+
+            return new SaleModel
+            {
+                SaleId = queryResult.First().SaleId,
+                SaleNumber = queryResult.First().SaleNumber,
+                SaleDate = queryResult.First().SaleDate ?? DateTime.Now,
+                TotalSalePrice = queryResult.First().TotalSalePrice,
+                SaleStatus = queryResult.First().SaleStatus,
+                UserId = queryResult.First().UserId,
+                UserName = queryResult.First().UserName,
+                BranchId = queryResult.First().BranchId,
+                BranchName = queryResult.First().BranchName,
+                BranchDescription = queryResult.First().BranchDescription,
+                SaleItems = saleItems
+            };
+        }
     }
 
     public class SaleItemModel : ISaleItemModel

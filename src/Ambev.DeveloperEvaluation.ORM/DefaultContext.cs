@@ -43,6 +43,26 @@ public class DefaultContext : DbContext
             .Property(e => e.TotalSalePrice)
             .HasConversion(moneyConverter);
 
+        modelBuilder.Entity<SaleItem>()
+            .Property(e => e.UnitProductItemPrice)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<SaleItem>()
+            .Property(e => e.DiscountAmount)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<SaleItem>()
+            .Property(e => e.TotalSaleItemPrice)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<SaleItem>()
+            .Property(e => e.TotalWithoutDiscount)
+            .HasConversion(moneyConverter);
+
+        modelBuilder.Entity<Sale>()
+            .Property(e => e.TotalSalePrice)
+            .HasConversion(moneyConverter);
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }

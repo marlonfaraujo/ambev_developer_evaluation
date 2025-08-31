@@ -1,4 +1,6 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Dtos;
+using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.WebApi.Notifications;
 using Microsoft.Extensions.Logging;
@@ -14,7 +16,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Notification
         {
             // Arrange
             var loggerMock = new Mock<ILogger<SaleCancelledNotiticationHandler>>();
-            var handler = new SaleCancelledNotiticationHandler(loggerMock.Object);
+            var mongoDbServiceMock = new Mock<IMongoDbService<ISaleModel>>();
+            var queryDatabaseServiceMock = new Mock<IQueryDatabaseService>();
+            var handler = new SaleCancelledNotiticationHandler(loggerMock.Object, mongoDbServiceMock.Object, queryDatabaseServiceMock.Object);
 
             var notification = new MediatRDomainNotification<SaleCancelledEvent>(new Sale().CancelSale());
 

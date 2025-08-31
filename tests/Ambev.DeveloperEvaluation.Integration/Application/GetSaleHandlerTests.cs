@@ -32,7 +32,22 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
             sale.TotalSalePrice = saleExisting.TotalSalePrice;
             sale.AddSaleItems(saleExisting.SaleItems.ToList());
 
-            mapperMock.Setup(m => m.Map<GetSaleResult>(It.IsAny<Sale>())).Returns(new GetSaleResult(sale.Id, sale.SaleNumber, sale.TotalSalePrice, saleExisting.SaleStatus, sale.SaleItems));
+            mapperMock.Setup(m => m.Map<GetSaleResult>(It.IsAny<Sale>())).Returns(
+                new GetSaleResult(
+                    sale.Id, 
+                    sale.SaleNumber, 
+                    sale.TotalSalePrice.Value, 
+                    saleExisting.SaleStatus, 
+                    sale.SaleItems.Select(x => new GetSaleItemResult(
+                        x.Id,
+                        x.ProductId,
+                        x.ProductItemQuantity,
+                        x.UnitProductItemPrice.Value,
+                        x.DiscountAmount.Value,
+                        x.TotalSaleItemPrice.Value,
+                        x.TotalWithoutDiscount.Value,
+                        x.SaleItemStatus
+                        ))));
             var handler = new GetSaleHandler(repoMock, mapperMock.Object);
             var result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);

@@ -10,5 +10,6 @@
         Task<IEnumerable<TEntity>> GetSaleQueryById<TEntity>(Guid saleId) where TEntity : class;
         Task<int> UpdateProductInCart(Guid productId, string productName);
         Task<int> UpdateBranchInCart(Guid branchId, string branchName);
+        Task<IEnumerable<TEntity>> GetSaleQueryBySaleItemId<TEntity>(Guid saleItemId) where TEntity : class;
     }
 }

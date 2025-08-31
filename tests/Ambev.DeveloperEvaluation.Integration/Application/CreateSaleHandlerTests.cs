@@ -1,12 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Application;
-using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
+﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.Integration.Application.TestData;
 using Ambev.DeveloperEvaluation.Integration.Data;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
-using Ambev.DeveloperEvaluation.WebApi;
 using AutoMapper;
 using Moq;
 using Xunit;
@@ -52,20 +51,36 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
             var sale = new Sale();
             sale.BranchSaleId = command.BranchSaleId;
             sale.UserId = command.UserId;
-            sale.TotalSalePrice = command.TotalSalePrice;
+            sale.TotalSalePrice = new Money(command.TotalSalePrice);
             sale.AddSaleItems(command.SaleItems.Select(x =>
             {
                 return new SaleItem
                 {
                     ProductId = x.ProductId,
                     ProductItemQuantity = x.ProductItemQuantity,
-                    UnitProductItemPrice = x.UnitProductItemPrice
+                    UnitProductItemPrice = new Money(x.UnitProductItemPrice)
                 };
             }).ToList());
 
             mapperMock.Setup(m => m.Map<CreateSaleCommand>(It.IsAny<Cart>())).Returns(command);
             mapperMock.Setup(m => m.Map<Sale>(command)).Returns(sale);
-            mapperMock.Setup(m => m.Map<CreateSaleResult>(sale)).Returns(new CreateSaleResult(Guid.NewGuid(), sale.UserId, sale.BranchSaleId, 0, sale.TotalSalePrice, sale.SaleStatus, sale.SaleItems));
+            mapperMock.Setup(m => m.Map<CreateSaleResult>(sale)).Returns(
+                new CreateSaleResult(
+                    Guid.NewGuid(), 
+                    sale.UserId, 
+                    sale.BranchSaleId, 
+                    0, 
+                    sale.TotalSalePrice.Value, 
+                    sale.SaleStatus,
+                    sale.SaleItems.Select(x => new CreateSaleItemResult(
+                        x.Id, 
+                        x.ProductId, 
+                        x.ProductItemQuantity, 
+                        x.UnitProductItemPrice.Value, 
+                        x.DiscountAmount.Value, 
+                        x.TotalSaleItemPrice.Value, 
+                        x.TotalWithoutDiscount.Value, 
+                        x.SaleItemStatus))));
             var handler = new CreateSaleHandler(saleRepoMock, productRepoMock, branchRepoMock, cartRepoMock, mapperMock.Object, adapter.Object);
             var result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);
