@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Services;
 using Ambev.DeveloperEvaluation.Domain.Common;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Ambev.DeveloperEvaluation.NoSql
@@ -35,6 +36,31 @@ namespace Ambev.DeveloperEvaluation.NoSql
         {
             var filter = Builders<T>.Filter.Eq("_id", id);
             await _collection.ReplaceOneAsync(filter, entity);
+        }
+
+        public async Task UpdateByParamsAsync(Dictionary<string, object> parameters, T entity)
+        {
+            try
+            {
+                var filterBuilder = Builders<T>.Filter;
+                FilterDefinition<T>? filter = FilterDefinition<T>.Empty;
+                foreach (var kv in parameters)
+                {
+                    BsonValue bsonValue;
+
+                    if (kv.Value is Guid guid)
+                        bsonValue = new BsonBinaryData(guid, GuidRepresentation.Standard);
+                    else
+                        bsonValue = BsonValue.Create(kv.Value);
+
+                    filter = filter & filterBuilder.Eq(kv.Key, bsonValue);
+                }
+                await _collection.ReplaceOneAsync(filter, entity, new ReplaceOptions { IsUpsert = false });
+
+            } catch(Exception e)
+            {
+                var msg = e.Message;
+            }
         }
 
         public async Task DeleteAsync(string id)

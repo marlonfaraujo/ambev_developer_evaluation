@@ -71,6 +71,11 @@ namespace Ambev.DeveloperEvaluation.ORM.Queries
                     query.AppendLine(@"AND s.""BranchSaleId"" = @branchId");
                     sqlParameters.Add(new NpgsqlParameter("branchId", queryParameters.BranchId));
                 }
+                if (queryParameters.SaleItemId.HasValue)
+                {
+                    query.AppendLine(@"AND si.""Id"" = @saleItemId");
+                    sqlParameters.Add(new NpgsqlParameter("saleItemId", queryParameters.SaleItemId));
+                }
             }
             query.AppendLine(@"ORDER BY s.""SaleDate"" DESC");
             query.AppendLine("LIMIT @pageSize OFFSET @pageSize * (@pageNumber - 1)");

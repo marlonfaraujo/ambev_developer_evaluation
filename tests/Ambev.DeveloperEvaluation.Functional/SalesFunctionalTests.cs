@@ -5,11 +5,13 @@ using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale;
 using Ambev.DeveloperEvaluation.WebApi.Features.Sales.GetSale;
+using Ambev.DeveloperEvaluation.WebApi.Features.Sales.ListSales;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using Xunit;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Ambev.DeveloperEvaluation.Functional
 {
@@ -106,6 +108,58 @@ namespace Ambev.DeveloperEvaluation.Functional
 
             var finalCheck = await _client.GetAsync($"/api/sales/{created.Data.Id}");
             finalCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        }
+
+        [Fact(DisplayName = "Sales update and synchronization with mongodb")]
+        public async Task Sales_Update_And_Synchronization_Should_Work()
+        {
+            var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
+            var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = 100 });
+            var cart = await SeedCartAsync(
+                new Cart(
+                    Guid.NewGuid(),
+                    new Money(product.Price * 2),
+                    branch.Id,
+                    branch.Name,
+                    new List<CartItem> {
+                        new CartItem(product.Id, product.Name, 2, new Money(product.Price), new Money(0), new Money(product.Price * 2), new Money(product.Price * 2))
+                    }
+                ));
+
+            var saleRequest = new
+            {
+                CartId = cart.Id
+            };
+            var postResponse = await _client.PostAsJsonAsync("/api/sales", saleRequest);
+            postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+            var created = await postResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateSaleResponse>>();
+            created.Should().NotBeNull();
+            created!.Data.SaleStatus.Should().Be(SaleStatusEnum.Created.ToString());
+
+            var getResponse = await _client.GetAsync($"/api/sales/{created.Data.Id}");
+            getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var updatedRequest = new
+            {
+                Id = created.Data.Id,
+                BranchSaleId = created.Data.BranchSaleId,
+                SaleItems = new[] { new { Id = created.Data.SaleItems.First().Id, ProductId = created.Data.SaleItems.First().ProductId, ProductItemQuantity = 4 } },
+                SaleStatus = SaleStatusEnum.Modified.ToString()
+            };
+            var putResponse = await _client.PutAsJsonAsync($"/api/sales/{created.Data.Id}", updatedRequest);
+            putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var check = await _client.GetFromJsonAsync<ApiResponseWithData<GetSaleResponse>>($"/api/sales/{created.Data.Id}");
+            check!.Data.SaleStatus.Should().Be(SaleStatusEnum.Modified.ToString());
+
+
+            var query = $"?PageNumber=1&PageSize=5&SaleId={created.Data.Id}";
+            var listResponse = await _client.GetAsync($"/api/sales{query}");
+            var listResult = await listResponse.Content.ReadFromJsonAsync<ApiResponseWithData<IEnumerable<ListSalesResponse>>>();
+            listResult.Data.First()
+                .SaleItems.Where(x => x.ProductId == created.Data.SaleItems.First().ProductId)
+                .First().ProductItemQuantity.Should().Be(4);
 
         }
     }

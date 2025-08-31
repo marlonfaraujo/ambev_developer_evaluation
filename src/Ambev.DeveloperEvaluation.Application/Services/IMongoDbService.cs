@@ -10,5 +10,6 @@ namespace Ambev.DeveloperEvaluation.Application.Services
         Task UpdateAsync(string id, T entity);
         Task DeleteAsync(string id);
         Task<PagedResult<T>> QueryAsync(QueryOptions options);
+        Task UpdateByParamsAsync(Dictionary<string, object> parameters, T entity);
     }
 }

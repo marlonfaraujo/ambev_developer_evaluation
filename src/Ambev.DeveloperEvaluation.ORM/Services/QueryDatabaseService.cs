@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Services;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
@@ -169,6 +170,16 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
             sqlParameters.Add(new NpgsqlParameter("cartStatus", CartStatusEnum.Opened.ToString()));
 
             var result = await _context.Database.ExecuteSqlRawAsync(sql, sqlParameters.ToArray());
+            return result;
+        }
+
+        public async Task<IEnumerable<TEntity>> GetSaleQueryBySaleItemId<TEntity>(Guid saleItemId) where TEntity : class
+        {
+            var sqlQueryParameters = ListSalesSqlQuery.GetSqlQuery(new ListSalesQueryParams()
+            {
+                SaleItemId = saleItemId
+            });
+            var result = await Select<TEntity>(sqlQueryParameters.QuerySql, sqlQueryParameters.SqlParameters.ToArray());
             return result;
         }
     }
