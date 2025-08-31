@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Bogus;
 using System.Net;
 using System.Net.Http.Json;
@@ -60,7 +61,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             foreach (var item in saleItems)
             {
                 item.ProductItemQuantity = new Faker().Random.Number(1, 20);
-                item.UnitProductItemPrice = new Faker().Random.Decimal(50, 100);
+                item.UnitProductItemPrice = new Money(new Faker().Random.Decimal(50, 100));
             }
 
             var updateRequest = new

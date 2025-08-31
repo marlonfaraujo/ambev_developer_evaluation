@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Bogus;
 
 namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData
@@ -13,7 +14,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData
         {
             SaleItemFaker.RuleFor(u => u.ProductId, f => productId);
             SaleItemFaker.RuleFor(u => u.ProductItemQuantity, f => itemQuantity);
-            SaleItemFaker.RuleFor(u => u.UnitProductItemPrice, f => unitItemPrice);
+            SaleItemFaker.RuleFor(u => u.UnitProductItemPrice, f => new Money(unitItemPrice));
 
             return SaleItemFaker.Generate();
         }

@@ -9,6 +9,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CancelSale
         {
             CreateMap<CancelSaleRequest, CancelSaleCommand>();
             CreateMap<CancelSaleResult, CancelSaleResponse>();
+            CreateMap<CancelSaleItemResult, CancelSaleItemResponse>();
         }
     }
 }

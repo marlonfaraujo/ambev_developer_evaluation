@@ -49,7 +49,7 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
         var cartSale = _mapper.Map<Sale>(command);
         var simulateSaleService = new SimulateSaleService(_mapper.Map<Sale>(command), products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
-        if (cartSale.TotalSalePrice != simulatedSale.TotalSalePrice)
+        if (cartSale.TotalSalePrice.Value != simulatedSale.TotalSalePrice.Value)
         {
             throw new PriceProductsDifferentException($"The price of the products in the cart and the new price are different, delete cart and try again");
         }

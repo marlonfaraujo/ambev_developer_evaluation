@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Specifications;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 
 namespace Ambev.DeveloperEvaluation.Domain.Services
 {
@@ -20,7 +21,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Services
             _sale.AddSaleItems(joinProductsWithSaleItems());
             ValidateMaxQuantityProductItems(_sale.SaleItems);
 
-            _sale.TotalSalePrice = TotalSalePrice();
+            _sale.TotalSalePrice = new Money(TotalSalePrice());
             return _sale;
         }
 
@@ -39,7 +40,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Services
                                         {
                                             Id = saleItem.Id,
                                             ProductId = product.Id,
-                                            UnitProductItemPrice = product.Price,
+                                            UnitProductItemPrice = new Money(product.Price),
                                             ProductItemQuantity = saleItem.ProductItemQuantity
                                         })
                                         .GroupBy(x => x.ProductId)

@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.Integration.Application.TestData;
 using Ambev.DeveloperEvaluation.Integration.Data;
 using Ambev.DeveloperEvaluation.ORM;
@@ -40,7 +41,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
                 {
                     ProductId = productExisting.Id,
                     ProductItemQuantity = 14,
-                    UnitProductItemPrice = productExisting.Price
+                    UnitProductItemPrice = new Money(productExisting.Price)
                 }
             };
             var sale = new Sale();
@@ -51,7 +52,26 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
             sale.AddSaleItems(command.SaleItems.ToList());
 
             mapperMock.Setup(m => m.Map<Sale>(command)).Returns(sale);
-            mapperMock.Setup(m => m.Map<UpdateSaleResult>(sale)).Returns(new UpdateSaleResult(sale.Id, sale.SaleNumber, sale.SaleDate, sale.UserId, sale.TotalSalePrice, sale.BranchSaleId, sale.SaleStatus, sale.SaleItems));
+            mapperMock.Setup(m => m.Map<UpdateSaleResult>(sale)).Returns(
+                new UpdateSaleResult(
+                    sale.Id, 
+                    sale.SaleNumber, 
+                    sale.SaleDate, 
+                    sale.UserId, 
+                    sale.TotalSalePrice.Value, 
+                    sale.BranchSaleId, 
+                    sale.SaleStatus, 
+                    sale.SaleItems.Select(x => 
+                    new UpdateSaleItemResult(
+                        x.Id,
+                        x.ProductId,
+                        x.ProductItemQuantity,
+                        x.UnitProductItemPrice.Value,
+                        x.DiscountAmount.Value,
+                        x.TotalSaleItemPrice.Value,
+                        x.TotalWithoutDiscount.Value,
+                        x.SaleItemStatus
+                        ))));
             var handler = new UpdateSaleHandler(saleRepoMock, productRepoMock, branchRepoMock, mapperMock.Object, adapter.Object);
             var result = await handler.Handle(command, CancellationToken.None);
             Assert.NotNull(result);

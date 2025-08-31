@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
@@ -9,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public int SaleNumber { get; private set; }
         public DateTime SaleDate { get; set; }
         public Guid UserId { get; set; }
-        public decimal TotalSalePrice { get; set; }
+        public Money TotalSalePrice { get; set; }
         public Guid BranchSaleId { get; set; }
         public string SaleStatus { get; private set; }
         public ICollection<SaleItem> SaleItems { get; private set; }
@@ -47,8 +48,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
                     if (item.SaleItemStatus != SaleItemStatusEnum.Cancelled.ToString())
                     {
                         events.Add(item.CancelItem());
-                    }
-                        
+                    }   
                 }
             }
             return events;
