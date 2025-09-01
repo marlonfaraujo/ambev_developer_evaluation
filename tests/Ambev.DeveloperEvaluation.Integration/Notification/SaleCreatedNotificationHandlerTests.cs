@@ -1,5 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Application.Dtos;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Events;
+using Ambev.DeveloperEvaluation.NoSql;
 using Ambev.DeveloperEvaluation.WebApi.Notifications;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -14,7 +16,10 @@ namespace Ambev.DeveloperEvaluation.Integration.Notification
         {
             // Arrange
             var loggerMock = new Mock<ILogger<SaleCreatedNotificationHandler>>();
-            var handler = new SaleCreatedNotificationHandler(loggerMock.Object);
+            var mongoDbContextMock = new Mock<MongoDbContext>("mongodb://developer:ev%40luAt10n@localhost:27017/?authSource=admin", "test_db_name");
+            var mongoDbServiceMock = new Mock<MongoDbService<ISaleModel>>(mongoDbContextMock.Object, "sales");
+            var queryDatabaseServiceMock = new Mock<Ambev.DeveloperEvaluation.Application.Services.IQueryDatabaseService>();
+            var handler = new SaleCreatedNotificationHandler(loggerMock.Object, mongoDbServiceMock.Object, queryDatabaseServiceMock.Object);
 
             var notification = new MediatRDomainNotification<SaleCreatedEvent>(new Sale().CreateSaleEvent());
 

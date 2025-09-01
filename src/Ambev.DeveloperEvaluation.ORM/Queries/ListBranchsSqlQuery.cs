@@ -1,20 +1,20 @@
 ﻿using Ambev.DeveloperEvaluation.ORM.Dtos;
-using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
+using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
 using Npgsql;
 using System.Text;
 
 namespace Ambev.DeveloperEvaluation.ORM.Queries
 {
-    public class ListProductsQuery
+    public class ListBranchsSqlQuery
     {
         public const string SELECT = @"
             SELECT
                 *
-            FROM public.""Products""
+            FROM public.""Branchs""
             WHERE ""Id"" = ""Id""
         ";
 
-        public static SqlQueryParams<NpgsqlParameter> GetSqlQuery(ListProductsQueryParams queryParameters)
+        public static SqlQueryParams<NpgsqlParameter> GetSqlQuery(ListBranchsQueryParams queryParameters)
         {
             var query = new StringBuilder();
             query.Append(SELECT);

@@ -1,5 +1,4 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
-using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale
@@ -10,7 +9,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Sales.CreateSale
         {
             CreateMap<CreateSaleRequest, CreateSaleCommand>();
             CreateMap<CreateSaleResult, CreateSaleResponse>();
-            CreateMap<CreateCartResponse, CreateSaleCommand>();
+            CreateMap<CreateSaleItemResult, CreateSaleItemResponse>();
         }
     }
 }

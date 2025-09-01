@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Ambev.DeveloperEvaluation.ORM.Queries
 {
-    public class ListSalesQuery
+    public class ListSalesSqlQuery
     {
         public const string SELECT = @"
             SELECT
@@ -46,12 +46,12 @@ namespace Ambev.DeveloperEvaluation.ORM.Queries
             var sqlParameters = new List<NpgsqlParameter>();
             if (queryParameters != null)
             {
-                if (!string.IsNullOrWhiteSpace(queryParameters.SaleId))
+                if (queryParameters.SaleId.HasValue)
                 {
                     query.AppendLine(@"AND s.""Id"" = @saleId");
                     sqlParameters.Add(new NpgsqlParameter("saleId", queryParameters.SaleId));
                 }
-                if (!string.IsNullOrWhiteSpace(queryParameters.UserId))
+                if (queryParameters.UserId.HasValue)
                 {
                     query.AppendLine(@"AND s.""UserId"" = @userId");
                     sqlParameters.Add(new NpgsqlParameter("userId", queryParameters.UserId));
@@ -61,15 +61,20 @@ namespace Ambev.DeveloperEvaluation.ORM.Queries
                     query.AppendLine(@"AND s.""SaleNumber"" = @saleNumber");
                     sqlParameters.Add(new NpgsqlParameter("saleNumber", queryParameters.SaleNumber));
                 }
-                if (!string.IsNullOrWhiteSpace(queryParameters.ProductId))
+                if (queryParameters.ProductId.HasValue)
                 {
                     query.AppendLine(@"AND si.""ProductId"" = @productId");
                     sqlParameters.Add(new NpgsqlParameter("productId", queryParameters.ProductId));
                 }
-                if (!string.IsNullOrWhiteSpace(queryParameters.BranchId))
+                if (queryParameters.BranchId.HasValue)
                 {
                     query.AppendLine(@"AND s.""BranchSaleId"" = @branchId");
                     sqlParameters.Add(new NpgsqlParameter("branchId", queryParameters.BranchId));
+                }
+                if (queryParameters.SaleItemId.HasValue)
+                {
+                    query.AppendLine(@"AND si.""Id"" = @saleItemId");
+                    sqlParameters.Add(new NpgsqlParameter("saleItemId", queryParameters.SaleItemId));
                 }
             }
             query.AppendLine(@"ORDER BY s.""SaleDate"" DESC");

@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Services;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using Xunit;
 
@@ -14,9 +15,9 @@ public class SaleTest
         var sale = new Sale();
         sale.AddSaleItems(new List<SaleItem>
             {
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 3, UnitProductItemPrice = 30 },
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 5, UnitProductItemPrice = 100 },
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 15, UnitProductItemPrice = 200 }
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 3, UnitProductItemPrice = new Money(30) },
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 5, UnitProductItemPrice = new Money(100) },
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 15, UnitProductItemPrice = new Money(200) }
             }
         );
         var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
@@ -27,9 +28,9 @@ public class SaleTest
         sale2.AddSaleItems(
             new List<SaleItem>
             {
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 3, UnitProductItemPrice = 30.50m },
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 5, UnitProductItemPrice = 100.98m },
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 15, UnitProductItemPrice = 200.59m }
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 3, UnitProductItemPrice = new Money(30.50m) },
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 5, UnitProductItemPrice = new Money(100.98m) },
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 15, UnitProductItemPrice = new Money(200.59m) }
             }
         );
         var simulateSaleService2 = new SimulateSaleService(sale2, Enumerable.Empty<Product>());
@@ -59,8 +60,8 @@ public class SaleTest
         var sale = SaleTestData.GenerateValidSale();
         sale.AddSaleItems(new List<SaleItem>
             {
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 16, UnitProductItemPrice = 90.29m },
-                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 4, UnitProductItemPrice = 122.73m }
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 16, UnitProductItemPrice = new Money(90.29m) },
+                new SaleItem { ProductId = Guid.NewGuid(), ProductItemQuantity = 4, UnitProductItemPrice = new Money(122.73m) }
             }
         );
         decimal price1 = (90.29m * 16) - ((90.29m * 16) * 0.2m);
@@ -78,8 +79,8 @@ public class SaleTest
         var sale = SaleTestData.GenerateValidSale();
         sale.AddSaleItems(new List<SaleItem>
             {
-                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(20,30), price),
-                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(20,30), price)
+                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(21,30), price),
+                SaleItemTestData.GenerateValidSaleItem(SaleItemTestData.GenerateValidProductId(), SaleItemTestData.GenerateValidItemQuantity(21,30), price)
             }
         );
         var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
@@ -94,9 +95,9 @@ public class SaleTest
         var duplicatedProductId = Guid.NewGuid();
         var saleItemsWithoutGrouping = new List<SaleItem>
         {
-            new SaleItem { ProductId = duplicatedProductId, ProductItemQuantity = 3, UnitProductItemPrice = 30 },
-            new SaleItem { ProductId = duplicatedProductId, ProductItemQuantity = 5, UnitProductItemPrice = 100 },
-            new SaleItem { ProductId = duplicatedProductId, ProductItemQuantity = 15, UnitProductItemPrice = 200 }
+            new SaleItem { ProductId = duplicatedProductId, ProductItemQuantity = 3, UnitProductItemPrice = new Money(30) },
+            new SaleItem { ProductId = duplicatedProductId, ProductItemQuantity = 5, UnitProductItemPrice = new Money(100) },
+            new SaleItem { ProductId = duplicatedProductId, ProductItemQuantity = 15, UnitProductItemPrice = new Money(200) }
         };
         var totalQuantity = saleItemsWithoutGrouping.Sum(x => x.ProductItemQuantity);
         var sale = new Sale();

@@ -1,10 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Branchs.CreateBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.DeleteBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.GetBranch;
+using Ambev.DeveloperEvaluation.Application.Branchs.ListBranch;
 using Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch;
-using Ambev.DeveloperEvaluation.Application.Services;
-using Ambev.DeveloperEvaluation.ORM.Dtos.Branch;
-using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.CreateBranch;
@@ -25,13 +23,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
     {
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly IQueryDatabaseService _queryDbService;
 
-        public BranchsController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService)
+        public BranchsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
             _mapper = mapper;
-            _queryDbService = queryDbService;
         }
 
         [HttpPost]
@@ -84,7 +80,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
         [ProducesResponseType(typeof(ApiResponseWithData<GetBranchResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetBranch(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetBranch([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var request = new GetBranchRequest { Id = id };
             var validator = new GetBranchRequestValidator();
@@ -105,7 +101,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
         }
 
         [HttpGet("")]
-        [ProducesResponseType(typeof(ApiResponseWithData<ListBranchsResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<ListBranchsResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetBranchs([FromQuery] ListBranchsRequest request, CancellationToken cancellationToken)
@@ -116,28 +112,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
-            var parameters = new ListBranchsQueryParams();
-            if (!string.IsNullOrWhiteSpace(request.Name))
-            {
-                parameters.Name = request.Name;
-            }
-            if (request.PageNumber > 0)
-            {
-                parameters.Pager.PageNumber = request.PageNumber;
-            }
-            if (request.PageSize > 0)
-            {
-                parameters.Pager.PageSize = request.PageSize;
-            }
-
-            var sqlQueryParams = ListBranchsQuery.GetSqlQuery(parameters);
-            var response = await _queryDbService.Select<ListBranchsQueryResult>(sqlQueryParams.QuerySql, _queryDbService.GetSqlParameters(request));
+            var query = _mapper.Map<ListBranchQuery>(request);
+            var response = await _mediator.Send(new MediatRRequestAdapter<ListBranchQuery, ListBranchResult>(query), cancellationToken);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListBranchsResponse>>
             {
                 Success = true,
                 Message = "Branchs retrieved successfully",
-                Data = _mapper.Map<IEnumerable<ListBranchsResponse>>(response)
+                Data = _mapper.Map<IEnumerable<ListBranchsResponse>>(response.Items)
             });
         }
 
@@ -145,7 +127,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Branchs
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteBranch(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteBranch([FromRoute] Guid id, CancellationToken cancellationToken)
         {
             var request = new DeleteBranchRequest { Id = id };
             var validator = new DeleteBranchRequestValidator();

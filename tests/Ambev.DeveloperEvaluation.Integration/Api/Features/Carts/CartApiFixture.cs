@@ -2,7 +2,9 @@
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Auth.AuthenticateUserFeature;
-using Ambev.DeveloperEvaluation.WebApi.Features.Cart.CreateCart;
+using Ambev.DeveloperEvaluation.WebApi.Features.Branchs.CreateBranch;
+using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
+using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Users.CreateUser;
 using Bogus;
 using System.Net.Http.Json;
@@ -12,6 +14,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
     public class CartApiFixture : IDisposable
     {
         public HttpClient Client { get; }
+        public Guid CartId { get; private set; }
         public Guid CartUserId { get; private set; }
         public string JwtToken { get; }
         public Guid BranchId { get; private set; }
@@ -42,18 +45,18 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
             JwtToken = auth.Data?.Token;
             Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", JwtToken);
 
-            var branchResponse = Client.PostAsJsonAsync("/api/branchs", new Branch { Name = "Initial", Description = "Initial" }).Result;
-            var branch = branchResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>().Result;
+            var branchResponse = Client.PostAsJsonAsync("/api/branchs", new { Name = "Initial", Description = "Initial" }).Result;
+            var branch = branchResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateBranchResponse>>().Result;
             BranchId = (Guid)(branch.Data?.Id);
 
-            var productResponse = Client.PostAsJsonAsync("/api/products", new Product { Name = "Initial", Description = "Initial", Price = 10.00m }).Result;
-            var product = productResponse.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>().Result;
+            var productResponse = Client.PostAsJsonAsync("/api/products", new { Name = "Initial", Description = "Initial", Price = 10.00m }).Result;
+            var product = productResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateProductResponse>>().Result;
             ProductId = (Guid)(product.Data?.Id);
 
             var cartRequest = new
             {
                 BranchSaleId = BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = ProductId, ProductItemQuantity = 2 }
                 }
@@ -61,15 +64,16 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
 
             var response = Client.PostAsJsonAsync("/api/carts", cartRequest).Result;
             var cart = response.Content.ReadFromJsonAsync<ApiResponseWithData<CreateCartResponse>>().Result;
+            CartId = (Guid)(cart.Data?.Id);
             CartUserId = (Guid)(cart.Data?.UserId);
         }
 
-        public void NewCartUserId()
+        public void NewCartId()
         {
             var cartRequest = new
             {
                 BranchSaleId = BranchId,
-                SaleItems = new[]
+                CartItems = new[]
                 {
                     new { ProductId = ProductId, ProductItemQuantity = 2 }
                 }
@@ -77,6 +81,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Carts
 
             var response = Client.PostAsJsonAsync("/api/carts", cartRequest).Result;
             var cart = response.Content.ReadFromJsonAsync<ApiResponseWithData<CreateCartResponse>>().Result!;
+            CartId = (Guid)(cart.Data?.Id);
             CartUserId = (Guid)(cart.Data?.UserId);
         }
 

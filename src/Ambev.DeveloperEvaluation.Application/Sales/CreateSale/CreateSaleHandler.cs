@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Exceptions;
 using Ambev.DeveloperEvaluation.Application.Requests;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
@@ -14,20 +15,29 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
     private readonly ISaleRepository _saleRepository;
     private readonly IProductRepository _productRepository;
     private readonly IBranchRepository _branchRepository;
+    private readonly ICartRepository _cartRepository;
     private readonly IMapper _mapper;
     private readonly IDomainNotificationAdapter _notification;
 
-    public CreateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, IMapper mapper, IDomainNotificationAdapter notification)
+    public CreateSaleHandler(ISaleRepository saleRepository, IProductRepository productRepository, IBranchRepository branchRepository, ICartRepository cartRepository, IMapper mapper, IDomainNotificationAdapter notification)
     {
         _saleRepository = saleRepository;
         _productRepository = productRepository;
         _branchRepository = branchRepository;
+        _cartRepository = cartRepository;
         _mapper = mapper;
         _notification = notification;
     }
 
     public async Task<CreateSaleResult> Handle(CreateSaleCommand command, CancellationToken cancellationToken)
     {
+        var cart = await GetCartById(command.CartId);
+        if (cart != null && cart.CartStatus.Equals(CartStatusEnum.Finished.ToString()))
+        {
+            throw new CartFinishedException("The cart is already finished, create a new cart to proceed with the sale");
+        }
+        command = _mapper.Map<CreateSaleCommand>(cart);
+
         var validator = new CreateSaleCommandValidator();
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
@@ -36,10 +46,10 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
         var products = await GetProductsById();
         await hasBranchById();
 
-        var cacheSale = _mapper.Map<Sale>(command);
+        var cartSale = _mapper.Map<Sale>(command);
         var simulateSaleService = new SimulateSaleService(_mapper.Map<Sale>(command), products);
         var simulatedSale = simulateSaleService.MakePriceSimulation();
-        if (cacheSale.TotalSalePrice != simulatedSale.TotalSalePrice)
+        if (cartSale.TotalSalePrice.Value != simulatedSale.TotalSalePrice.Value)
         {
             throw new PriceProductsDifferentException($"The price of the products in the cart and the new price are different, delete cart and try again");
         }
@@ -47,7 +57,8 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
         var created = await _saleRepository.CreateAsync(simulatedSale, cancellationToken);
         var saleEvent = created.CreateSaleEvent();
         var result = _mapper.Map<CreateSaleResult>(created);
-        _notification.Publish(saleEvent, cancellationToken);
+        await _notification.Publish(saleEvent, cancellationToken);
+        await FinishCart();
 
         return result;
 
@@ -63,6 +74,20 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
             var branch = await _branchRepository.GetByIdAsync(command.BranchSaleId, cancellationToken);
             if (branch == null)
                 throw new KeyNotFoundException($"Branch not found");
+        }
+        async Task<Cart?> GetCartById(Guid cartId)
+        {
+            if (command.CartId == null) return null;
+            var cart = await _cartRepository.GetByIdAsync(command.CartId, cancellationToken);
+            if (cart == null)
+                throw new KeyNotFoundException($"Cart with ID not found");
+            return cart;
+        }
+
+        async Task FinishCart()
+        {
+            cart.FinishCart();
+            await _cartRepository.UpdateAsync(cart, cancellationToken);
         }
     }
 }

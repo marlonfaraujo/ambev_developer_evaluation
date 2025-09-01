@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using Xunit;
 
@@ -11,12 +12,15 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Entities
         {
             Guid productId = SaleItemTestData.GenerateValidProductId();
             int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(1);
-            decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
+            var price = new Money(SaleItemTestData.GenerateValidUnitItemPrice());
             var saleItem = new SaleItem { ProductId = productId, ProductItemQuantity = itemQuantity, UnitProductItemPrice = price };
             decimal discountAmount = (itemQuantity >= 10 && itemQuantity <= 20) ? 0.2m : (itemQuantity >= 4 && itemQuantity <= 9) ? 0.1m : 0;
-            decimal expectedTotal = (price * itemQuantity) - ((price * itemQuantity) * discountAmount);
+            var totalWithoutDiscount = new Money(price.Value * itemQuantity);
+            var discountCalculate = new Money(totalWithoutDiscount.Value * discountAmount);
+            var expectedTotal = new Money(totalWithoutDiscount.Value - discountCalculate.Value);
+
             decimal totalSaleItemPrice = saleItem.CalculateTotalSaleItemPrice();
-            Assert.Equal(expectedTotal, totalSaleItemPrice);
+            Assert.Equal(expectedTotal.Value, totalSaleItemPrice);
         }
     }
 }

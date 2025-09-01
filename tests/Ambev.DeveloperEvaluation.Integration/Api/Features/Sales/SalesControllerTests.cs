@@ -1,19 +1,22 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Bogus;
 using System.Net;
 using System.Net.Http.Json;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
 {
     public class SalesControllerTests : IClassFixture<SaleApiFixture>
     {
-        private readonly SaleApiFixture _saleApiFixture;
+        private readonly SaleApiFixture _saleApiFixture; 
+        private readonly ITestOutputHelper _output;
 
-        public SalesControllerTests(SaleApiFixture saleApiFixture)
+        public SalesControllerTests(SaleApiFixture saleApiFixture, ITestOutputHelper output)
         {
             _saleApiFixture = saleApiFixture;
-            
+            _output = output;
         }
 
         /// <summary>
@@ -22,9 +25,13 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
         [Fact(DisplayName = "POST /api/sales should return Created when sale is valid")]
         public async Task Post_Sale_ReturnsCreated()
         {
-            _saleApiFixture.NewCartUserId();
+            _saleApiFixture.NewCartId();
+            var saleRequest = new
+            {
+                CartId = _saleApiFixture.CartId
+            };
             // Act
-            var response = await _saleApiFixture.Client.PostAsync("/api/sales", null);
+            var response = await _saleApiFixture.Client.PostAsJsonAsync("/api/sales", saleRequest);
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -54,7 +61,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
             foreach (var item in saleItems)
             {
                 item.ProductItemQuantity = new Faker().Random.Number(1, 20);
-                item.UnitProductItemPrice = new Faker().Random.Decimal(50, 100);
+                item.UnitProductItemPrice = new Money(new Faker().Random.Decimal(50, 100));
             }
 
             var updateRequest = new
@@ -86,6 +93,70 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Sales
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that listing sales via GET returns HTTP 200 OK and a valid response.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/sales should return Ok and sales list when query is valid")]
+        public async Task Get_Sales_ReturnsOkAndSalesList()
+        {
+            var stringWriter = new StringWriter();
+            var originalOut = Console.Out;
+            Console.SetOut(stringWriter);
+            try
+            {
+                // Arrange: create query params for ListSalesRequest (using fixture values)
+                var query = $"?PageNumber=1&PageSize=5";
+                // Act
+                var response = await _saleApiFixture.Client.GetAsync($"/api/sales{query}");
+
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                var content = await response.Content.ReadAsStringAsync();
+                Assert.False(string.IsNullOrWhiteSpace(content));
+
+                string output = stringWriter.ToString();
+                Assert.NotEmpty(output);
+            }
+            finally
+            {
+                _output.WriteLine(stringWriter.ToString());
+                Console.SetOut(originalOut);
+            }
+        }
+
+
+        /// <summary>
+        /// Verifies that listing sales via GET returns HTTP 200 OK and a valid response.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/sales should return Ok and sales list when query by sale id")]
+        public async Task Get_Sales_ReturnsOkAndSalesListBySaleId()
+        {
+            var stringWriter = new StringWriter();
+            var originalOut = Console.Out;
+            Console.SetOut(stringWriter);
+            try
+            {
+                //_saleApiFixture.NewSaleId();
+                // Arrange: create query params for ListSalesRequest (using fixture values)
+                var query = $"?PageNumber=1&PageSize=5&SaleId={_saleApiFixture.SaleId}";
+                // Act
+                var response = await _saleApiFixture.Client.GetAsync($"/api/sales{query}");
+
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                var content = await response.Content.ReadAsStringAsync();
+                Assert.False(string.IsNullOrWhiteSpace(content));
+
+                string output = stringWriter.ToString();
+                Assert.NotEmpty(output);
+            }
+            finally
+            {
+                _output.WriteLine(stringWriter.ToString());
+                Console.SetOut(originalOut);
+            }
         }
     }
 }

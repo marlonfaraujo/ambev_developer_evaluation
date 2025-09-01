@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.Integration.Data;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
 
@@ -15,7 +16,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application.TestData
                 Id = Guid.NewGuid(),
                 SaleDate = DateTime.UtcNow,
                 UserId = Guid.NewGuid(),
-                TotalSalePrice = 100,
+                TotalSalePrice = new Money(100),
                 BranchSaleId = Guid.NewGuid()
             };
             sale.AddSaleItems(new List<SaleItem>());

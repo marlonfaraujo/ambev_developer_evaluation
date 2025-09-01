@@ -23,10 +23,11 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
         {
             var branchRepoMock = new BranchRepository(_context);
             var queryDbServiceMock = new Mock<IQueryDatabaseService>();
+            var cartRepoMock = new CartRepository(_context);
             var branchExisting = BranchHandlerTestData.GetBranch();
             var command = new DeleteBranchCommand(branchExisting.Id);
 
-            var handler = new DeleteBranchHandler(branchRepoMock, queryDbServiceMock.Object);
+            var handler = new DeleteBranchHandler(branchRepoMock, queryDbServiceMock.Object, cartRepoMock);
 
             var result = await handler.Handle(command, CancellationToken.None);
 

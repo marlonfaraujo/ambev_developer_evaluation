@@ -65,8 +65,25 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
         [Fact(DisplayName = "GET /api/branchs should return Ok with branch list")]
         public async Task ListBranchs_ReturnsOk()
         {
-            var response = await _branchApiFixture.Client.GetAsync("/api/branchs");
+            var query = $"?PageNumber=1&PageSize=5";
+            var response = await _branchApiFixture.Client.GetAsync($"/api/branchs{query}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that listing branchs via GET returns HTTP 200 OK and a valid response.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/branchs should return Ok and branchs list when query by name")]
+        public async Task Get_Branchs_ReturnsOkAndBranchsListByName()
+        {
+            var query = $"?PageNumber=1&PageSize=5&Name={_branchApiFixture.BranchName}";
+            // Act
+            var response = await _branchApiFixture.Client.GetAsync($"/api/branchs{query}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrWhiteSpace(content));
         }
 
         /// <summary>

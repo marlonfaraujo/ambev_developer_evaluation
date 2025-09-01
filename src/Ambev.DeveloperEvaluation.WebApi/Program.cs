@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.IoC;
+using Ambev.DeveloperEvaluation.NoSql;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -74,6 +75,12 @@ public class Program
             builder.Services.AddSingleton<IConnectionMultiplexer>(options => 
                 ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")));
 
+            builder.Services.AddSingleton<MongoDbContext>(sp =>
+                new MongoDbContext(
+                    builder.Configuration.GetConnectionString("MongoConnection")!,
+                    builder.Configuration["MongoDatabase"]!
+                ));
+
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.RegisterDependencies();
@@ -105,22 +112,6 @@ public class Program
             }
 
             app.UseHttpsRedirection();
-
-
-            app.UseExceptionHandler(u => u.Run(async context => {
-                var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-                var exception = new BaseException(exceptionHandlerPathFeature.Error.Message, exceptionHandlerPathFeature.Error);
-
-                context.Response.ContentType = "application/json";
-                var response = new ApiResponse
-                {
-                    Success = false,
-                    Message = exception.Message
-                };
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-            }));
-
 
             app.UseAuthentication();
             app.UseAuthorization();

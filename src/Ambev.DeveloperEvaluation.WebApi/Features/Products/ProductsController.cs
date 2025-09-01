@@ -1,10 +1,8 @@
 ﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.Application.Products.GetProduct;
+using Ambev.DeveloperEvaluation.Application.Products.ListProduct;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
-using Ambev.DeveloperEvaluation.Application.Services;
-using Ambev.DeveloperEvaluation.ORM.Dtos.Product;
-using Ambev.DeveloperEvaluation.ORM.Queries;
 using Ambev.DeveloperEvaluation.WebApi.Adapters;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
@@ -26,13 +24,11 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
 
         private readonly IMediator _mediator;
         private readonly IMapper _mapper;
-        private readonly IQueryDatabaseService _queryDbService;
 
-        public ProductsController(IMediator mediator, IMapper mapper, IQueryDatabaseService queryDbService)
+        public ProductsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
             _mapper = mapper;
-            _queryDbService = queryDbService;
         }
 
 
@@ -107,7 +103,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
         }
 
         [HttpGet("")]
-        [ProducesResponseType(typeof(ApiResponseWithData<ListProductsResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponseWithData<IEnumerable<ListProductsResponse>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProducts([FromQuery] ListProductsRequest request, CancellationToken cancellationToken)
@@ -118,27 +114,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
 
-            var parameters = new ListProductsQueryParams();
-            if (!string.IsNullOrWhiteSpace(request.Name))
-            {
-                parameters.Name = request.Name;
-            }
-            if (request.PageNumber > 0)
-            {
-                parameters.Pager.PageNumber = request.PageNumber;
-            }
-            if (request.PageSize > 0)
-            {
-                parameters.Pager.PageSize = request.PageSize;
-            }
-            var sqlQueryParams = ListProductsQuery.GetSqlQuery(parameters);
-            var response = await _queryDbService.Select<ListProductsQueryResult>(sqlQueryParams.QuerySql, _queryDbService.GetSqlParameters(request));
+            var query = _mapper.Map<ListProductQuery>(request);
+            var response = await _mediator.Send(new MediatRRequestAdapter<ListProductQuery, ListProductResult>(query), cancellationToken);
 
             return Ok(new ApiResponseWithData<IEnumerable<ListProductsResponse>>
             {
                 Success = true,
                 Message = "Products retrieved successfully",
-                Data = _mapper.Map<IEnumerable<ListProductsResponse>>(response)
+                Data = _mapper.Map<IEnumerable<ListProductsResponse>>(response.Items)
             });
         }
 

@@ -1,4 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.ORM.Dtos.Product
+﻿using Ambev.DeveloperEvaluation.Application.Dtos;
+
+namespace Ambev.DeveloperEvaluation.ORM.Dtos.Product
 {
     public class ListProductsQueryParams
     {

@@ -1,4 +1,6 @@
-﻿namespace Ambev.DeveloperEvaluation.ORM.Dtos.Branch
+﻿using Ambev.DeveloperEvaluation.Application.Dtos;
+
+namespace Ambev.DeveloperEvaluation.ORM.Dtos.Branch
 {
     public class ListBranchsQueryParams
     {

@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Specifications;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.Unit.Domain.Entities.TestData;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Specifications
             int itemQuantity = SaleItemTestData.GenerateValidItemQuantity(21,50);
             decimal price = SaleItemTestData.GenerateValidUnitItemPrice();
             var saleItems = new List<SaleItem> {
-                new SaleItem { ProductId = productId, ProductItemQuantity = itemQuantity, UnitProductItemPrice = price }
+                new SaleItem { ProductId = productId, ProductItemQuantity = itemQuantity, UnitProductItemPrice = new Money(price) }
             };
 
             Assert.Equal(false, spec.IsSatisfiedBy(saleItems));

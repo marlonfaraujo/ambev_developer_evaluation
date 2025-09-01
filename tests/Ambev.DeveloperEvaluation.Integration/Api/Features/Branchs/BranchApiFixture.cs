@@ -10,6 +10,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
     {
         public HttpClient Client { get; }
         public Guid BranchId { get; private set; }
+        public string BranchName { get; private set; }  
         public string JwtToken { get; }
 
         public BranchApiFixture()
@@ -22,9 +23,10 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
 
             Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", JwtToken);
 
-            var response = Client.PostAsJsonAsync("/api/branchs", new Branch { Name = "Initial", Description = "Initial" }).Result;
+            var response = Client.PostAsJsonAsync("/api/branchs", new Branch { Name = "Name Initial", Description = "Initial" }).Result;
             var branch = response.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>().Result;
             BranchId = (Guid)(branch.Data?.Id);
+            BranchName = branch.Data?.Name;
         }
 
         public Guid GetNewBranchId()
