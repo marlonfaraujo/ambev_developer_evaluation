@@ -52,7 +52,8 @@ To run the project, you must have the following installed on your local environm
 * **Git** to clone repository ([link](https://git-scm.com/downloads))
 * **Docker** should be installed ([link](https://docs.docker.com/engine/install/))
 * **docker-compose** should be installed, if your docker installation does not install it automatically ([link](https://docs.docker.com/compose/install/))
-* **.NET-SDK-8** For running database migrations and local development ([link](https://dotnet.microsoft.com/en-us/download/dotnet/8.0))
+* **.NET-SDK-8** For running application and local development ([link](https://dotnet.microsoft.com/en-us/download/dotnet/8.0))
+* **Entity-Framework-Core-Tools** Creating and executing migrations for generation the database ([link](https://learn.microsoft.com/en-us/ef/core/cli/dotnet))
 * **PostgreSQL** (local or via Docker)([link](https://www.postgresql.org/))
 * Recommended IDE: Visual Studio 2022 for local development
 
