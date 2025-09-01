@@ -26,7 +26,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Services
             var key = Guid.NewGuid();
             var value = RedisDatabaseServiceTestData.GenerateProduct();
 
-            await _redisDatabaseService.SetAsync(key.ToString(), value, TimeSpan.FromMinutes(60));
+            await _redisDatabaseService.SetAsync(key.ToString(), value, CancellationToken.None, TimeSpan.FromMinutes(60));
             var result = await _redisDatabaseService.GetAsync<Product>(key.ToString());
 
             // Assert
@@ -46,7 +46,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Services
             var value = RedisDatabaseServiceTestData.GenerateProduct();
 
             // Act
-            var result = await _redisDatabaseService.GetAsync<Product>(key.ToString());
+            var result = await _redisDatabaseService.GetAsync<Product>(key.ToString(), CancellationToken.None);
 
             // Assert
             Assert.Null(result);
@@ -62,11 +62,11 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Services
             var key = Guid.NewGuid();
             var value = RedisDatabaseServiceTestData.GenerateProduct();
             var json = JsonSerializer.Serialize(value);
-            await _redisDatabaseService.SetAsync(key.ToString(), json);
+            await _redisDatabaseService.SetAsync(key.ToString(), json, CancellationToken.None);
 
             // Act
-            var removed = await _redisDatabaseService.RemoverAsync(key.ToString());
-            var result = await _redisDatabaseService.GetAsync<Product>(key.ToString());
+            var removed = await _redisDatabaseService.RemoverAsync(key.ToString(), CancellationToken.None);
+            var result = await _redisDatabaseService.GetAsync<Product>(key.ToString(), CancellationToken.None);
 
             // Assert
             Assert.True(removed);

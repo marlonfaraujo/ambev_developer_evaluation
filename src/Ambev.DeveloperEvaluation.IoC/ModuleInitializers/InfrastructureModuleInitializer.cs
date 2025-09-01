@@ -16,8 +16,8 @@ public class InfrastructureModuleInitializer : IModuleInitializer
 {
     public void Initialize(WebApplicationBuilder builder)
     {
-        //builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<DefaultContext>());
-        builder.Services.AddScoped<RedisDatabaseService>();
+        builder.Services.AddScoped<DbContext>(provider => provider.GetRequiredService<DefaultContext>());
+        builder.Services.AddScoped<ICacheDatabase, RedisDatabaseService>();
         builder.Services.AddScoped<IMongoDbServiceFactory, MongoDbServiceFactory>();
         builder.Services.AddScoped<IMongoDbService<ISaleModel>>(sp =>
         {

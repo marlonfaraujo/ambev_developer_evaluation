@@ -11,5 +11,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
         Task<IEnumerable<Product>?> ListByIdsAsync(Guid[] ids, CancellationToken cancellationToken = default);
         Task<PagedResult<Product>> GetPagedAsync(QueryOptions options, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Product>> GetAsync(CancellationToken cancellationToken = default);
     }
 }

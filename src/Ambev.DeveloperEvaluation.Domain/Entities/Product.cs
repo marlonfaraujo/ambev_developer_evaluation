@@ -24,5 +24,15 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         {
             return new ProductChangedEvent(this.Id, this.Name);
         }
+
+        public ProductCreatedEvent CreateProductCreatedEvent()
+        {
+            return new ProductCreatedEvent(this.Id);
+        }
+
+        public ProductDeletedEvent CreateProductDeletedEvent()
+        {
+            return new ProductDeletedEvent(this.Id);
+        }
     }
 }

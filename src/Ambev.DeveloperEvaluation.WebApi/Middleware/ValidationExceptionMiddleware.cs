@@ -3,7 +3,6 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
-using ApplicationException = Ambev.DeveloperEvaluation.Application.Exceptions.ApplicationException;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Middleware
 {
@@ -32,7 +31,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                 };
                 await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
             }
-            catch (ApplicationException ex)
+            catch (Ambev.DeveloperEvaluation.Application.Exceptions.ApplicationException ex)
             {
                 var response = new ApiResponse
                 {

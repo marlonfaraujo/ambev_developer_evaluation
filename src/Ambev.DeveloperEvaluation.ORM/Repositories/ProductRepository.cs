@@ -102,5 +102,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
                 PageSize = options.PageSize
             };
         }
+
+        public async Task<IEnumerable<Product>> GetAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Products.ToListAsync(cancellationToken);
+        }
     }
 }

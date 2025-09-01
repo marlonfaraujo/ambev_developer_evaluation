@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace Ambev.DeveloperEvaluation.Functional
 {
@@ -36,6 +37,10 @@ namespace Ambev.DeveloperEvaluation.Functional
                         "mongodb://developer:ev%40luAt10n@localhost:27017/?authSource=admin",
                         "test_developer_evaluation"
                     ));
+
+
+                services.AddSingleton<IConnectionMultiplexer>(options =>
+                    ConnectionMultiplexer.Connect("localhost:6379,password=ev@luAt10n"));
             });
         }
     }
