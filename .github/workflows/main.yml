@@ -19,8 +19,7 @@ jobs:
         ports:
           - 6379:6379
         options: >-
-          --requirepass ev@luAt10n
-          --health-cmd "redis-cli -a ev@luAt10n ping"
+          --health-cmd "redis-cli -a $REDIS_PASSWORD ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -34,7 +33,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres"
+          --health-cmd "pg_isready -U $POSTGRES_USER"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -47,7 +46,7 @@ jobs:
         ports:
           - 27017:27017
         options: >-
-          --health-cmd "mongosh --username developer --password ev@luAt10n --eval 'db.adminCommand(\"ping\")'"
+          --health-cmd "mongosh --username $MONGO_INITDB_ROOT_USERNAME --password $MONGO_INITDB_ROOT_PASSWORD --eval 'db.adminCommand(\"ping\")'"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -67,17 +66,25 @@ jobs:
       - name: Build
         run: dotnet build Ambev.DeveloperEvaluation.sln --no-restore --configuration Release
 
+      - name: Apply EF Core Migrations
+        env:
+          POSTGRES_DB: developer_evaluation
+          POSTGRES_USER: developer
+          POSTGRES_PASSWORD: ev@luAt10n
+          ConnectionStrings__Postgres: "Host=localhost;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
+        run: dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM/Ambev.DeveloperEvaluation.ORM.csproj --startup-project src/Ambev.DeveloperEvaluation.WebApi/Ambev.DeveloperEvaluation.WebApi.csproj --context Ambev.DeveloperEvaluation.ORM.DefaultContext
+
       - name: Run Tests
         env:
           # PostgreSQL
           POSTGRES_DB: developer_evaluation
           POSTGRES_USER: developer
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ev@luAt10n
           ConnectionStrings__Postgres: "Host=localhost;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
 
           # MongoDB
           MONGO_INITDB_ROOT_USERNAME: developer
-          MONGO_INITDB_ROOT_PASSWORD: mongopass
+          MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
           ConnectionStrings__Mongo: "mongodb://developer:ev@luAt10n@localhost:27017/appdb?authSource=admin"
 
           # Redis
