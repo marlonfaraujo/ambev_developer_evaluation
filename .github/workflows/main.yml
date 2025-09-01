@@ -66,12 +66,18 @@ jobs:
       - name: Build
         run: dotnet build Ambev.DeveloperEvaluation.sln --no-restore --configuration Release
 
+      - name: Install dotnet-ef and add to PATH
+        run: |
+          dotnet tool install --global dotnet-ef
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+          dotnet ef --version
+
       - name: Apply EF Core Migrations
         env:
           POSTGRES_DB: developer_evaluation
           POSTGRES_USER: developer
           POSTGRES_PASSWORD: ev@luAt10n
-          ConnectionStrings__Postgres: "Host=localhost;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
+          ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
         run: dotnet ef database update --project src/Ambev.DeveloperEvaluation.ORM/Ambev.DeveloperEvaluation.ORM.csproj --startup-project src/Ambev.DeveloperEvaluation.WebApi/Ambev.DeveloperEvaluation.WebApi.csproj --context Ambev.DeveloperEvaluation.ORM.DefaultContext
 
       - name: Run Tests
@@ -80,16 +86,16 @@ jobs:
           POSTGRES_DB: developer_evaluation
           POSTGRES_USER: developer
           POSTGRES_PASSWORD: ev@luAt10n
-          ConnectionStrings__Postgres: "Host=localhost;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
+          ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
 
           # MongoDB
           MONGO_INITDB_ROOT_USERNAME: developer
           MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
-          ConnectionStrings__Mongo: "mongodb://developer:ev@luAt10n@localhost:27017/appdb?authSource=admin"
+          ConnectionStrings__Mongo: "mongodb://developer:ev@luAt10n@mongodb:27017/appdb?authSource=admin"
 
           # Redis
           REDIS_PASSWORD: ev@luAt10n
-          ConnectionStrings__Redis: "localhost:6379,password=ev@luAt10n"
+          ConnectionStrings__Redis: "redis:6379,password=ev@luAt10n"
 
           # ASP.NET Core
           ASPNETCORE_ENVIRONMENT: "Development"
