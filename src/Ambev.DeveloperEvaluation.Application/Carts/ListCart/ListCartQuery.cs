@@ -9,7 +9,7 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
         public Guid? BranchSaleId { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
-        public string SortBy { get; set; }
-        public string SortDirection { get; set; }
+        public string SortBy { get; set; } = string.Empty;
+        public string SortDirection { get; set; } = string.Empty;
     }
 }

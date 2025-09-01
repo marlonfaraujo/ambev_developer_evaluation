@@ -7,7 +7,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.SimulateSale
     public class SimulateSaleQuery : IRequestApplication<SimulateSaleResult>
     {
         public Guid BranchSaleId { get; set; }
-        public IEnumerable<SaleItem> SaleItems { get; set; }
+        public IEnumerable<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
 
         public ValidationResultDetail Validate()
         {

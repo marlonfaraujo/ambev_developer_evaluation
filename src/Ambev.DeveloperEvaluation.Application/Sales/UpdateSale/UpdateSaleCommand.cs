@@ -8,8 +8,8 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale
     {
         public Guid Id { get; set; }
         public Guid BranchSaleId { get; set; }
-        public string SaleStatus { get; set; }
-        public IEnumerable<SaleItem> SaleItems { get; set; }
+        public string SaleStatus { get; set; } = string.Empty;
+        public IEnumerable<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
 
         public ValidationResultDetail Validate()
         {

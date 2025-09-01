@@ -10,8 +10,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public Money TotalSalePrice { get; set; }
         public Guid BranchSaleId { get; set; }
         public string BranchName { get; set; } = string.Empty;
-        public ICollection<CartItem> CartItems { get; private set; }
-        public string CartStatus { get; private set; }
+        public ICollection<CartItem> CartItems { get; private set; } = new List<CartItem>();
+        public string CartStatus { get; private set; } = string.Empty;
 
 
         public Cart(Guid userId, Money totalSalePrice, Guid branchSaleId, string branchName)
@@ -36,6 +36,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         public Cart()
         {
+            TotalSalePrice = new Money(0);
             CartStatus = CartStatusEnum.Opened.ToString();
         }
 

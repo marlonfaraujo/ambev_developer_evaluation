@@ -2,7 +2,7 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
 {
     public class ListCartResult
     {
-        public IEnumerable<ListCartResultData> Items { get; set; }
+        public IEnumerable<ListCartResultData> Items { get; set; } = new List<ListCartResultData>();
         public long TotalCount { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
@@ -13,9 +13,9 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public Guid BranchSaleId { get; set; }
-        public string BranchName { get; set; }
+        public string BranchName { get; set; } = string.Empty;
         public decimal TotalSalePrice { get; set; }
-        public IEnumerable<ListCartItemResult> CartItems { get; set; }
+        public IEnumerable<ListCartItemResult> CartItems { get; set; } = new List<ListCartItemResult>();
     }
 
     public class ListCartItemResult
@@ -27,6 +27,6 @@ namespace Ambev.DeveloperEvaluation.Application.Carts.ListCart
         public decimal DiscountAmount { get; set; }
         public decimal TotalSaleItemPrice { get; set; }
         public decimal TotalWithoutDiscount { get; set; }
-        public string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
     }
 }

@@ -9,7 +9,7 @@ public class CreateSaleCommand : IRequestApplication<CreateSaleResult>
     public Guid UserId { get; set; }
     public Guid BranchSaleId { get; set; }
     public decimal TotalSalePrice { get; set; }
-    public IEnumerable<CreateSaleItem> SaleItems { get; set; }
+    public IEnumerable<CreateSaleItem> SaleItems { get; set; } = new List<CreateSaleItem>();
 
     public CreateSaleCommand()
     {

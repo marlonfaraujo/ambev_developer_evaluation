@@ -20,7 +20,7 @@ namespace Ambev.DeveloperEvaluation.Unit.Domain.Specifications
                 new SaleItem { ProductId = productId, ProductItemQuantity = itemQuantity, UnitProductItemPrice = new Money(price) }
             };
 
-            Assert.Equal(false, spec.IsSatisfiedBy(saleItems));
+            Assert.False(spec.IsSatisfiedBy(saleItems));
         }
 
         /// <summary>

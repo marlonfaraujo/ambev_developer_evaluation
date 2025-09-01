@@ -56,7 +56,7 @@ namespace Ambev.DeveloperEvaluation.NoSql
                 filter = filter & filterBuilder.Eq(kv.Key, bsonValue);
             }
             var updateBuilder = Builders<T>.Update;
-            UpdateDefinition<T> update = null;
+            UpdateDefinition<T>? update = null;
             var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             foreach (var prop in props)
             {
@@ -94,7 +94,7 @@ namespace Ambev.DeveloperEvaluation.NoSql
                 {
                     if (typeof(T).GetProperty(kv.Key)?.PropertyType == typeof(Guid) || kv.Value?.GetType() == typeof(Guid))
                     {
-                        var guidValue = Guid.Parse(kv.Value.ToString()!);
+                        var guidValue = Guid.Parse(kv.Value!.ToString()!);
                         filters.Add(filterBuilder.Eq(kv.Key, new BsonBinaryData(guidValue, GuidRepresentation.Standard)));
                     }
                     else

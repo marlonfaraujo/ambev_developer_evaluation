@@ -40,8 +40,8 @@
         public decimal DiscountAmount { get; set; }
         public decimal TotalSaleItemPrice { get; set; }
         public decimal TotalWithoutDiscount { get; set; }
-        public string SaleItemStatus { get; set; }
-        public string ProductName { get; set; }
-        public string ProductDescription { get; set; }
+        public string SaleItemStatus { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
+        public string ProductDescription { get; set; } = string.Empty;
     }
 }

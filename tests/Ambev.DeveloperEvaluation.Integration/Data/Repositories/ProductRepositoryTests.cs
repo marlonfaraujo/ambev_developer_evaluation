@@ -117,7 +117,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
             var updated = await repository.UpdateAsync(product);
             
             var current = await repository.GetByIdAsync(product.Id);
-            Assert.Equal(current.Price.Value, updated.Price.Value);
+            Assert.Equal(current!.Price.Value, updated!.Price.Value);
         }
     }
 }

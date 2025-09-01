@@ -2,7 +2,7 @@
 {
     public class ListProductResult
     {
-        public IEnumerable<ListProductResultData> Items { get; set; }
+        public IEnumerable<ListProductResultData> Items { get; set; } = new List<ListProductResultData>();
         public long TotalCount { get; set; }
         public int Page { get; set; }
         public int PageSize { get; set; }
@@ -10,8 +10,8 @@
     public class ListProductResultData
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public ListProductResultData()
         {

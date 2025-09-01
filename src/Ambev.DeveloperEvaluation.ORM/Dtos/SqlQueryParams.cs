@@ -2,7 +2,7 @@
 {
     public class SqlQueryParams<T>
     {
-        public string QuerySql { get; set; }
-        public IEnumerable<T> SqlParameters { get; set; }
+        public string QuerySql { get; set; } = string.Empty;
+        public IEnumerable<T> SqlParameters { get; set; } = new List<T>();
     }
 }

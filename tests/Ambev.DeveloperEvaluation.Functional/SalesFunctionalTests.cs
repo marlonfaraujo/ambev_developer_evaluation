@@ -81,13 +81,13 @@ namespace Ambev.DeveloperEvaluation.Functional
 
             var authResponse = await _client.PostAsJsonAsync("/api/auth", new { Email = userRequest.Email, Password = userRequest.Password });
             var auth = await authResponse.Content.ReadFromJsonAsync<ApiResponseWithData<AuthenticateUserResponse>>();
-            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth.Data?.Token);
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth!.Data?.Token);
 
             var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
             var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = new Money(100) });
             var cart = await SeedCartAsync(
                 new Cart(
-                    user.Data.Id, 
+                    user!.Data!.Id, 
                     new Money(product.Price.Value * 2), 
                     branch.Id, 
                     branch.Name, 
@@ -112,7 +112,7 @@ namespace Ambev.DeveloperEvaluation.Functional
             postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await postResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateSaleResponse>>();
             created.Should().NotBeNull();
-            created!.Data.SaleStatus.Should().Be(SaleStatusEnum.Created.ToString());
+            created!.Data!.SaleStatus.Should().Be(SaleStatusEnum.Created.ToString());
 
             var getResponse = await _client.GetAsync($"/api/sales/{created.Data.Id}");
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -128,7 +128,7 @@ namespace Ambev.DeveloperEvaluation.Functional
             putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var check = await _client.GetFromJsonAsync<ApiResponseWithData<GetSaleResponse>>($"/api/sales/{created.Data.Id}");
-            check!.Data.SaleStatus.Should().Be(SaleStatusEnum.Modified.ToString());
+            check!.Data!.SaleStatus.Should().Be(SaleStatusEnum.Modified.ToString());
 
             var cancelResponse = await _client.PostAsJsonAsync($"/api/sales/{created.Data.Id}/cancel", new { Id = created.Data.Id });
             cancelResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -151,13 +151,13 @@ namespace Ambev.DeveloperEvaluation.Functional
 
             var authResponse = await _client.PostAsJsonAsync("/api/auth", new { Email = userRequest.Email, Password = userRequest.Password });
             var auth = await authResponse.Content.ReadFromJsonAsync<ApiResponseWithData<AuthenticateUserResponse>>();
-            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth.Data?.Token);
+            _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth!.Data?.Token);
 
             var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
             var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = new Money(100) });
             var cart = await SeedCartAsync(
                 new Cart(
-                    user.Data.Id,
+                    user!.Data!.Id,
                     new Money(product.Price.Value * 2),
                     branch.Id,
                     branch.Name,
@@ -182,7 +182,7 @@ namespace Ambev.DeveloperEvaluation.Functional
             postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await postResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateSaleResponse>>();
             created.Should().NotBeNull();
-            created!.Data.SaleStatus.Should().Be(SaleStatusEnum.Created.ToString());
+            created!.Data!.SaleStatus.Should().Be(SaleStatusEnum.Created.ToString());
 
             var getResponse = await _client.GetAsync($"/api/sales/{created.Data.Id}");
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -198,12 +198,12 @@ namespace Ambev.DeveloperEvaluation.Functional
             putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var check = await _client.GetFromJsonAsync<ApiResponseWithData<GetSaleResponse>>($"/api/sales/{created.Data.Id}");
-            check!.Data.SaleStatus.Should().Be(SaleStatusEnum.Modified.ToString());
+            check!.Data!.SaleStatus.Should().Be(SaleStatusEnum.Modified.ToString());
 
             var query = $"?PageNumber=1&PageSize=5&SaleId={created.Data.Id}";
             var listResponse = await _client.GetAsync($"/api/sales{query}");
             var listResult = await listResponse.Content.ReadFromJsonAsync<ApiResponseWithData<IEnumerable<ListSalesResponse>>>();
-            listResult.Data.First()
+            listResult!.Data!.First()
                 .SaleItems.Where(x => x.ProductId == created.Data.SaleItems.First().ProductId)
                 .First().ProductItemQuantity.Should().Be(4);
 

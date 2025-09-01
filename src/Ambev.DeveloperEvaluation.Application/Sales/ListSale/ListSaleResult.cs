@@ -12,7 +12,7 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
         public Guid BranchId { get; set; }
         public string BranchName { get; set; } = string.Empty;
         public string BranchDescription { get; set; } = string.Empty;
-        public IEnumerable<ListSaleItemResult> SaleItems { get; set; }
+        public IEnumerable<ListSaleItemResult> SaleItems { get; set; } = new List<ListSaleItemResult>();
     }
 
     public class ListSaleResult
@@ -32,8 +32,8 @@ namespace Ambev.DeveloperEvaluation.Application.Sales.ListSale
         public decimal DiscountAmount { get; set; }
         public decimal TotalSaleItemPrice { get; set; }
         public decimal TotalWithoutDiscount { get; set; }
-        public string SaleItemStatus { get; set; }
-        public string ProductName { get; set; }
-        public string ProductDescription { get; set; }
+        public string SaleItemStatus { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
+        public string ProductDescription { get; set; } = string.Empty;
     }
 }

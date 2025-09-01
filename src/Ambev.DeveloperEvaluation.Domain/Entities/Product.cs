@@ -6,8 +6,8 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 {
     public class Product : BaseEntity
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public Money Price { get; set; }
         public Product(Guid id, string name, string description, decimal price)
         {
@@ -18,6 +18,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         }
         public Product()
         {
+            Price = new Money(0);
         }
 
         public ProductChangedEvent CreateProductChangedEvent()
