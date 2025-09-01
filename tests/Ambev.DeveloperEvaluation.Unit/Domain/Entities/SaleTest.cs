@@ -22,7 +22,7 @@ public class SaleTest
         );
         var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
         var totalPrice = simulateSaleService.TotalSalePrice();
-        Assert.Equal(totalPrice, 2940.00m);
+        Assert.Equal(2940.00m, totalPrice);
 
         var sale2 = new Sale();
         sale2.AddSaleItems(
@@ -35,7 +35,7 @@ public class SaleTest
         );
         var simulateSaleService2 = new SimulateSaleService(sale2, Enumerable.Empty<Product>());
         totalPrice = simulateSaleService2.TotalSalePrice();
-        Assert.Equal(totalPrice, 2952.99m);
+        Assert.Equal(2952.99m, totalPrice);
     }
 
     [Fact(DisplayName = "With fake data generation, sale should give discount if it has identical products")]
@@ -51,7 +51,7 @@ public class SaleTest
 
         var simulateSaleService = new SimulateSaleService(sale, Enumerable.Empty<Product>());
         decimal totalSalePrice = simulateSaleService.TotalSalePrice();
-        Assert.Equal(totalSalePrice, expectedSaleItemPrice);
+        Assert.Equal(expectedSaleItemPrice, totalSalePrice);
     }
 
     [Fact(DisplayName = "With personalized data, the sale should give a discount because there are identical products, with 16 and 4 quantities")]

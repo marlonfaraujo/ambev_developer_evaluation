@@ -84,7 +84,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
             var updated = await repository.UpdateAsync(branch);
 
             var current = await repository.GetByIdAsync(branch.Id);
-            Assert.Equal(current.Name, updated.Name);
+            Assert.Equal(current!.Name, updated!.Name);
         }
     }
 }

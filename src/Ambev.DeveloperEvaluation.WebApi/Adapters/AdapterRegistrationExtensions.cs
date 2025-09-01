@@ -23,7 +23,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Adapters
             foreach (var req in requestTypes)
             {
                 var requestType = req.Type;
-                var resultType = req.Interface.GetGenericArguments()[0];
+                var resultType = req.Interface!.GetGenericArguments()[0];
 
                 // Cria os tipos genéricos fechados
                 var adapterType = typeof(MediatRRequestAdapter<,>).MakeGenericType(requestType, resultType);
@@ -52,7 +52,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Adapters
 
             foreach (var h in handlers)
             {
-                services.AddScoped(h.Interface, h.Implementation);
+                services.AddScoped(h.Interface!, h.Implementation);
             }
 
             return services;

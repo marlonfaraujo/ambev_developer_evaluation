@@ -10,7 +10,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
     {
         public HttpClient Client { get; }
         public Guid BranchId { get; private set; }
-        public string BranchName { get; private set; }  
+        public string BranchName { get; private set; } = string.Empty;
         public string JwtToken { get; }
 
         public BranchApiFixture()
@@ -25,15 +25,15 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Branchs
 
             var response = Client.PostAsJsonAsync("/api/branchs", new Branch { Name = "Name Initial", Description = "Initial" }).Result;
             var branch = response.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>().Result;
-            BranchId = (Guid)(branch.Data?.Id);
-            BranchName = branch.Data?.Name;
+            BranchId = (Guid)(branch!.Data!.Id);
+            BranchName = branch!.Data!.Name;
         }
 
         public Guid GetNewBranchId()
         {
             var response = Client.PostAsJsonAsync("/api/branchs", new Branch { Name = "Initial", Description = "Initial" }).Result;
             var branch = response.Content.ReadFromJsonAsync<ApiResponseWithData<Branch>>().Result;
-            return (Guid)(branch.Data?.Id);
+            return (Guid)(branch!.Data!.Id);
         }
 
         public void Dispose()

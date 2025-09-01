@@ -77,7 +77,7 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
         }
         async Task<Cart?> GetCartById(Guid cartId)
         {
-            if (command.CartId == null) return null;
+            if (command == null || command.CartId == Guid.Empty) return null;
             var cart = await _cartRepository.GetByIdAsync(command.CartId, cancellationToken);
             if (cart == null)
                 throw new KeyNotFoundException($"Cart with ID not found");
@@ -86,7 +86,7 @@ public class CreateSaleHandler : IRequestApplicationHandler<CreateSaleCommand, C
 
         async Task FinishCart()
         {
-            cart.FinishCart();
+            cart!.FinishCart();
             await _cartRepository.UpdateAsync(cart, cancellationToken);
         }
     }

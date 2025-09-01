@@ -20,6 +20,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             SaleDate = DateTime.Now;
             SaleItems = new List<SaleItem>();
             SaleStatus = SaleStatusEnum.Created.ToString();
+            TotalSalePrice = new Money(0);
         }
 
         public void AddSaleItems(List<SaleItem> saleItems)

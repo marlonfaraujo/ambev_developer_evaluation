@@ -19,6 +19,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         {
             TotalSaleItemPrice = new Money(0);
             SaleItemStatus = SaleStatusEnum.Created.ToString();
+            UnitProductItemPrice = new Money(0);
+            DiscountAmount = new Money(0);
+            UnitProductItemPrice = new Money(0);
+            TotalWithoutDiscount = new Money(0);
         }
 
         public SaleItem(Guid id, Guid productId, int productItemQuantity, decimal unitProductItemPrice, decimal discountAmount, decimal totalSaleItemPrice, decimal totalWithoutDiscount, string saleItemStatus)

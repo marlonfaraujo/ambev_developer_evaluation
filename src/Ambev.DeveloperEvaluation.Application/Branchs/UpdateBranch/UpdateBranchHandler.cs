@@ -32,7 +32,7 @@ namespace Ambev.DeveloperEvaluation.Application.Branchs.UpdateBranch
 
             var branch = _mapper.Map<Branch>(command);
             var updated = await _branchRepository.UpdateAsync(branch, cancellationToken);
-            var branchEvent = updated.CreateBranchChangedEvent();
+            var branchEvent = updated!.CreateBranchChangedEvent();
             var result = _mapper.Map<UpdateBranchResult>(updated);
             await _notification.Publish(branchEvent, cancellationToken);
             return result;

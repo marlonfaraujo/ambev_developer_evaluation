@@ -26,6 +26,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
         public CartItem()
         {
+            UnitProductItemPrice = new Money(0);
+            DiscountAmount = new Money(0);
+            TotalSaleItemPrice = new Money(0);
+            TotalWithoutDiscount = new Money(0);
         }
     }
 }

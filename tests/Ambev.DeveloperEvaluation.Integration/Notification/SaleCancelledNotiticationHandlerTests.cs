@@ -30,9 +30,9 @@ namespace Ambev.DeveloperEvaluation.Integration.Notification
                 x => x.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("SaleCancelledEvent")),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("SaleCancelledEvent")),
                     null,
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
                 Times.Once);
         }
     }

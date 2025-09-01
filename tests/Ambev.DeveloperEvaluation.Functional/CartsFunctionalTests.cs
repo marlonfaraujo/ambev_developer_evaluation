@@ -64,7 +64,7 @@ namespace Ambev.DeveloperEvaluation.Functional
             postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await postResponse.Content.ReadFromJsonAsync<ApiResponseWithData<CreateCartResponse>>();
             created.Should().NotBeNull();
-            created!.Data.BranchSaleId.Should().Be(branch.Id);
+            created!.Data!.BranchSaleId.Should().Be(branch.Id);
             
             var getResponse = await _client.GetAsync($"/api/carts/{created.Data.Id}");
             getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -82,7 +82,7 @@ namespace Ambev.DeveloperEvaluation.Functional
             putResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var check = await _client.GetFromJsonAsync<ApiResponseWithData<GetCartResponse>>($"/api/carts/{created.Data.Id}");
-            check!.Data.BranchName.Should().Be("Branch");
+            check!.Data!.BranchName.Should().Be("Branch");
 
             var deleteResponse = await _client.DeleteAsync($"/api/carts/{created.Data.Id}");
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.OK);
