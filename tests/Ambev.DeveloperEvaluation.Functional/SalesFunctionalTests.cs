@@ -84,15 +84,23 @@ namespace Ambev.DeveloperEvaluation.Functional
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth.Data?.Token);
 
             var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
-            var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = 100 });
+            var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = new Money(100) });
             var cart = await SeedCartAsync(
                 new Cart(
                     user.Data.Id, 
-                    new Money(product.Price * 2), 
+                    new Money(product.Price.Value * 2), 
                     branch.Id, 
                     branch.Name, 
                     new List<CartItem> {
-                        new CartItem(product.Id, product.Name, 2, new Money(product.Price), new Money(0), new Money(product.Price * 2), new Money(product.Price * 2))
+                        new CartItem(
+                            product.Id, 
+                            product.Name, 
+                            2, 
+                            product.Price, 
+                            new Money(0), 
+                            new Money(product.Price.Value * 2), 
+                            new Money(product.Price.Value * 2)
+                        )
                     }
                 ));
 
@@ -146,15 +154,23 @@ namespace Ambev.DeveloperEvaluation.Functional
             _client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", auth.Data?.Token);
 
             var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
-            var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = 100 });
+            var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = new Money(100) });
             var cart = await SeedCartAsync(
                 new Cart(
                     user.Data.Id,
-                    new Money(product.Price * 2),
+                    new Money(product.Price.Value * 2),
                     branch.Id,
                     branch.Name,
                     new List<CartItem> {
-                        new CartItem(product.Id, product.Name, 2, new Money(product.Price), new Money(0), new Money(product.Price * 2), new Money(product.Price * 2))
+                        new CartItem(
+                            product.Id, 
+                            product.Name, 
+                            2, 
+                            product.Price, 
+                            new Money(0), 
+                            new Money(product.Price.Value * 2), 
+                            new Money(product.Price.Value * 2)
+                        )
                     }
                 ));
 

@@ -40,7 +40,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Services
                                         {
                                             Id = saleItem.Id,
                                             ProductId = product.Id,
-                                            UnitProductItemPrice = new Money(product.Price),
+                                            UnitProductItemPrice = product.Price,
                                             ProductItemQuantity = saleItem.ProductItemQuantity
                                         })
                                         .GroupBy(x => x.ProductId)

@@ -18,10 +18,10 @@ namespace Ambev.DeveloperEvaluation.Integration.Application.TestData
                     product.Id, 
                     product.Name, 
                     10, 
-                    new Money(product.Price), 
+                    product.Price, 
                     new Money(0), 
-                    new Money((product.Price * 10)), 
-                    new Money((product.Price * 10))
+                    new Money((product.Price.Value * 10)), 
+                    new Money((product.Price.Value * 10))
                 )
             );
 

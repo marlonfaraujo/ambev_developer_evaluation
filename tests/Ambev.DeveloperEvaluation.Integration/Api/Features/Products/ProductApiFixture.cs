@@ -1,6 +1,6 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
-using Ambev.DeveloperEvaluation.Integration.Api.Security;
+﻿using Ambev.DeveloperEvaluation.Integration.Api.Security;
 using Ambev.DeveloperEvaluation.WebApi.Common;
+using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using System.Net.Http.Json;
 
 namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
@@ -9,6 +9,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
     {
         public HttpClient Client { get; }
         public Guid ProductId { get; private set; }
+        public string ProductName { get; private set; }
         public string JwtToken { get; }
 
         public ProductApiFixture()
@@ -21,15 +22,16 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
 
             Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", JwtToken);
 
-            var response = Client.PostAsJsonAsync("/api/products", new Product { Name = "Initial", Description = "Initial", Price = 10.00m }).Result;
-            var product = response.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>().Result;
+            var response = Client.PostAsJsonAsync("/api/products", new { Name = "Name Initial", Description = "Initial", Price = 10.00m }).Result;
+            var product = response.Content.ReadFromJsonAsync<ApiResponseWithData<CreateProductResponse>>().Result;
             ProductId = (Guid)(product.Data?.Id);
+            ProductName = product.Data?.Name;
         }
 
         public Guid GetNewProductId()
         {
-            var response = Client.PostAsJsonAsync("/api/products", new Product { Name = "Initial", Description = "Initial", Price = 10.00m }).Result;
-            var product = response.Content.ReadFromJsonAsync<ApiResponseWithData<Product>>().Result;
+            var response = Client.PostAsJsonAsync("/api/products", new { Name = "Initial", Description = "Initial", Price = 10.00m }).Result;
+            var product = response.Content.ReadFromJsonAsync<ApiResponseWithData<CreateProductResponse>>().Result;
             return (Guid)(product.Data?.Id);
         }
 

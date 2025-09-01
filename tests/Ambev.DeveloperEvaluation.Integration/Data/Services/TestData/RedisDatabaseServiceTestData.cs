@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Bogus;
 
 namespace Ambev.DeveloperEvaluation.Integration.Data.Services.TestData
@@ -11,7 +12,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Services.TestData
                 Id = f.Random.Guid(),
                 Name = f.Commerce.ProductName(),
                 Description = f.Commerce.ProductDescription(),
-                Price = f.Random.Decimal(50, 800)
+                Price = new Money(f.Random.Decimal(50, 800))
             });
 
         public static Product GenerateProduct()

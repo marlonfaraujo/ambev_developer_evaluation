@@ -45,7 +45,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
                 {
                     ProductId = productExisting.Id,
                     ProductItemQuantity = 10,
-                    UnitProductItemPrice = productExisting.Price
+                    UnitProductItemPrice = productExisting.Price.Value
                 }
             };
             var sale = new Sale();

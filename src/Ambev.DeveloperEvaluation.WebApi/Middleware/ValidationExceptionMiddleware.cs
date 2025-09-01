@@ -3,6 +3,7 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using System.Text.Json;
+using ApplicationException = Ambev.DeveloperEvaluation.Application.Exceptions.ApplicationException;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Middleware
 {
@@ -21,14 +22,23 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
             {
                 await _next(context);
             }
-            catch (ValidationException ex)
+            catch (DomainException ex)
             {
                 var response = new ApiResponse
                 {
                     Success = false,
-                    Message = "Validation Failed",
-                    Errors = ex.Errors
-                        .Select(error => (ValidationErrorDetail)error)
+                    Message = ex.Message,
+                    Errors = Enumerable.Empty<ValidationErrorDetail>()
+                };
+                await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
+            }
+            catch (ApplicationException ex)
+            {
+                var response = new ApiResponse
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Errors = Enumerable.Empty<ValidationErrorDetail>()
                 };
                 await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
             }
@@ -59,6 +69,17 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
                     Success = false,
                     Message = ex.Message,
                     Errors = Enumerable.Empty<ValidationErrorDetail>()
+                };
+                await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
+            }
+            catch (ValidationException ex)
+            {
+                var response = new ApiResponse
+                {
+                    Success = false,
+                    Message = "Validation Failed",
+                    Errors = ex.Errors
+                        .Select(error => (ValidationErrorDetail)error)
                 };
                 await HandleExceptionAsync(context, ex, StatusCodes.Status400BadRequest, response);
             }

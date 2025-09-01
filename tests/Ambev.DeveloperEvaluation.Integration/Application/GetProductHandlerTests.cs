@@ -27,7 +27,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
             var productExisting = ProductHandlerTestData.GetProduct();
             var productQuery = new GetProductQuery(productExisting.Id);
 
-            mapperMock.Setup(m => m.Map<GetProductResult>(It.IsAny<Product>())).Returns(new GetProductResult(productExisting.Id, productExisting.Name, productExisting.Description, productExisting.Price));
+            mapperMock.Setup(m => m.Map<GetProductResult>(It.IsAny<Product>())).Returns(new GetProductResult(productExisting.Id, productExisting.Name, productExisting.Description, productExisting.Price.Value));
             var handler = new GetProductHandler(repoMock, mapperMock.Object);
             var result = await handler.Handle(productQuery, CancellationToken.None);
             Assert.NotNull(result);

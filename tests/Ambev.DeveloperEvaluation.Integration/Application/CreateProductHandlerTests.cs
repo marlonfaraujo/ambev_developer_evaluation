@@ -28,7 +28,7 @@ namespace Ambev.DeveloperEvaluation.Integration.Application
             var product = new Product(Guid.NewGuid(), command.Name, command.Description, command.Price);
 
             mapperMock.Setup(m => m.Map<Product>(command)).Returns(product);
-            mapperMock.Setup(m => m.Map<CreateProductResult>(product)).Returns(new CreateProductResult(product.Id, product.Name, product.Description, product.Price));
+            mapperMock.Setup(m => m.Map<CreateProductResult>(product)).Returns(new CreateProductResult(product.Id, product.Name, product.Description, product.Price.Value));
 
             var handler = new CreateProductHandler(repoMock, mapperMock.Object);
 

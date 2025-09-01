@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Carts.CreateCart;
@@ -49,7 +50,7 @@ namespace Ambev.DeveloperEvaluation.Functional
         public async Task Cart_Crud_Flow_Should_Work()
         {
             var branch = await SeedBranchAsync(new Branch { Name = "Branch name", Description = "Branch description" });
-            var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = 100 });
+            var product = await SeedProductAsync(new Product { Name = "Product name", Description = "Product description", Price = new Money(100) });
 
             var cartRequest = new
             {

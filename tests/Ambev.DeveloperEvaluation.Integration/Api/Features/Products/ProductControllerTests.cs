@@ -68,10 +68,26 @@ namespace Ambev.DeveloperEvaluation.Integration.Api.Features.Products
         [Fact(DisplayName = "GET /api/products should return Ok with product list")]
         public async Task ListProducts_ReturnsOk()
         {
-            var listRequest = "?Category=Test Category"; // Example query string, adjust as needed
-            var response = await _productApiFixture.Client.GetAsync($"/api/products{listRequest}");
+            var query = $"?PageNumber=1&PageSize=5";
+            var response = await _productApiFixture.Client.GetAsync($"/api/products{query}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Verifies that listing products via GET returns HTTP 200 OK and a valid response.
+        /// </summary>
+        [Fact(DisplayName = "GET /api/products should return Ok and products list when query by name")]
+        public async Task Get_Products_ReturnsOkAndProductsListByName()
+        {
+            var query = $"?PageNumber=1&PageSize=5&Name={_productApiFixture.ProductName}";
+            // Act
+            var response = await _productApiFixture.Client.GetAsync($"/api/products{query}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var content = await response.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrWhiteSpace(content));
         }
 
         /// <summary>

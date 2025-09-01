@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using Ambev.DeveloperEvaluation.ORM.Repositories;
 using Xunit;
 
@@ -112,11 +113,11 @@ namespace Ambev.DeveloperEvaluation.Integration.Data.Repositories
             context.SaveChanges();
 
             var repository = new ProductRepository(context);
-            product.Price = 100.0m;
+            product.Price = new Money(100.0m);
             var updated = await repository.UpdateAsync(product);
             
             var current = await repository.GetByIdAsync(product.Id);
-            Assert.Equal(current.Price, updated.Price);
+            Assert.Equal(current.Price.Value, updated.Price.Value);
         }
     }
 }

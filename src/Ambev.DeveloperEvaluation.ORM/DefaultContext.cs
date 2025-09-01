@@ -63,6 +63,10 @@ public class DefaultContext : DbContext
             .Property(e => e.TotalSalePrice)
             .HasConversion(moneyConverter);
 
+        modelBuilder.Entity<Product>()
+            .Property(e => e.Price)
+            .HasConversion(moneyConverter);
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
     }

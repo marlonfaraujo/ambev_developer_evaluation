@@ -52,7 +52,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct
 
             async Task validateChangePriceProduct()
             {
-                if (command.Price == existing.Price) return;
+                if (command.Price == existing.Price.Value) return;
 
                 var carts = await GetCartsWithProductId(existing.Id);
                 if (carts != null && carts.Any())

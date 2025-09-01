@@ -1,6 +1,6 @@
 ﻿namespace Ambev.DeveloperEvaluation.Application.Exceptions
 {
-    public class CartFinishedException : Exception
+    public class CartFinishedException : ApplicationException
     {
 
         public CartFinishedException(string? message) : base(message)

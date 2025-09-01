@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Domain.Common;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 
 namespace Ambev.DeveloperEvaluation.Domain.Repositories
 {
@@ -9,5 +10,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
         Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
         Task<IEnumerable<Product>?> ListByIdsAsync(Guid[] ids, CancellationToken cancellationToken = default);
+        Task<PagedResult<Product>> GetPagedAsync(QueryOptions options, CancellationToken cancellationToken = default);
     }
 }
