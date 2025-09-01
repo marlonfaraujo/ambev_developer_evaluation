@@ -78,7 +78,8 @@ $certPath = "$env:APPDATA\ASP.NET\Https"
 New-Item -ItemType Directory -Path $certPath -Force
 
 # Export the certificate with password
-dotnet dev-certs https -ep "$certPath\Ambev.DeveloperEvaluation.WebApi.pfx" -p your_password
+# The password must be the same as configured in docker-compose.yml
+dotnet dev-certs https -ep "$certPath\Ambev.DeveloperEvaluation.WebApi.pfx" -p ev@luAt10n
 ```
 
 * Run docker compose: 
