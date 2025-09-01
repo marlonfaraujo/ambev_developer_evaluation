@@ -79,12 +79,12 @@ namespace Ambev.DeveloperEvaluation.Functional
             var getBranchResponse = await _client.GetAsync($"/api/branchs/{branch.Id}");
             getBranchResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var getBranch = await getBranchResponse.Content.ReadFromJsonAsync<ApiResponseWithData<GetBranchResponse>>();
-            getBranch.Data.Name.Should().Be(updateBranchRequest.Name);
+            getBranch!.Data!.Name.Should().Be(updateBranchRequest.Name);
 
-            var getCartResponse = await _client.GetAsync($"/api/carts/{created.Data.Id}");
+            var getCartResponse = await _client.GetAsync($"/api/carts/{created!.Data!.Id}");
             getCartResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var getCart = await getCartResponse.Content.ReadFromJsonAsync<ApiResponseWithData<GetCartResponse>>();
-            getCart.Data.BranchName.Should().Be(getBranch.Data.Name);
+            getCart!.Data!.BranchName.Should().Be(getBranch.Data.Name);
 
         }
     }

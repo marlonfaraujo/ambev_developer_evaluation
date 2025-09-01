@@ -23,7 +23,7 @@ namespace Ambev.DeveloperEvaluation.NoSql
         {
             var json = await _database.StringGetAsync(key);
             if (json.IsNullOrEmpty) return default;
-            return JsonSerializer.Deserialize<T>(json);
+            return JsonSerializer.Deserialize<T>(json!);
         }
 
         public async Task<bool> RemoverAsync(string key, CancellationToken cancellationToken = default)

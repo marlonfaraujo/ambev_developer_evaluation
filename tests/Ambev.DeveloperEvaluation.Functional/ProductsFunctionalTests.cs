@@ -80,13 +80,13 @@ namespace Ambev.DeveloperEvaluation.Functional
             var getProductResponse = await _client.GetAsync($"/api/products/{product.Id}");
             getProductResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var getProduct = await getProductResponse.Content.ReadFromJsonAsync<ApiResponseWithData<GetProductResponse>>();
-            getProduct.Data.Name.Should().Be(updateProductRequest.Name);
+            getProduct!.Data!.Name.Should().Be(updateProductRequest.Name);
 
-            var getCartResponse = await _client.GetAsync($"/api/carts/{created.Data.Id}");
+            var getCartResponse = await _client.GetAsync($"/api/carts/{created!.Data!.Id}");
             getCartResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             var getCart = await getCartResponse.Content.ReadFromJsonAsync<ApiResponseWithData<GetCartResponse>>();
-            getCart.Data.CartItems.Select(x => x.ProductId == product.Id).Should().NotBeNull();
-            getCart.Data.CartItems.Where(x => x.ProductId == product.Id).FirstOrDefault().ProductName.Should().Be(getProduct.Data.Name);
+            getCart!.Data!.CartItems.Select(x => x.ProductId == product.Id).Should().NotBeNull();
+            getCart!.Data!.CartItems.Where(x => x.ProductId == product.Id).FirstOrDefault()!.ProductName.Should().Be(getProduct.Data.Name);
 
         }
     }

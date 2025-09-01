@@ -73,7 +73,7 @@ public class Program
             );
 
             builder.Services.AddSingleton<IConnectionMultiplexer>(options => 
-                ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")));
+                ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!));
 
             builder.Services.AddSingleton<MongoDbContext>(sp =>
                 new MongoDbContext(

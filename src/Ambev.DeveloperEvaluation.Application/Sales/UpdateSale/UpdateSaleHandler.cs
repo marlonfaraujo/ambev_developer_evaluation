@@ -41,9 +41,9 @@ public class UpdateSaleHandler : IRequestApplicationHandler<UpdateSaleCommand, U
         {
             command.SaleStatus = existingSale.SaleStatus;
         }
-        if (command.BranchSaleId == null || command.BranchSaleId == Guid.Empty)
+        if (command.BranchSaleId == Guid.Empty)
         {
-            command.BranchSaleId = existingSale.BranchSaleId;
+            command!.BranchSaleId = existingSale.BranchSaleId;
         }
         var products = await GetProductsById();
         await hasBranchById();

@@ -27,10 +27,10 @@ namespace Ambev.DeveloperEvaluation.ORM.Queries
                     query.AppendLine(@"AND ""Name"" ILIKE @name");
                     sqlParameters.Add(new NpgsqlParameter("name", $"%{queryParameters.Name}%"));
                 }
+                query.AppendLine("LIMIT @pageSize OFFSET @pageSize * (@pageNumber - 1)");
+                sqlParameters.Add(new NpgsqlParameter("pageSize", queryParameters.Pager.PageSize));
+                sqlParameters.Add(new NpgsqlParameter("pageNumber", queryParameters.Pager.PageNumber));
             }
-            query.AppendLine("LIMIT @pageSize OFFSET @pageSize * (@pageNumber - 1)");
-            sqlParameters.Add(new NpgsqlParameter("pageSize", queryParameters.Pager.PageSize));
-            sqlParameters.Add(new NpgsqlParameter("pageNumber", queryParameters.Pager.PageNumber));
 
             return new SqlQueryParams<NpgsqlParameter>
             {

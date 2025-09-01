@@ -68,7 +68,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
                         }
                         else
                         {
-                            query = query.Where(x => EF.Property<string>(x, kv.Key) == value.ToString());
+                            query = query.Where(x => EF.Property<string>(x, kv.Key) == value!.ToString());
                         }
                     }
                 }

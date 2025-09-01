@@ -6,8 +6,8 @@
         public Guid UserId { get; set; }
         public Guid BranchSaleId { get; set; }
         public decimal TotalSalePrice { get; set; }
-        public string BranchName { get; set; }
-        public IEnumerable<ListCartItemResponse> CartItems { get; set; }
+        public string BranchName { get; set; } = string.Empty;
+        public IEnumerable<ListCartItemResponse> CartItems { get; set; } = new List<ListCartItemResponse>();
     }
 
 
@@ -20,6 +20,6 @@
         public decimal DiscountAmount { get; set; }
         public decimal TotalSaleItemPrice { get; set; }
         public decimal TotalWithoutDiscount { get; set; }
-        public string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
     }
 }

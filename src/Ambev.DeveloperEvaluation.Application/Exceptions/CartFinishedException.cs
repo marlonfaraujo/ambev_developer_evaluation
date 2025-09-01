@@ -3,11 +3,11 @@
     public class CartFinishedException : ApplicationException
     {
 
-        public CartFinishedException(string? message) : base(message)
+        public CartFinishedException(string? message) : base(message!)
         {
         }
 
-        public CartFinishedException(string? message, Exception? innerException) : base(message, innerException)
+        public CartFinishedException(string? message, Exception? innerException) : base(message!, innerException!)
         {
         }
     }

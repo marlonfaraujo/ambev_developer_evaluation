@@ -111,7 +111,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Services
 
         public object[] GetSqlParameters<T>(T parameters)
         {
-            return ToSqlParameters(parameters).ToArray();
+            return ToSqlParameters(parameters!).ToArray();
         }
 
         private List<NpgsqlParameter> ToSqlParameters(object obj)

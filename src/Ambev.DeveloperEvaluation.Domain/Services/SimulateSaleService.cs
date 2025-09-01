@@ -46,10 +46,10 @@ namespace Ambev.DeveloperEvaluation.Domain.Services
                                         .GroupBy(x => x.ProductId)
                                         .Select(g => new SaleItem
                                         {
-                                            Id = g.FirstOrDefault().Id,
+                                            Id = g.FirstOrDefault()!.Id,
                                             ProductId = g.Key,
                                             ProductItemQuantity = g.Sum(x => x.ProductItemQuantity),
-                                            UnitProductItemPrice = g.FirstOrDefault().UnitProductItemPrice
+                                            UnitProductItemPrice = g.FirstOrDefault()!.UnitProductItemPrice
                                         })
                                         .ToList();
 
