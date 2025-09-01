@@ -56,6 +56,8 @@ To run the project, you must have the following installed on your local environm
 * **PostgreSQL** (local or via Docker)([link](https://www.postgresql.org/))
 * Recommended IDE: Visual Studio 2022 for local development
 
+You may need to restart your system after installations
+
 ## Installation and Execution
 
 In order to run the application you need to follow the steps below:
@@ -66,6 +68,17 @@ In order to run the application you need to follow the steps below:
 * Access the folder in terminal, example: 
 ```bash
 cd ambev_developerevaluation_backend
+```
+
+* To access via https in Docker, you need to generate a certificate, as per the command below:
+```bash
+# Create the folder if it doesn't exist
+# In Linux this folder is: ~/.aspnet/https
+$certPath = "$env:APPDATA\ASP.NET\Https"
+New-Item -ItemType Directory -Path $certPath -Force
+
+# Export the certificate with password
+dotnet dev-certs https -ep "$certPath\Ambev.DeveloperEvaluation.WebApi.pfx" -p your_password
 ```
 
 * Run docker compose: 
@@ -97,8 +110,6 @@ dotnet test Ambev.DeveloperEvaluation.sln
 
 # Documentation
 Access the documentation and make requests to the API at https://localhost:8081/swagger
-
-See also in [Documentation](/.doc/carts-api.md)
 
 # Technologies and Technical Features 
 This project consists of a REST API built in .NET 8 with a focus on clarity, scalability and ease of maintenance. Best practices were applied such as separation of responsibilities, use of Entity Framework Core for data persistence, validations with FluentValidation, CQRS pattern with MediatR and documentation with Swagger.
