@@ -55,6 +55,8 @@ To run the project, you must have the following installed on your local environm
 * **.NET-SDK-8** For running application and local development ([link](https://dotnet.microsoft.com/en-us/download/dotnet/8.0))
 * **Entity-Framework-Core-Tools** Creating and executing migrations for generation the database ([link](https://learn.microsoft.com/en-us/ef/core/cli/dotnet))
 * **PostgreSQL** (local or via Docker)([link](https://www.postgresql.org/))
+* **MongoDB** (local or via Docker)([link](https://www.mongodb.com/try/download/community))
+* **Redis** (local or via Docker)([link](https://redis.io/downloads/))
 * Recommended IDE: Visual Studio 2022 for local development
 
 You may need to restart your system after installations
@@ -88,8 +90,6 @@ dotnet dev-certs https -ep "$certPath\Ambev.DeveloperEvaluation.WebApi.pfx" -p e
 ```bash
 docker-compose up -d
 ```
-
-* The `appsettings.Development.json` file of the development environment contains configuration of database connections for use by docker.
 
 
 * Run the migrations to create the database: 
@@ -175,7 +175,8 @@ Here are listed some of the specific technologies used for the implementation of
        │     ├── Specifications
        │     ├── Validation
        │     └── ValueObjects  
-       ├── IoC
+       ├── IoC  
+       ├── NoSql
        ├── ORM
        │     ├── Common
        │     ├── Dtos

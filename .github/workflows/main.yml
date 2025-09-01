@@ -101,4 +101,4 @@ jobs:
           ASPNETCORE_ENVIRONMENT: "Development"
           ASPNETCORE_HTTP_PORTS: "8080"
           ASPNETCORE_HTTPS_PORTS: "8081"
-        run: dotnet test Ambev.DeveloperEvaluation.sln --no-build --verbosity normal
+        run: dotnet test Ambev.DeveloperEvaluation.sln --no-restore --configuration Release --verbosity normal
