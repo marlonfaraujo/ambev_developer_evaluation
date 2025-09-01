@@ -26,19 +26,18 @@ Backend API project developed to manage sales records and calculate discounts ba
 
 A sales context and a product cart context have been created to simulate prices with discount rules [(See discount rule)](/.doc/use-case.md). Therefore, it is not possible to make sales without a registered cart.
 
-The cart consists only of data cached using the in-memory Redis database. The cart APIs, when interacting with the application and domain layer, have the sole purpose of using the domain service that simulates prices with discounts. For data persistence it does not use repositories.
-
 # Achievements
 
 I removed the dependency on the MediatR framework from the application layer. This brought benefits to the project, such as ease of changing the framework without compromising business rules, ease of testing, etc. MediatR is used in the project to implement the CQRS pattern, centralizing the sending of commands and queries, promoting decoupling between the application layers and facilitating maintenance and testing.
 
-Additionally, when listing data from all APIs, I opted for paginated SQL queries to avoid retrieving all records through the repository layer and loading them entirely into memory.
+Additionally, it was possible to record consolidated and denormalized sales data and cache product data.
 
 # What can be improved
 
-With more time, my goal for the project would be to remove the Fluent framework from the domain layer, so as not to run the risk of having to change it for another one in the future. The impact would be great on this important layer. I believe that with the inversion of dependencies and the use of adapter patterns, this case would be solved.
+With more time, my goal for the project would be to remove the Fluent framework from the domain layer, so as not to run the risk of having to change it for another one in the future. 
+The impact would be great on this important layer. I believe that with the inversion of dependencies and the use of patterns, this case would be solved.
 
-In addition, the next step would be to write consolidated and denormalized data to a NoSQL database (MongoDB), to facilitate queries and use by some other microservice.
+Additionally, user profile control to view data, and other strategies for using the cache in the paging and data invalidation part.
 
 See more pending issues in [Link](https://github.com/marlonfaraujo/ambev_developerevaluation_backend/issues).
 
@@ -46,7 +45,7 @@ See more pending issues in [Link](https://github.com/marlonfaraujo/ambev_develop
 
 ## Environment Setup Instructions - Prerequisites
 
-Make sure you have docker installed.
+Make sure you have docker and git installed.
  
 To run the project, you must have the following installed on your local environment:
 
@@ -98,7 +97,8 @@ dotnet test Ambev.DeveloperEvaluation.sln
 
 # Documentation
 Access the documentation and make requests to the API at https://localhost:8081/swagger
-See also in [Carts](/.doc/carts-api.md)
+
+See also in [Documentation](/.doc/carts-api.md)
 
 # Technologies and Technical Features 
 This project consists of a REST API built in .NET 8 with a focus on clarity, scalability and ease of maintenance. Best practices were applied such as separation of responsibilities, use of Entity Framework Core for data persistence, validations with FluentValidation, CQRS pattern with MediatR and documentation with Swagger.

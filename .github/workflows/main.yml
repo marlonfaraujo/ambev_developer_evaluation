@@ -1,36 +1,91 @@
-name: .NET 8 Build and Test
+name: Build & Test WebAPI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        image: redis:7.4.1-alpine
+        env:
+          REDIS_PASSWORD: ev@luAt10n
+        ports:
+          - 6379:6379
+        options: >-
+          --requirepass ev@luAt10n
+          --health-cmd "redis-cli -a ev@luAt10n ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: developer_evaluation
+          POSTGRES_USER: developer
+          POSTGRES_PASSWORD: ev@luAt10n
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      mongodb:
+        image: mongo:8.0
+        env:
+          MONGO_INITDB_ROOT_USERNAME: developer
+          MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --username developer --password ev@luAt10n --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8 SDK
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
       - name: Restore dependencies
-        run: dotnet restore Ambev.DeveloperEvaluation.sln
+        run: dotnet restore
 
-      - name: Build project
+      - name: Build
         run: dotnet build Ambev.DeveloperEvaluation.sln --no-restore --configuration Release
 
-      - name: Run unit tests
-        run: dotnet test Ambev.DeveloperEvaluation.sln --no-restore --configuration Release --collect:"XPlat Code Coverage"
+      - name: Run Tests
+        env:
+          # PostgreSQL
+          POSTGRES_DB: developer_evaluation
+          POSTGRES_USER: developer
+          POSTGRES_PASSWORD: postgres
+          ConnectionStrings__Postgres: "Host=localhost;Port=5432;Database=developer_evaluation;Username=developer;Password=ev@luAt10n"
 
-      - name: Publish test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: 'tests/TestResults/*.trx'
+          # MongoDB
+          MONGO_INITDB_ROOT_USERNAME: developer
+          MONGO_INITDB_ROOT_PASSWORD: mongopass
+          ConnectionStrings__Mongo: "mongodb://developer:ev@luAt10n@localhost:27017/appdb?authSource=admin"
+
+          # Redis
+          REDIS_PASSWORD: ev@luAt10n
+          ConnectionStrings__Redis: "localhost:6379,password=ev@luAt10n"
+
+          # ASP.NET Core
+          ASPNETCORE_ENVIRONMENT: "Development"
+          ASPNETCORE_HTTP_PORTS: "8080"
+          ASPNETCORE_HTTPS_PORTS: "8081"
+        run: dotnet test Ambev.DeveloperEvaluation.sln --no-build --verbosity normal
