@@ -42,6 +42,13 @@ namespace Ambev.DeveloperEvaluation.NoSql
                 {
                     cm.AutoMap();
                     cm.MapIdMember(c => c.Id);
+                    cm.SetDiscriminatorIsRequired(false);
+                });
+
+                BsonClassMap.RegisterClassMap<SaleItemModel>(cm =>
+                {
+                    cm.AutoMap();
+                    cm.SetDiscriminatorIsRequired(false);
                 });
             }
         }
